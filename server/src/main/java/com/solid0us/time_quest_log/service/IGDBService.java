@@ -14,29 +14,54 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.LinkedBlockingQueue;
 
 @Service
 public class IGDBService {
     @Value("${IGDB_CLIENT_ID}")
-    private String clientId;
+    private final String clientId;
 
     @Value("${IGDB_SECRET_KEY}")
-    private String clientSecretKey;
+    private final String clientSecretKey;
 
     private String accessToken;
 
-    private String apiBaseUrl = "https://api.igdb.com/v4/";
+    private final String apiBaseUrl = "https://api.igdb.com/v4/";
+    private final BlockingQueue<Runnable> requestQueue = new LinkedBlockingQueue<>();
+    private final Thread workerThread;
 
     private final int MAX_RETRIES = 3;
+    // To accommodate for IGDB's 4 request per second rate limit
+    private final int THREAD_BLOCK_MILLISECONDS = 300;
 
     public IGDBService() {
         clientId = System.getenv("IGDB_CLIENT_ID");
         clientSecretKey = System.getenv("IGDB_SECRET_KEY");
+
+        workerThread = new Thread(() -> {
+            while (true) {
+                try {
+                    Runnable task = requestQueue.take();
+                    task.run();
+                    Thread.sleep(THREAD_BLOCK_MILLISECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        });
+        workerThread.start();
+
         try {
             login();
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void addRequest(Runnable request) {
+        requestQueue.offer(request);
     }
 
     public void login() throws IOException, InterruptedException {
@@ -72,7 +97,35 @@ public class IGDBService {
         }
     }
 
-    public List<IGDBGame> searchGames(String searchString) throws IOException, InterruptedException{
+    public List<IGDBGame> searchGames(String searchString) throws InterruptedException {
+        CompletableFuture<List<IGDBGame>> resultFuture = new CompletableFuture<>();
+
+        addRequest(() -> {
+            try {
+                resultFuture.complete(executeSearchGames(searchString));
+            } catch (Exception e) {
+                resultFuture.completeExceptionally(e);
+            }
+        });
+
+        return resultFuture.join();
+    }
+
+    public List<IGDBGenre> getGenres() throws InterruptedException {
+        CompletableFuture<List<IGDBGenre>> resultFuture = new CompletableFuture<>();
+
+        addRequest(() -> {
+            try {
+                resultFuture.complete(executeGetGenres());
+            } catch (Exception e) {
+                resultFuture.completeExceptionally(e);
+            }
+        });
+
+        return resultFuture.join();
+    }
+
+    private List<IGDBGame> executeSearchGames(String searchString) throws IOException, InterruptedException{
         String gamesUrl = apiBaseUrl + "games";
         String fields = "fields name, first_release_date, genres.*, cover.*;";
         String search = String.format("search \"%s\";", searchString);
@@ -98,6 +151,7 @@ public class IGDBService {
                 if (response.statusCode() == 401) {
                     login();
                     retries++;
+                    Thread.sleep(THREAD_BLOCK_MILLISECONDS);
                 }
             }
         } while(retries < MAX_RETRIES && response.statusCode() == 401);
@@ -119,7 +173,7 @@ public class IGDBService {
         return games;
     }
 
-    public List<IGDBGenre> getGenres() throws IOException, InterruptedException {
+    private List<IGDBGenre> executeGetGenres() throws IOException, InterruptedException {
         String genresUrl = apiBaseUrl + "genres";
         String fields = "fields *;";
         String limit = "limit 500;";
@@ -142,6 +196,7 @@ public class IGDBService {
             if (response.statusCode() == 401) {
                 login();
                 retries++;
+                Thread.sleep(THREAD_BLOCK_MILLISECONDS);
             }
         } while (retries < MAX_RETRIES && response.statusCode() == 401);
 

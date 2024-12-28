@@ -5,7 +5,6 @@ import com.solid0us.time_quest_log.repositories.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -19,8 +18,6 @@ public class GameService {
     public List<IGDBGame> getAllGames(String name) {
         try {
             return igdbService.searchGames(name);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
