@@ -2,8 +2,8 @@ package com.solid0us.time_quest_log.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.solid0us.time_quest_log.model.IGDBGame;
+import com.solid0us.time_quest_log.model.IGDBGenre;
 import com.solid0us.time_quest_log.model.IGDBTokenResponse;
-import com.solid0us.time_quest_log.model.exceptions.TwitchUnauthorizedException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -72,7 +72,7 @@ public class IGDBService {
         }
     }
 
-    public List<IGDBGame> searchGames(String searchString) throws IOException, InterruptedException, TwitchUnauthorizedException {
+    public List<IGDBGame> searchGames(String searchString) throws IOException, InterruptedException{
         String gamesUrl = apiBaseUrl + "games";
         String fields = "fields name, first_release_date, genres.*, cover.*;";
         String search = String.format("search \"%s\";", searchString);
@@ -103,7 +103,7 @@ public class IGDBService {
         } while(retries < MAX_RETRIES && response.statusCode() == 401);
 
         if (retries == MAX_RETRIES) {
-            throw new TwitchUnauthorizedException("Could not authorize with Twitch.");
+            throw new IOException("Could not authorize with Twitch.");
         }
         if (response.statusCode() != 200) {
             return Collections.emptyList();
@@ -118,4 +118,49 @@ public class IGDBService {
                 ));
         return games;
     }
+
+    public List<IGDBGenre> getGenres() throws IOException, InterruptedException {
+        String genresUrl = apiBaseUrl + "genres";
+        String fields = "fields *;";
+        String limit = "limit 500;";
+        String requestBody = fields + limit;
+        int retries = 0;
+
+        HttpResponse<String> response;
+        do {
+            try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(genresUrl))
+                        .header("Client-ID", clientId)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Content-Type", "text/plain")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            }
+            if (response.statusCode() == 401) {
+                login();
+                retries++;
+            }
+        } while (retries < MAX_RETRIES && response.statusCode() == 401);
+
+        if (retries == MAX_RETRIES) {
+            throw new IOException("Could not authorize with Twitch.");
+        }
+
+        if (response.statusCode() != 200) {
+            return Collections.emptyList();
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<IGDBGenre> genres = objectMapper.readValue
+                (response.body(),
+                        objectMapper
+                                .getTypeFactory()
+                                .constructCollectionType(List.class, IGDBGenre.class
+                                ));
+        return genres;
+    }
+
 }
