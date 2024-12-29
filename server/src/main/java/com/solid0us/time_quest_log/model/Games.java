@@ -9,7 +9,6 @@ import java.util.Set;
 @Table(name = "games")
 public class Games {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
 
     @Column(nullable = false)

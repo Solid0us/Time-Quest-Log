@@ -11,7 +11,6 @@ public class Genres {
     @Column(name = "name", nullable = false, unique = true)
     private String name;
 
-
     public int getId() {
         return id;
     }
