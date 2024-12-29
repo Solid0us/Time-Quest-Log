@@ -1,6 +1,6 @@
 package com.solid0us.time_quest_log.controller;
 
-import com.solid0us.time_quest_log.model.IGDBGenre;
+import com.solid0us.time_quest_log.model.Genres;
 import com.solid0us.time_quest_log.service.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,7 +15,7 @@ public class GenreController {
     GenreService genreService;
 
     @RequestMapping({"/", ""})
-    public List<IGDBGenre> getGenres() {
+    public List<Genres> getGenres() {
         return genreService.getAllGenres();
     }
 }
