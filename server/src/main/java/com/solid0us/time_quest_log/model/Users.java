@@ -11,7 +11,6 @@ import java.util.UUID;
  uniqueConstraints = {@UniqueConstraint(columnNames = {"username"})})
 public class Users {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, length = 20, unique = true)
@@ -31,14 +30,7 @@ public class Users {
     private Timestamp createdAt;
 
     public Users() {
-    }
-
-    public Users(UUID id, String username, String firstName, String lastName, String password) {
-        this.id = id;
-        this.username = username;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.password = password;
+        this.id = UUID.randomUUID();
     }
 
     public UUID getId() {

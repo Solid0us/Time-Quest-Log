@@ -1,8 +1,6 @@
 package com.solid0us.time_quest_log.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import jakarta.persistence.GenerationType;
 
 import java.util.UUID;
 
@@ -11,7 +9,6 @@ import java.util.UUID;
 public class UserGames {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
@@ -24,6 +21,18 @@ public class UserGames {
 
     @Column(name = "exe_name")
     private String exeName;
+
+    public UserGames() {
+        this.id = UUID.randomUUID();
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
 
     public Users getUser() {
         return user;

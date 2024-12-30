@@ -1,7 +1,6 @@
 package com.solid0us.time_quest_log.model;
 
 import jakarta.persistence.*;
-import jakarta.persistence.GenerationType;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -12,7 +11,6 @@ import java.util.UUID;
 public class GameSessions {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @ManyToOne
@@ -31,6 +29,7 @@ public class GameSessions {
     private Timestamp endTime;
 
     public GameSessions() {
+        this.id = UUID.randomUUID();
     }
 
     public UUID getId() {
