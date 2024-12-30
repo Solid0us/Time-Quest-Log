@@ -16,8 +16,12 @@ public class UserGameController {
     private UserGameService userGameService;
 
     @PostMapping({"/", ""})
-    public ResponseEntity<UserGames> saveUserGame(@RequestBody UserGames userGame) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(userGameService.saveUserGame(userGame));
+    public ResponseEntity<?> saveUserGame(@RequestBody UserGames userGame) {
+        try {
+            return ResponseEntity.status(HttpStatus.CREATED).body(userGameService.saveUserGame(userGame));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping({"/{userId}", "/{userId}/"})
