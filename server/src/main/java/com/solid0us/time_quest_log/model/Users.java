@@ -1,6 +1,7 @@
 package com.solid0us.time_quest_log.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
@@ -12,6 +13,10 @@ import java.util.UUID;
 public class Users {
     @Id
     private UUID id;
+
+    @Column(nullable = false, unique = true, name="email")
+    @Email(message = "Invalid email")
+    private String email;
 
     @Column(nullable = false, length = 20, unique = true)
     private String username;
@@ -71,5 +76,21 @@ public class Users {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public @Email(message = "Invalid email") String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email(message = "Invalid email") String email) {
+        this.email = email.toLowerCase();
+    }
+
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
     }
 }
