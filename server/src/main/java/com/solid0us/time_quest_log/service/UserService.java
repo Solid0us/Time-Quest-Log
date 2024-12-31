@@ -1,6 +1,7 @@
 package com.solid0us.time_quest_log.service;
 
 import com.solid0us.time_quest_log.model.AuthResponse;
+import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.model.Users;
 import com.solid0us.time_quest_log.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +39,8 @@ public class UserService  {
         return newUsers;
     }
 
-    public Optional<Users> getUserById(UUID id) {
-        return userRepository.findById(id);
+    public ServiceResult<Users> getUserById(UUID id) {
+        return ServiceResult.success(userRepository.findById(id).orElse(null));
     }
 
     public AuthResponse createUser(Users user) {

@@ -1,8 +1,12 @@
 package com.solid0us.time_quest_log.controller;
 
+import com.solid0us.time_quest_log.model.ApiResponse;
 import com.solid0us.time_quest_log.model.GameSessions;
+import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.service.GameSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,12 +18,26 @@ public class GameSessionController {
     private GameSessionService gameSessionService;
 
     @GetMapping({"/", ""})
-    public List<GameSessions> getGameSessions(@RequestParam(required = false) String userId) {
-        return gameSessionService.getGameSessions(userId);
+    public ResponseEntity<ApiResponse<?>> getGameSessions(@RequestParam(required = false) String userId) {
+        ServiceResult<List<GameSessions>> result = gameSessionService.getGameSessions(userId);
+        if (result.isSuccess()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("", result.getData()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("Unable to retrieve game sessions.", result.getErrors()));
+        }
     }
 
     @PostMapping({"/", ""})
-    public GameSessions createGameSession(@RequestBody GameSessions gameSession) {
-        return gameSessionService.createGameSession(gameSession);
+    public ResponseEntity<ApiResponse<?>> createGameSession(@RequestBody GameSessions gameSession) {
+        ServiceResult<GameSessions> result =gameSessionService.createGameSession(gameSession);
+        if (result.isSuccess()){
+           return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("", result.getData()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+        }
+
     }
 }

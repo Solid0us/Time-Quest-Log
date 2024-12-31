@@ -1,12 +1,15 @@
 package com.solid0us.time_quest_log.service;
 
+import com.solid0us.time_quest_log.model.ErrorDetail;
 import com.solid0us.time_quest_log.model.Games;
+import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.model.UserGames;
 import com.solid0us.time_quest_log.repositories.UserGameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,23 +22,24 @@ public class UserGameService {
     @Autowired
     private GameService gameService;
 
-    public UserGames saveUserGame(UserGames userGame) {
-        Optional<Games> existingGame = gameService.getGameById(userGame.getGame().getId());
-        if (!existingGame.isPresent()) {
+    public ServiceResult<UserGames> saveUserGame(UserGames userGame) {
+        ServiceResult<Optional<Games>> gameExistsResult = gameService.getGameById(userGame.getGame().getId());
+        List<ErrorDetail> errorDetails = new ArrayList<>();
+        if (!gameExistsResult.isSuccess()) {
             gameService.createGame(userGame.getGame());
         }
         try {
-            return userGameRepository.save(userGame);
+            return ServiceResult.success(userGameRepository.save(userGame));
         } catch (DataIntegrityViolationException e) {
             System.out.println(e.getMessage());
-            throw new RuntimeException("Game already exists in the user's library.", e);
+            errorDetails.add(new ErrorDetail("gameId", "Game already exists in the user's library."));
         } catch (Exception e) {
-            throw new RuntimeException("Error saving UserGame", e);
+            errorDetails.add(new ErrorDetail("input", "Unknown error occurred while saving game to user's library."));
         }
-
+        return ServiceResult.failure(errorDetails);
     }
 
-    public List<UserGames> getUserGamesByUserId(UUID userId) {
-        return userGameRepository.findByUser_Id(userId);
+    public ServiceResult<List<UserGames>> getUserGamesByUserId(UUID userId) {
+        return ServiceResult.success(userGameRepository.findByUser_Id(userId));
     }
 }

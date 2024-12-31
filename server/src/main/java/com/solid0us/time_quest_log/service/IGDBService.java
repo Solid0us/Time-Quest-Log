@@ -1,9 +1,7 @@
 package com.solid0us.time_quest_log.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.solid0us.time_quest_log.model.IGDBGame;
-import com.solid0us.time_quest_log.model.IGDBGenre;
-import com.solid0us.time_quest_log.model.IGDBTokenResponse;
+import com.solid0us.time_quest_log.model.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +10,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -97,8 +96,8 @@ public class IGDBService {
         }
     }
 
-    public List<IGDBGame> searchGames(String searchString) throws InterruptedException {
-        CompletableFuture<List<IGDBGame>> resultFuture = new CompletableFuture<>();
+    public ServiceResult<List<IGDBGame>> searchGames(String searchString) throws InterruptedException {
+        CompletableFuture<ServiceResult<List<IGDBGame>>> resultFuture = new CompletableFuture<>();
 
         addRequest(() -> {
             try {
@@ -111,8 +110,8 @@ public class IGDBService {
         return resultFuture.join();
     }
 
-    public List<IGDBGenre> getGenres() throws InterruptedException {
-        CompletableFuture<List<IGDBGenre>> resultFuture = new CompletableFuture<>();
+    public ServiceResult<List<IGDBGenre>> getGenres() throws InterruptedException {
+        CompletableFuture<ServiceResult<List<IGDBGenre>>> resultFuture = new CompletableFuture<>();
 
         addRequest(() -> {
             try {
@@ -125,12 +124,13 @@ public class IGDBService {
         return resultFuture.join();
     }
 
-    private List<IGDBGame> executeSearchGames(String searchString) throws IOException, InterruptedException{
+    private ServiceResult<List<IGDBGame>> executeSearchGames(String searchString) throws IOException, InterruptedException{
         String gamesUrl = apiBaseUrl + "games";
         String fields = "fields name, first_release_date, genres.*, cover.*;";
         String search = String.format("search \"%s\";", searchString);
         String limit = "limit 500;";
         String requestBody = fields + limit;
+        List<ErrorDetail> errorDetails = new ArrayList<ErrorDetail>();
         if (!search.isBlank()) {
             requestBody += search;
         }
@@ -157,10 +157,13 @@ public class IGDBService {
         } while(retries < MAX_RETRIES && response.statusCode() == 401);
 
         if (retries == MAX_RETRIES) {
-            throw new IOException("Could not authorize with Twitch.");
+            errorDetails.add(new ErrorDetail("loginCredentials", "Could not authorize with Twitch."));
+        } else if (response.statusCode() != 200) {
+            errorDetails.add(new ErrorDetail("igdb", "Could not obtain data from Twitch."));
         }
-        if (response.statusCode() != 200) {
-            return Collections.emptyList();
+
+        if (!errorDetails.isEmpty()) {
+            return ServiceResult.failure(errorDetails);
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -170,14 +173,15 @@ public class IGDBService {
                 .getTypeFactory()
                 .constructCollectionType(List.class, IGDBGame.class
                 ));
-        return games;
+        return ServiceResult.success(games);
     }
 
-    private List<IGDBGenre> executeGetGenres() throws IOException, InterruptedException {
+    private ServiceResult<List<IGDBGenre>> executeGetGenres() throws IOException, InterruptedException {
         String genresUrl = apiBaseUrl + "genres";
         String fields = "fields *;";
         String limit = "limit 500;";
         String requestBody = fields + limit;
+        List<ErrorDetail> errorDetails = new ArrayList<ErrorDetail>();
         int retries = 0;
 
         HttpResponse<String> response;
@@ -201,11 +205,13 @@ public class IGDBService {
         } while (retries < MAX_RETRIES && response.statusCode() == 401);
 
         if (retries == MAX_RETRIES) {
-            throw new IOException("Could not authorize with Twitch.");
+            errorDetails.add(new ErrorDetail("loginCredentials", "Could not authorize with Twitch."));
+        } else if (response.statusCode() != 200) {
+            errorDetails.add(new ErrorDetail("igdb", "Could not obtain data from Twitch."));
         }
 
-        if (response.statusCode() != 200) {
-            return Collections.emptyList();
+        if (!errorDetails.isEmpty()) {
+            return ServiceResult.failure(errorDetails);
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -215,7 +221,6 @@ public class IGDBService {
                                 .getTypeFactory()
                                 .constructCollectionType(List.class, IGDBGenre.class
                                 ));
-        return genres;
+        return ServiceResult.success(genres);
     }
-
 }
