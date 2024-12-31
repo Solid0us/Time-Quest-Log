@@ -2,6 +2,7 @@ package com.solid0us.time_quest_log.controller;
 
 import com.solid0us.time_quest_log.model.ApiResponse;
 import com.solid0us.time_quest_log.model.GameSessions;
+import com.solid0us.time_quest_log.model.GameSessionsDTO;
 import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.service.GameSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class GameSessionController {
 
     @GetMapping({"/", ""})
     public ResponseEntity<ApiResponse<?>> getGameSessions(@RequestParam(required = false) String userId) {
-        ServiceResult<List<GameSessions>> result = gameSessionService.getGameSessions(userId);
+        ServiceResult<List<GameSessionsDTO>> result = gameSessionService.getGameSessions(userId);
         if (result.isSuccess()){
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.success("", result.getData()));
@@ -31,7 +32,7 @@ public class GameSessionController {
 
     @PostMapping({"/", ""})
     public ResponseEntity<ApiResponse<?>> createGameSession(@RequestBody GameSessions gameSession) {
-        ServiceResult<GameSessions> result =gameSessionService.createGameSession(gameSession);
+        ServiceResult<GameSessionsDTO> result = gameSessionService.createGameSession(gameSession);
         if (result.isSuccess()){
            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("", result.getData()));
         } else {

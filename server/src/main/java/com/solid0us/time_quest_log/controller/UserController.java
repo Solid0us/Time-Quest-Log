@@ -1,8 +1,5 @@
 package com.solid0us.time_quest_log.controller;
-import com.solid0us.time_quest_log.model.ApiResponse;
-import com.solid0us.time_quest_log.model.AuthResponse;
-import com.solid0us.time_quest_log.model.ServiceResult;
-import com.solid0us.time_quest_log.model.Users;
+import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,23 +20,23 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<Users>> getAllUsers() {
+    @GetMapping({"", "/"})
+    public ResponseEntity<ServiceResult<List<UsersDTO>>> getAllUsers() {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> getUserById(@PathVariable String id) {
-        ServiceResult<Users> user = userService.getUserById(UUID.fromString(id));
-        if (user.getData() != null) {
+        ServiceResult<UsersDTO> user = userService.getUserById(UUID.fromString(id));
+        if (user.isSuccess()) {
             return ResponseEntity.ok().body(ApiResponse.success("", user.getData()));
         }
         return ResponseEntity.status(404).body(ApiResponse.failure("Could not find user.", user.getErrors()));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Users> updateUser(@PathVariable String id, @RequestBody Users user) {
-        Users updatedUser = userService.updateUser(id, user);
+    public ResponseEntity<UsersDTO> updateUser(@PathVariable String id, @RequestBody Users user) {
+        UsersDTO updatedUser = userService.updateUser(id, user);
         if (updatedUser != null) {
             return ResponseEntity.ok(updatedUser);
         }

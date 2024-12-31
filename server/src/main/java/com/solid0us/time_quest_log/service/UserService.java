@@ -1,8 +1,6 @@
 package com.solid0us.time_quest_log.service;
 
-import com.solid0us.time_quest_log.model.AuthResponse;
-import com.solid0us.time_quest_log.model.ServiceResult;
-import com.solid0us.time_quest_log.model.Users;
+import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,17 +28,23 @@ public class UserService  {
 
     private final Map<String, Users> users = new HashMap<>();
 
-    public UserService() {
-
-    }
-
-    public List<Users> getAllUsers() {
+    public ServiceResult<List<UsersDTO>> getAllUsers() {
         ArrayList<Users> newUsers = new ArrayList<Users>(users.values());
-        return newUsers;
+        ArrayList<UsersDTO> usersDTO = new ArrayList<>();
+        for (Users user : newUsers) {
+            usersDTO.add(new UsersDTO(user));
+        }
+        return ServiceResult.success(usersDTO);
     }
 
-    public ServiceResult<Users> getUserById(UUID id) {
-        return ServiceResult.success(userRepository.findById(id).orElse(null));
+    public ServiceResult<UsersDTO> getUserById(UUID id) {
+        Users user = userRepository.findById(id).orElse(null);
+        List<ErrorDetail> errors = new ArrayList<>();
+        if (user == null) {
+            errors.add(new ErrorDetail("id", "Could not find user with the given ID."));
+            return ServiceResult.failure(errors);
+        }
+        return ServiceResult.success(new UsersDTO(user));
     }
 
     public AuthResponse createUser(Users user) {
@@ -53,10 +57,10 @@ public class UserService  {
         return new AuthResponse(jwtService.generateToken(userName), userName);
     }
 
-    public Users updateUser(String id, Users user) {
+    public UsersDTO updateUser(String id, Users user) {
         if (users.containsKey(id)) {
             users.put(id, user);
-            return user;
+            return new UsersDTO(user);
         }
         return null;
     }

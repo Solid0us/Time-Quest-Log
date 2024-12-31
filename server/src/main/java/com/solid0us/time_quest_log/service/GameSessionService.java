@@ -2,6 +2,7 @@ package com.solid0us.time_quest_log.service;
 
 import com.solid0us.time_quest_log.model.ErrorDetail;
 import com.solid0us.time_quest_log.model.GameSessions;
+import com.solid0us.time_quest_log.model.GameSessionsDTO;
 import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.repositories.GameSessionRepository;
 import org.hibernate.exception.ConstraintViolationException;
@@ -18,10 +19,10 @@ public class GameSessionService {
     @Autowired
     private GameSessionRepository gameSessionRepository;
 
-    public ServiceResult<GameSessions> createGameSession(GameSessions gameSession) {
+    public ServiceResult<GameSessionsDTO> createGameSession(GameSessions gameSession) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         try {
-            return ServiceResult.success(gameSessionRepository.save(gameSession));
+            return ServiceResult.success(new GameSessionsDTO(gameSessionRepository.save(gameSession)));
         }  catch (DataIntegrityViolationException e) {
             errorDetails.add(new ErrorDetail("input", "There was an ID conflict when creating a game session."));
         } catch (ConstraintViolationException e){
@@ -33,7 +34,7 @@ public class GameSessionService {
         return ServiceResult.failure(errorDetails);
     }
 
-    public ServiceResult<List<GameSessions>> getGameSessions(String userId) {
+    public ServiceResult<List<GameSessionsDTO>> getGameSessions(String userId) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         List<GameSessions> gameSessions;
         try {
@@ -42,7 +43,11 @@ public class GameSessionService {
             } else {
                 gameSessions = gameSessionRepository.findByUser_Id(UUID.fromString(userId));
             }
-            return ServiceResult.success(gameSessions);
+            List<GameSessionsDTO> gameSessionsDTO = new ArrayList<>();
+            for (GameSessions gameSession : gameSessions) {
+                gameSessionsDTO.add(new GameSessionsDTO(gameSession));
+            }
+            return ServiceResult.success(gameSessionsDTO);
         } catch (Exception e) {
             errorDetails.add(new ErrorDetail("input", "Unknown error occurred while retrieving game sessions."));
         }
