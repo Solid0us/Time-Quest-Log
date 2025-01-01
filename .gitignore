@@ -22,3 +22,41 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Build Folders
+bin/
+obj/
+
+# Visual Studio specific files
+*.user
+*.suo
+*.userosscache
+*.userprefs
+.vscode/
+.vs/
+.vscode/settings.json
+.vscode/launch.json
+.vscode/tasks.json
+
+# Dependency folders
+packages/
+node_modules/
+
+# Build results
+*.build.cs
+*.cache
+*.ilk
+*.log
+*.obj
+*.pch
+*.pdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tmp
+*.txt
+*.tmp_proj
+*.tlog
