@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views"
+             xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views" xmlns:viewmodels="clr-namespace:TimeQuestLogDesktopApp.ViewModels" xmlns:components="clr-namespace:TimeQuestLogDesktopApp.Components" d:DataContext="{d:DesignInstance Type=viewmodels:LoginViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="#4d7bb2">
+             Background="#121212">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
@@ -24,51 +24,56 @@
             Grid.Row="0" 
             HorizontalAlignment="Center" 
             VerticalAlignment="Center">
-            <TextBlock TextWrapping="WrapWithOverflow" FontSize="20">
+            <TextBlock TextWrapping="WrapWithOverflow" FontSize="20" Foreground="White">
                 Welcome to QuestTime Log!
             </TextBlock>
         </Label>
-        <StackPanel Grid.Column="1" Grid.Row="1" Background="White">
+        <StackPanel Grid.Column="1" Grid.Row="1" Background="#252525">
             <Label
                 Grid.Column="1" 
                 Grid.Row="1" 
                 Content="Username" 
-                HorizontalAlignment="Left"  
+                Foreground="White"
+                HorizontalAlignment="Center"  
                 VerticalAlignment="Center"/>
             <TextBox 
+                Height="25"
+                BorderBrush="#b23a48"
                 Grid.Column="1" 
-                HorizontalAlignment="Left" 
+                Background="#252525"
+                HorizontalAlignment="Center" 
                 Grid.Row="1" 
                 TextWrapping="Wrap" 
-                Text="TextBox" 
+                Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
                 VerticalAlignment="Center"
+                Foreground="White"
+                VerticalContentAlignment="Center"
                 Width="200"/>
 
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="2" Background="White">
+        <StackPanel Grid.Column="1" Grid.Row="2" Background="#252525">
             <Label
                 Grid.Column="1" 
                 Grid.Row="1" 
                 Content="Password" 
-                HorizontalAlignment="Left"  
+                HorizontalAlignment="Center"  
+                Foreground="White"
                 VerticalAlignment="Center"/>
-            <PasswordBox 
-                Grid.Column="1" 
-                HorizontalAlignment="Left" 
-                Grid.Row="1" 
-                PasswordChar="*"
-                VerticalAlignment="Center"
-                Width="200"/>
+            <components:BindablePasswordBox
+                Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                />
 
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="3" Background="White" Height="50">
+        <StackPanel Grid.Column="1" Grid.Row="3" Background="#252525" Height="50">
             <Button
-                Grid.Column="1" 
                 HorizontalAlignment="Center"
-                Grid.Row="1" 
                 VerticalAlignment="Center"
                 Content="Login"
-                Width="200"/>
+                Command="{Binding LoginCommand}"
+                Foreground="White"
+                Background="#b23a48"
+                Height="30"
+                Width="100"/>
 
         </StackPanel>
 

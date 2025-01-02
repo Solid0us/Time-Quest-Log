@@ -24,5 +24,5 @@ namespace TimeQuestLogDesktopApp.Views
         {
             InitializeComponent();
         }
-    }
+	}
 }

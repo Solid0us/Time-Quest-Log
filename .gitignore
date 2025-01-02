@@ -60,3 +60,5 @@ node_modules/
 *.txt
 *.tmp_proj
 *.tlog
+
+.env
