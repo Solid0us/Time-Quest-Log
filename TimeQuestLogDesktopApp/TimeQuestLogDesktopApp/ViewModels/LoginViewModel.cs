@@ -1,13 +1,16 @@
-﻿using System.Windows.Input;
+﻿using Newtonsoft.Json;
+using System.Windows.Input;
 using TimeQuestLogDesktopApp.Commands;
 using TimeQuestLogDesktopApp.Stores;
 
 namespace TimeQuestLogDesktopApp.ViewModels
 {
+	[JsonObject(MemberSerialization.OptIn)]
 	internal class LoginViewModel : ViewModelBase
 	{
 		private string _username;
 
+		[JsonProperty("username")]
 		public string Username
 		{
 			get { return _username; }
@@ -20,6 +23,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 		private string _password;
 
+		[JsonProperty("password")]
 		public string Password
 		{
 			get { return _password; }
