@@ -73,15 +73,16 @@ public class UserController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(new AuthResponse(user.getUsername(), "Invalid username or password."));
         }
-        String refreshToken = userService.generateRefreshToken(user);
-        return ResponseEntity.ok().body(new AuthResponse(token, refreshToken, user));
+        Users existingUser = userService.getUserByUsername(user.getUsername());
+        String refreshToken = userService.generateRefreshToken(existingUser);
+        return ResponseEntity.ok().body(new AuthResponse(token, refreshToken, existingUser));
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<RefreshJwtResponse> refresh(@RequestBody RefreshTokenBody refreshTokenBody) {
         String username = refreshTokenBody.getUsername();
         String refreshToken = refreshTokenBody.getRefreshToken();
-        boolean isValidRefreshToken = userService.verifyRefreshToken(refreshToken, username);
+        boolean isValidRefreshToken = userService.verifyRefreshToken(refreshToken);
         if (isValidRefreshToken) {
             return ResponseEntity
                     .status(HttpStatus.CREATED)

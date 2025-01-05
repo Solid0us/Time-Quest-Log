@@ -66,6 +66,10 @@ public class UserService  {
         return null;
     }
 
+    public Users getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
     public boolean deleteUser(String id) {
         return users.remove(id) != null;
     }
@@ -85,11 +89,11 @@ public class UserService  {
         }
     }
 
-    public boolean verifyRefreshToken(String refreshToken, String username) {
-        return jwtService.validateRefreshToken(refreshToken, username);
+    public boolean verifyRefreshToken(String refreshToken) {
+        return jwtService.validateRefreshToken(refreshToken);
     }
 
     public String generateRefreshToken(Users user) {
-        return jwtService.generateRefreshToken(user.getUsername());
+        return jwtService.generateRefreshToken(user);
     }
 }

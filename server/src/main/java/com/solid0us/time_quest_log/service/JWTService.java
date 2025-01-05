@@ -1,5 +1,8 @@
 package com.solid0us.time_quest_log.service;
 
+import com.solid0us.time_quest_log.model.RefreshTokens;
+import com.solid0us.time_quest_log.model.Users;
+import com.solid0us.time_quest_log.repositories.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -7,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,9 +21,14 @@ import javax.crypto.SecretKey;
 
 @Service
 public class JWTService {
+    private final long JWT_EXPIRATION_MILLISECONDS = 1000 * 60 * 60;
+    private final long REFRESH_TOKEN_EXPIRATION_MILLISECONDS = 1000 * 60 * 60 * 24 * 7;
 
     @Autowired
     private MyUserDetailsService userDetailsService;
+
+    @Autowired
+    private RefreshTokenRepository refreshTokenRepository;
 
     @Value("${JWT_SECRET}")
     private String secretKey;
@@ -33,23 +43,31 @@ public class JWTService {
                 .add(claims)
                 .subject(username.toLowerCase())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 1000))
+                .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_MILLISECONDS))
                 .and()
                 .signWith(getKey(false))
                 .compact();
     }
 
-    public String generateRefreshToken(String username) {
+    // Only generates during user login and signup
+    public String generateRefreshToken(Users user) {
         Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder()
+        long expirationTime = System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_MILLISECONDS;
+        String refreshToken  = Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(username.toLowerCase())
+                .subject(user.getUsername().toLowerCase())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7))
+                .expiration(new Date(expirationTime))
                 .and()
                 .signWith(getKey(true))
                 .compact();
+        refreshTokenRepository.save(new RefreshTokens(
+                user,
+                refreshToken,
+                new Timestamp(expirationTime)
+        ));
+        return refreshToken;
     }
 
     private SecretKey getKey(boolean isRefreshToken) {
@@ -66,9 +84,11 @@ public class JWTService {
         return (userName.equals(userDetails.getUsername().toLowerCase()) && !isTokenExpired(token, false));
     }
 
-    public boolean validateRefreshToken(String token, String username) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token, true);
+    public boolean validateRefreshToken(String token) {
+        RefreshTokens existingRefreshToken = refreshTokenRepository.findByRefreshToken(token);
+        return existingRefreshToken != null
+                && !isTokenExpired(existingRefreshToken.getRefreshToken(), true)
+                && !existingRefreshToken.isRevoked();
     }
 
     public String extractUserName(String token, boolean isRefreshToken) {
