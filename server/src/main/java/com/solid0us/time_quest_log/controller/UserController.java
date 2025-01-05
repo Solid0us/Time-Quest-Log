@@ -1,5 +1,6 @@
 package com.solid0us.time_quest_log.controller;
 import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.service.JWTService;
 import com.solid0us.time_quest_log.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,9 @@ import java.util.UUID;
 public class UserController {
     
     private final UserService userService;
+
+    @Autowired
+    private JWTService jwtService;
 
     @Autowired
     public UserController(UserService userService) {
@@ -67,8 +71,24 @@ public class UserController {
         if (token == null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResponse(token, user.getUsername(), "Invalid username or password."));
+                    .body(new AuthResponse(user.getUsername(), "Invalid username or password."));
         }
-        return ResponseEntity.ok().body(new AuthResponse(token, user.getUsername()));
+        String refreshToken = userService.generateRefreshToken(user);
+        return ResponseEntity.ok().body(new AuthResponse(token, refreshToken, user));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshJwtResponse> refresh(@RequestBody RefreshTokenBody refreshTokenBody) {
+        String username = refreshTokenBody.getUsername();
+        String refreshToken = refreshTokenBody.getRefreshToken();
+        boolean isValidRefreshToken = userService.verifyRefreshToken(refreshToken, username);
+        if (isValidRefreshToken) {
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new RefreshJwtResponse(jwtService.generateToken(username)));
+        }
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new RefreshJwtResponse(null));
     }
 }

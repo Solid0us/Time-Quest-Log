@@ -80,7 +80,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private String extractAndValidateUsername(String token) throws JwtAuthenticationException {
         try {
-            return jwtService.extractUsername(token);
+            return jwtService.extractUsername(token, false);
         } catch (Exception e) {
             throw new JwtAuthenticationException("Failed to extract username from token: " + e.getMessage());
         }

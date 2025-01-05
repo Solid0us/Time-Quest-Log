@@ -49,12 +49,13 @@ public class UserService  {
 
     public AuthResponse createUser(Users user) {
         if (userRepository.findByUsername(user.getUsername()) != null) {
-            return new AuthResponse(null, user.getUsername(), "Username already exists. Please select a different name.");
+            return new AuthResponse(user.getUsername(), "Username already exists. Please select a different name.");
         }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         Users createdUser = userRepository.save(user);
         String userName = createdUser.getUsername();
-        return new AuthResponse(jwtService.generateToken(userName), userName);
+        String refreshToken = generateRefreshToken(createdUser);
+        return new AuthResponse(jwtService.generateToken(userName), refreshToken, user);
     }
 
     public UsersDTO updateUser(String id, Users user) {
@@ -82,5 +83,13 @@ public class UserService  {
             System.out.println(e.getStackTrace().toString());
             return null;
         }
+    }
+
+    public boolean verifyRefreshToken(String refreshToken, String username) {
+        return jwtService.validateRefreshToken(refreshToken, username);
+    }
+
+    public String generateRefreshToken(Users user) {
+        return jwtService.generateRefreshToken(user.getUsername());
     }
 }
