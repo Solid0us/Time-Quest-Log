@@ -29,7 +29,7 @@ namespace TimeQuestLogDesktopApp.Views
 
 		private LoginViewModel CreateLoginViewModel()
 		{
-			return new LoginViewModel();
+			return new LoginViewModel(_navigationStore);
 		}
 
 	}

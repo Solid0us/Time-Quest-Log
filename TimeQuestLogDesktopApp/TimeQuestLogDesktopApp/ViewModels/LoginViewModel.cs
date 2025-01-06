@@ -9,6 +9,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 	internal class LoginViewModel : ViewModelBase
 	{
 		private string _username;
+		private NavigationStore _navigationStore;
 
 		[JsonProperty("username")]
 		public string Username
@@ -36,9 +37,15 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 		public ICommand LoginCommand { get; set; }
 
-		public LoginViewModel()
+		public LoginViewModel(NavigationStore navigationStore)
 		{
 			LoginCommand = new LoginCommand(this);
+			_navigationStore = navigationStore;
+		}
+
+		public void NavigateTo(ViewModelBase viewModelBase)
+		{
+			_navigationStore.CurrentViewModel = viewModelBase;
 		}
 	}
 }

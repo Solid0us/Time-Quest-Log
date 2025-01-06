@@ -21,9 +21,9 @@ namespace TimeQuestLogDesktopApp.Services
 			};
 		}
 
-		public void SetUsername(string username)
+		public void SetUsername(string userId,  string username)
 		{
-			_credential.Username = username;
+			_credential.Username = userId + ";" + username;
 		}
 
 		public void SetPassword(string password)
@@ -45,6 +45,26 @@ namespace TimeQuestLogDesktopApp.Services
 		public void Delete()
 		{
 			_credential.Delete();
+		}
+
+		public string GetUsername()
+		{
+			string username = String.Empty;
+			if (_credential.Username != null)
+			{
+				username = _credential.Username.Split(';')[1];
+			}
+			return username;
+		}
+
+		public string GetUserId()
+		{
+			string userId = String.Empty;
+			if (_credential.Username != null)
+			{
+				userId = _credential.Username.Split(';')[0];
+			}
+			return userId;
 		}
 
 		public Credential GetCredential() => _credential;

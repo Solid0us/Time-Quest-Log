@@ -38,9 +38,10 @@ namespace TimeQuestLogDesktopApp.Commands
 				{
 					MessageBox.Show($"You have successfully logged in! Here is your token: {json?.Token}");
 					var credentialManager = new CredentialManagerService();
-					credentialManager.SetUsername(json?.Username);
-					credentialManager.SetPassword(_loginViewModel.Password);
+					credentialManager.SetUsername(json?.UserId, json?.Username);
+					credentialManager.SetPassword(json?.RefreshToken);
 					credentialManager.Save();
+					_loginViewModel.NavigateTo(new DashboardViewModel());
 				}
 				else if (response.StatusCode == HttpStatusCode.Unauthorized)
 				{
