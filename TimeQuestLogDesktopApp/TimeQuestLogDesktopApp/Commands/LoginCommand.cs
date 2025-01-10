@@ -7,7 +7,9 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using TimeQuestLogDesktopApp.Database;
 using TimeQuestLogDesktopApp.Models;
+using TimeQuestLogDesktopApp.Repositories;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.ViewModels;
 
@@ -18,11 +20,13 @@ namespace TimeQuestLogDesktopApp.Commands
 		private readonly LoginViewModel _loginViewModel;
 		private EnvironmentVariableService EnvironmentVariableService;
 		private readonly HttpService _httpService;
+		private readonly SqliteDataAccess _sqliteDataAccess;
 
         public LoginCommand(LoginViewModel loginViewModel)
         {
             _loginViewModel = loginViewModel;
 			_httpService = new HttpService();
+			_sqliteDataAccess = new SqliteDataAccess();
         }
         protected override async Task ExecuteAsync(object? parameter)
 		{
@@ -41,6 +45,15 @@ namespace TimeQuestLogDesktopApp.Commands
 					credentialManager.SetUsername(json?.UserId, json?.Username);
 					credentialManager.SetPassword(json?.RefreshToken);
 					credentialManager.Save();
+
+					SqliteConnectionFactory sqliteConnectionFactory = new SqliteConnectionFactory(_sqliteDataAccess.LoadConnectionString());
+					UserRepository userRepository = new UserRepository(sqliteConnectionFactory);
+					Users? existingUser = userRepository.GetUserById(json.UserId);
+					if (existingUser == null)
+					{
+						userRepository.SaveUsers(new Users(json.UserId, json.Username));
+					}
+
 					_loginViewModel.NavigateTo(new DashboardViewModel());
 				}
 				else if (response.StatusCode == HttpStatusCode.Unauthorized)
