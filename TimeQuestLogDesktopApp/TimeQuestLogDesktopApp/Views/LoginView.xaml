@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views" xmlns:viewmodels="clr-namespace:TimeQuestLogDesktopApp.ViewModels" xmlns:components="clr-namespace:TimeQuestLogDesktopApp.Components" d:DataContext="{d:DesignInstance Type=viewmodels:LoginViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="#121212">
+             Background="{StaticResource BackgroundBrush}">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
@@ -24,29 +24,33 @@
             Grid.Row="0" 
             HorizontalAlignment="Center" 
             VerticalAlignment="Center">
-            <TextBlock TextWrapping="WrapWithOverflow" FontSize="20" Foreground="White">
-                Welcome to QuestTime Log!
-            </TextBlock>
-        </Label>
-        <StackPanel Grid.Column="1" Grid.Row="1" Background="#252525">
+                <TextBlock TextWrapping="WrapWithOverflow" FontSize="20" Foreground="{StaticResource TextPrimaryBrush}">
+                        Welcome to QuestTime Log!
+                </TextBlock>
+            </Label>
+        <StackPanel Grid.Column="1" Grid.Row="1" Background="{StaticResource SecondaryBrush}">
             <Label
-                Grid.Column="1" 
-                Grid.Row="1" 
+             Content="Sign In" 
+             FontSize="20"
+             Foreground="{StaticResource TextPrimaryBrush}"
+             HorizontalAlignment="Center"  
+             VerticalAlignment="Center"/>   
+            <Label
                 Content="Username" 
-                Foreground="White"
+                Foreground="{StaticResource TextPrimaryBrush}"
                 HorizontalAlignment="Center"  
                 VerticalAlignment="Center"/>
             <TextBox 
                 Height="25"
-                BorderBrush="#b23a48"
+                BorderBrush="{StaticResource PrimaryBrush}"
                 Grid.Column="1" 
-                Background="#252525"
+                Background="{StaticResource SecondaryBrush}"
                 HorizontalAlignment="Center" 
                 Grid.Row="1" 
                 TextWrapping="Wrap" 
                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
                 VerticalAlignment="Center"
-                Foreground="White"
+                Foreground="{StaticResource TextPrimaryBrush}"
                 VerticalContentAlignment="Center"
                 Width="200"/>
 
@@ -57,24 +61,41 @@
                 Grid.Row="1" 
                 Content="Password" 
                 HorizontalAlignment="Center"  
-                Foreground="White"
+                Foreground="{StaticResource TextPrimaryBrush}"
                 VerticalAlignment="Center"/>
             <components:BindablePasswordBox
                 Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                 />
 
         </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="3" Background="#252525" Height="50">
-            <Button
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Content="Login"
-                Command="{Binding LoginCommand}"
-                Foreground="White"
-                Background="#b23a48"
-                Height="30"
-                Width="100"/>
-
+        <StackPanel 
+            Grid.Column="1" 
+            Grid.Row="3" 
+            VerticalAlignment="Bottom"
+            Background="{StaticResource SecondaryBrush}" 
+            Height="100">
+                <Button
+                    Grid.Column="1" Grid.Row="3"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Margin="0 25 0 0"
+                    Content="Login"
+                    Command="{Binding LoginCommand}"
+                    Foreground="{StaticResource TextPrimaryBrush}"
+                    Background="{StaticResource PrimaryBrush}"
+                    Height="30"
+                    Width="100"/>
+                <TextBlock 
+                        Margin="0 20 0 0"
+                        Foreground="White" 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                        Don't have an account yet?
+                    <Hyperlink
+                            Foreground="{StaticResource TextLinkBrush}"
+                            Command="{Binding NavigateToSignup}"
+                            >Signup now</Hyperlink>
+                </TextBlock>
         </StackPanel>
 
     </Grid>

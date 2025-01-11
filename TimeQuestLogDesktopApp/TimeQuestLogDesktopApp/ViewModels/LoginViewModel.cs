@@ -9,7 +9,20 @@ namespace TimeQuestLogDesktopApp.ViewModels
 	internal class LoginViewModel : ViewModelBase
 	{
 		private string _username;
-		private NavigationStore _navigationStore;
+		private readonly NavigationStore _navigationStore;
+		public ICommand LoginCommand { get; set; }
+		public ICommand NavigateToSignup { get; set; }
+
+
+		public LoginViewModel(NavigationStore navigationStore)
+		{
+			LoginCommand = new LoginCommand(this, navigationStore);
+			_navigationStore = navigationStore;
+			NavigateToSignup = new NavigateCommand<SignupViewModel>(
+				_navigationStore,
+				() => new SignupViewModel(_navigationStore)
+			);
+		}
 
 		[JsonProperty("username")]
 		public string Username
@@ -33,19 +46,6 @@ namespace TimeQuestLogDesktopApp.ViewModels
 				_password = value; 
 				OnPropertyChanged(nameof(Password));
 			}
-		}
-
-		public ICommand LoginCommand { get; set; }
-
-		public LoginViewModel(NavigationStore navigationStore)
-		{
-			LoginCommand = new LoginCommand(this);
-			_navigationStore = navigationStore;
-		}
-
-		public void NavigateTo(ViewModelBase viewModelBase)
-		{
-			_navigationStore.CurrentViewModel = viewModelBase;
 		}
 	}
 }

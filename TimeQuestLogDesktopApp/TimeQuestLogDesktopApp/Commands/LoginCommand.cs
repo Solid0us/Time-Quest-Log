@@ -11,6 +11,7 @@ using TimeQuestLogDesktopApp.Database;
 using TimeQuestLogDesktopApp.Models;
 using TimeQuestLogDesktopApp.Repositories;
 using TimeQuestLogDesktopApp.Services;
+using TimeQuestLogDesktopApp.Stores;
 using TimeQuestLogDesktopApp.ViewModels;
 
 namespace TimeQuestLogDesktopApp.Commands
@@ -18,15 +19,17 @@ namespace TimeQuestLogDesktopApp.Commands
 	internal class LoginCommand : AsyncCommandBase
 	{
 		private readonly LoginViewModel _loginViewModel;
+		private readonly NavigationStore _navigationStore;	
 		private EnvironmentVariableService EnvironmentVariableService;
 		private readonly HttpService _httpService;
 		private readonly SqliteDataAccess _sqliteDataAccess;
 
-        public LoginCommand(LoginViewModel loginViewModel)
+        public LoginCommand(LoginViewModel loginViewModel, NavigationStore navigationStore)
         {
             _loginViewModel = loginViewModel;
 			_httpService = new HttpService();
 			_sqliteDataAccess = new SqliteDataAccess();
+			_navigationStore = navigationStore;
         }
         protected override async Task ExecuteAsync(object? parameter)
 		{
@@ -54,7 +57,7 @@ namespace TimeQuestLogDesktopApp.Commands
 						userRepository.SaveUsers(new Users(json.UserId, json.Username));
 					}
 
-					_loginViewModel.NavigateTo(new DashboardViewModel());
+					_navigationStore.CurrentViewModel = new DashboardViewModel();
 				}
 				else if (response.StatusCode == HttpStatusCode.Unauthorized)
 				{
