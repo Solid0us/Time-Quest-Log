@@ -13,7 +13,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 	[JsonObject(MemberSerialization.OptIn)]
 	internal class SignupViewModel : ViewModelBase
 	{
-		private readonly NavigationStore _navigationStore;
+		private readonly NavigationStore _mainViewModelNavigationStore;
         private string _username;
         public ICommand NavigateToLogin { get; set; }
         public ICommand SignupCommand { get; set; }
@@ -94,9 +94,9 @@ namespace TimeQuestLogDesktopApp.ViewModels
         }
 
 
-        public SignupViewModel(NavigationStore navigationStore)
+        public SignupViewModel(NavigationStore mainViewModelNavigationStore)
         {
-            _navigationStore = navigationStore;
+            _mainViewModelNavigationStore = mainViewModelNavigationStore;
             Password = string.Empty;
             Username = string.Empty;
             Email = string.Empty;
@@ -104,8 +104,8 @@ namespace TimeQuestLogDesktopApp.ViewModels
             FirstName = string.Empty;
             LastName = string.Empty;
 
-            NavigateToLogin = new NavigateCommand<LoginViewModel>(navigationStore, () => new LoginViewModel(navigationStore));
-            SignupCommand = new SignupCommand(this, navigationStore);
+            NavigateToLogin = new NavigateCommand<LoginViewModel>(mainViewModelNavigationStore, () => new LoginViewModel(mainViewModelNavigationStore));
+            SignupCommand = new SignupCommand(this, mainViewModelNavigationStore);
         }
     }
 }

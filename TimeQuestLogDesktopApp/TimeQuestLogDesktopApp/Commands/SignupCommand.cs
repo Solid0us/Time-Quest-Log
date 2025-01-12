@@ -81,7 +81,7 @@ namespace TimeQuestLogDesktopApp.Commands
 							userRepository.SaveUsers(new Users(json.UserId, json.Username));
 						}
 
-						_navigationStore.CurrentViewModel = new DashboardViewModel();
+						_navigationStore.CurrentViewModel = new DashboardViewModel(_navigationStore);
 
 					}
 					else

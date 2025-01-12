@@ -9,18 +9,18 @@ namespace TimeQuestLogDesktopApp.ViewModels
 	internal class LoginViewModel : ViewModelBase
 	{
 		private string _username;
-		private readonly NavigationStore _navigationStore;
+		private readonly NavigationStore _mainViewModelNavigationStore;
 		public ICommand LoginCommand { get; set; }
 		public ICommand NavigateToSignup { get; set; }
 
 
-		public LoginViewModel(NavigationStore navigationStore)
+		public LoginViewModel(NavigationStore mainViewModelNavigationStore)
 		{
-			LoginCommand = new LoginCommand(this, navigationStore);
-			_navigationStore = navigationStore;
+			LoginCommand = new LoginCommand(this, mainViewModelNavigationStore);
+			_mainViewModelNavigationStore = mainViewModelNavigationStore;
 			NavigateToSignup = new NavigateCommand<SignupViewModel>(
-				_navigationStore,
-				() => new SignupViewModel(_navigationStore)
+				_mainViewModelNavigationStore,
+				() => new SignupViewModel(_mainViewModelNavigationStore)
 			);
 		}
 

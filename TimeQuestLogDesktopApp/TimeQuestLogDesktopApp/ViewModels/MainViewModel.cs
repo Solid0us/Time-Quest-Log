@@ -12,23 +12,23 @@ namespace TimeQuestLogDesktopApp.ViewModel
 {
     internal class MainViewModel : ViewModelBase
     {
-		private readonly NavigationStore _navigationStore;
-		public ViewModelBase CurrentViewModel => _navigationStore.CurrentViewModel;
+		private readonly NavigationStore _mainViewModelNavigationStore;
+		public ViewModelBase CurrentViewModel => _mainViewModelNavigationStore.CurrentViewModel;
 
-		public MainViewModel(NavigationStore navigationStore)
+		public MainViewModel(NavigationStore mainViewModelNavigationStore)
 		{
-			_navigationStore = navigationStore;
+			_mainViewModelNavigationStore = mainViewModelNavigationStore;
 			CredentialManagerService credentialManagerService = new CredentialManagerService();
 			credentialManagerService.Load();
 			if (credentialManagerService.GetUserId() != null && credentialManagerService.GetUsername != null)
 			{
-				_navigationStore.CurrentViewModel = new DashboardViewModel();
+				_mainViewModelNavigationStore.CurrentViewModel = new DashboardViewModel(_mainViewModelNavigationStore);
 			}
 			else
 			{
-				_navigationStore.CurrentViewModel = CreateLoginViewModel();
+				_mainViewModelNavigationStore.CurrentViewModel = CreateLoginViewModel();
 			}
-			_navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
+			_mainViewModelNavigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
 		}
 
@@ -39,7 +39,7 @@ namespace TimeQuestLogDesktopApp.ViewModel
 
 		private LoginViewModel CreateLoginViewModel()
 		{
-			return new LoginViewModel(_navigationStore);
+			return new LoginViewModel(_mainViewModelNavigationStore);
 		}
 
 	}

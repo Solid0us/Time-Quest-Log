@@ -11,17 +11,17 @@ namespace TimeQuestLogDesktopApp
 	/// </summary>
 	public partial class App : Application
 	{
-		private readonly NavigationStore _navigationStore;
+		private readonly NavigationStore _mainViewModelNavigationStore;
 		public App()
 		{
-			_navigationStore = new NavigationStore();
+			_mainViewModelNavigationStore = new NavigationStore();
 		}
 
 		protected override void OnStartup(StartupEventArgs e)
 		{
 			MainWindow = new MainWindow()
 			{
-				DataContext = new MainViewModel(_navigationStore)
+				DataContext = new MainViewModel(_mainViewModelNavigationStore)
 			};
 			MainWindow.Show();
 			base.OnStartup(e);
