@@ -14,8 +14,13 @@ namespace TimeQuestLogDesktopApp.ViewModels
 {
 	internal class DashboardViewModel : ViewModelBase
 	{
+        private readonly NavigationStore _dashboardNavigationStore;
+        public ViewModelBase CurrentDashboardViewModel => _dashboardNavigationStore.CurrentViewModel;
         CredentialManagerService CredentialManager { get; set; }
         public ICommand SignoutCommand { get; set; }
+        public ICommand NavigateToHome {  get; set; }
+        public ICommand NavigateToLibrary { get; set; }
+        public ICommand NavigateToSettings {  get; set; }
         public string Username { get; set; }
 
         public DashboardViewModel(NavigationStore mainViewModelNavigationStore)
@@ -24,6 +29,19 @@ namespace TimeQuestLogDesktopApp.ViewModels
             CredentialManager.Load();
             Username = CredentialManager.GetUsername();
             SignoutCommand = new SignoutCommand(mainViewModelNavigationStore);
-        }
-    }
+
+            _dashboardNavigationStore = new NavigationStore();
+            _dashboardNavigationStore.CurrentViewModel = new HomeViewModel();
+            _dashboardNavigationStore.CurrentViewModelChanged += OnCurrentDashboardViewModelChanged;
+
+            NavigateToHome = new NavigateCommand<HomeViewModel>(_dashboardNavigationStore, () => new HomeViewModel());
+            NavigateToLibrary = new NavigateCommand<LibraryViewModel>(_dashboardNavigationStore, () => new LibraryViewModel());
+            NavigateToSettings = new NavigateCommand<SettingsViewModel>(_dashboardNavigationStore, () => new SettingsViewModel());
+		}
+
+		private void OnCurrentDashboardViewModelChanged()
+		{
+			OnPropertyChanged(nameof(CurrentDashboardViewModel));
+		}
+	}
 }

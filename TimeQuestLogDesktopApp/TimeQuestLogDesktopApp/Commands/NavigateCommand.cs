@@ -26,7 +26,11 @@ namespace TimeQuestLogDesktopApp.Commands
 
 		public void Execute(object? parameter)
 		{
-			_navigationStore.CurrentViewModel = _createViewModel();
+			var newViewModel = _createViewModel();
+			if (_navigationStore.CurrentViewModel?.GetType() != newViewModel.GetType())
+			{
+				_navigationStore.CurrentViewModel = newViewModel;
+			}
 		}
 	}
 }

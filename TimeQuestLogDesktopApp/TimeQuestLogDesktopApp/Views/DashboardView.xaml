@@ -5,43 +5,70 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views" xmlns:viewmodels="clr-namespace:TimeQuestLogDesktopApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:DashboardViewModel}"
              mc:Ignorable="d" 
+             xmlns:vms="clr-namespace:TimeQuestLogDesktopApp.ViewModels"
+             xmlns:views="clr-namespace:TimeQuestLogDesktopApp.Views"
              d:DesignHeight="450" d:DesignWidth="800"
              Background="#121212">
     <Grid>
+        <Grid.Resources>
+            <DataTemplate DataType="{x:Type vms:HomeViewModel}">
+                <views:HomeView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:LibraryViewModel}">
+                <views:LibraryView />
+            </DataTemplate>
+            <DataTemplate DataType="{x:Type vms:SettingsViewModel}">
+                <views:SettingsView/>
+            </DataTemplate>
+        </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel
-            Grid.Column="0"
-            Background="{StaticResource SecondaryBrush}"
-            >
-        </StackPanel>
-        <StackPanel Grid.Column="1">
-            <Label
-                Grid.Column="1" 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center">
-                            <TextBlock 
-                    TextWrapping="WrapWithOverflow" 
-                    FontSize="20" 
-                    Foreground="White" 
-        >
-                    <TextBlock.Text>
-                        <Binding Path="Username" StringFormat="Hello there, {0}"/>
-                    </TextBlock.Text>
-                </TextBlock>
-            </Label>
-            <Button
-                Command="{Binding SignoutCommand}"
-                Width="100"
-                Height="25"
-                Grid.Column="1"
-                Grid.Row="1"
-                Content="Logout"
-                Foreground="{StaticResource TextPrimaryBrush}"
-                Background="{StaticResource PrimaryBrush}" />   
-        </StackPanel>
-        
+        <Border 
+            Grid.Column="0" 
+            Background="{StaticResource SecondaryBrush}" 
+            Padding="10">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock 
+                    Text="{Binding Username}" 
+                    Foreground="{StaticResource TextPrimaryBrush}" 
+                    Style="{StaticResource HeaderText}"/>
+                <StackPanel Grid.Row="1">
+                    <Button x:Name="btnHome" 
+                            Content="Home" 
+                            Command="{Binding NavigateToHome}"
+                            Style="{StaticResource NavButton}"
+                            />
+                    <Button x:Name="btnAnalytics" 
+                            Content="Analytics" 
+                            Command="{Binding NavigateToLibrary}"
+                            Style="{StaticResource NavButton}"
+                            />
+                    <Button x:Name="btnSettings" 
+                            Content="Settings" 
+                            Command="{Binding NavigateToSettings}"
+                            Style="{StaticResource NavButton}"
+                            />
+                </StackPanel>
+                <Button x:Name="btnSignOut"
+                        Grid.Row="2"
+                        Content="Sign Out"
+                        Command="{Binding SignoutCommand}"
+                        Margin="0,20,0,0"
+                        Style="{StaticResource DangerButton}"
+                       >
+                </Button>
+            </Grid>
+        </Border>
+        <ContentControl
+            Grid.Column="1" 
+            Content="{Binding CurrentDashboardViewModel}"/>
+
     </Grid>
 </UserControl>
