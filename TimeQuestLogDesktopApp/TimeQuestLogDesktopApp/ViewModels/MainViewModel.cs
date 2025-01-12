@@ -4,10 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.Stores;
 using TimeQuestLogDesktopApp.ViewModels;
 
-namespace TimeQuestLogDesktopApp.Views
+namespace TimeQuestLogDesktopApp.ViewModel
 {
     internal class MainViewModel : ViewModelBase
     {
@@ -17,7 +18,16 @@ namespace TimeQuestLogDesktopApp.Views
 		public MainViewModel(NavigationStore navigationStore)
 		{
 			_navigationStore = navigationStore;
-			_navigationStore.CurrentViewModel = CreateLoginViewModel();
+			CredentialManagerService credentialManagerService = new CredentialManagerService();
+			credentialManagerService.Load();
+			if (credentialManagerService.GetUserId() != null && credentialManagerService.GetUsername != null)
+			{
+				_navigationStore.CurrentViewModel = new DashboardViewModel();
+			}
+			else
+			{
+				_navigationStore.CurrentViewModel = CreateLoginViewModel();
+			}
 			_navigationStore.CurrentViewModelChanged += OnCurrentViewModelChanged;
 
 		}

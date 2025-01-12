@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:TimeQuestLogDesktopApp"
         xmlns:views="clr-namespace:TimeQuestLogDesktopApp.Views"
-        xmlns:vms="clr-namespace:TimeQuestLogDesktopApp.ViewModels" d:DataContext="{d:DesignInstance Type=views:MainViewModel}"
+        xmlns:vms="clr-namespace:TimeQuestLogDesktopApp.ViewModels" xmlns:viewmodel="clr-namespace:TimeQuestLogDesktopApp.ViewModel" d:DataContext="{d:DesignInstance Type=viewmodel:MainViewModel}"
         mc:Ignorable="d"
         Title="TimeQuest Log" Height="720" Width="1200">
     <Grid>

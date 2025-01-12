@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 using TimeQuestLogDesktopApp.Stores;
-using TimeQuestLogDesktopApp.Views;
+using TimeQuestLogDesktopApp.ViewModel;
 
 namespace TimeQuestLogDesktopApp
 {
