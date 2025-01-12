@@ -94,7 +94,7 @@
                     <Hyperlink
                             Foreground="{StaticResource TextLinkBrush}"
                             Command="{Binding NavigateToSignup}"
-                            >Signup now</Hyperlink>
+                            >Sign up now</Hyperlink>
                 </TextBlock>
         </StackPanel>
 

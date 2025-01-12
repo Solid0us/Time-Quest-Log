@@ -106,7 +106,7 @@
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Content="Register"
-                Command="{Binding LoginCommand}"
+                Command="{Binding SignupCommand}"
                 Foreground="{StaticResource TextPrimaryBrush}"
                 Background="{StaticResource PrimaryBrush}"
                 Height="30"
@@ -115,7 +115,7 @@
                 Margin="0 20 0 0"
                 Foreground="White" 
                 HorizontalAlignment="Center">
-                    Already Have an Account?
+                    Already have an account?
                 <Hyperlink
                     Foreground="{StaticResource TextLinkBrush}"
                     Command="{Binding NavigateToLogin}"

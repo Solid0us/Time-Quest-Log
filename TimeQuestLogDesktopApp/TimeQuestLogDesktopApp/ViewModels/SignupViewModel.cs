@@ -16,6 +16,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		private readonly NavigationStore _navigationStore;
         private string _username;
         public ICommand NavigateToLogin { get; set; }
+        public ICommand SignupCommand { get; set; }
 
 		[JsonProperty("username")]
 		public string Username
@@ -25,6 +26,32 @@ namespace TimeQuestLogDesktopApp.ViewModels
             { 
                 _username = value; 
                 OnPropertyChanged(nameof(Username)); 
+            }
+        }
+
+        private string _firstName;
+
+        [JsonProperty("firstName")]
+        public string FirstName
+        {
+            get { return _firstName; }
+            set 
+            { 
+                _firstName = value; 
+                OnPropertyChanged(nameof(FirstName));
+            }
+        }
+
+        private string _lastName;
+
+        [JsonProperty("lastName")]
+        public string LastName
+        {
+            get { return _lastName; }
+            set 
+            { 
+                _lastName = value; 
+                OnPropertyChanged(nameof(LastName));
             }
         }
 
@@ -70,12 +97,15 @@ namespace TimeQuestLogDesktopApp.ViewModels
         public SignupViewModel(NavigationStore navigationStore)
         {
             _navigationStore = navigationStore;
-            Password = String.Empty;
-            Username = String.Empty;
-            Email = String.Empty;
-            ConfirmPassword = String.Empty;
+            Password = string.Empty;
+            Username = string.Empty;
+            Email = string.Empty;
+            ConfirmPassword = string.Empty;
+            FirstName = string.Empty;
+            LastName = string.Empty;
 
             NavigateToLogin = new NavigateCommand<LoginViewModel>(navigationStore, () => new LoginViewModel(navigationStore));
+            SignupCommand = new SignupCommand(this, navigationStore);
         }
     }
 }
