@@ -33,7 +33,7 @@ public class UserGameController {
     public ResponseEntity<ApiResponse<?>> getUserGamesByUserId(@PathVariable String userId) {
         ServiceResult<List<UserGames>> result = userGameService.getUserGamesByUserId(UUID.fromString(userId));
         if (result.isSuccess()){
-            return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("", result.getData()));
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));

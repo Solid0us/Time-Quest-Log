@@ -17,5 +17,10 @@ namespace TimeQuestLogDesktopApp.Models
             Id = id;
             Username = username;
         }
+
+        public Users()
+        {
+            
+        }
     }
 }

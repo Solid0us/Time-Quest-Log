@@ -20,6 +20,12 @@ namespace TimeQuestLogDesktopApp.Stores
 			}
 		}
 
+		public async Task NavigateAsync(Func<Task<ViewModelBase>> createViewModelAsync)
+		{
+			var viewModel = await createViewModelAsync();
+			CurrentViewModel = viewModel;
+		}
+
 		private void OnCurrentViewModelChanged()
 		{
 			CurrentViewModelChanged?.Invoke();

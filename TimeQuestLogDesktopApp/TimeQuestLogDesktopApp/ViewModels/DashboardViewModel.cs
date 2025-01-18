@@ -14,29 +14,38 @@ namespace TimeQuestLogDesktopApp.ViewModels
 {
 	internal class DashboardViewModel : ViewModelBase
 	{
-        private readonly NavigationStore _dashboardNavigationStore;
-        public ViewModelBase CurrentDashboardViewModel => _dashboardNavigationStore.CurrentViewModel;
-        CredentialManagerService CredentialManager { get; set; }
-        public ICommand SignoutCommand { get; set; }
-        public ICommand NavigateToHome {  get; set; }
-        public ICommand NavigateToLibrary { get; set; }
-        public ICommand NavigateToSettings {  get; set; }
-        public string Username { get; set; }
+		private readonly NavigationStore _dashboardNavigationStore;
+		public ViewModelBase CurrentDashboardViewModel => _dashboardNavigationStore.CurrentViewModel;
+		private LibraryViewModel _libraryViewModel;
+		public ICommand SignoutCommand { get; set; }
+		public ICommand NavigateToHome { get; set; }
+		public ICommand NavigateToLibrary { get; private set; }
+		public ICommand NavigateToSettings { get; set; }
+		public string Username { get; private set; }
+		private readonly CredentialManagerService _credentialManager;
 
-        public DashboardViewModel(NavigationStore mainViewModelNavigationStore)
-        {
-            CredentialManager = new CredentialManagerService();
-            CredentialManager.Load();
-            Username = CredentialManager.GetUsername();
-            SignoutCommand = new SignoutCommand(mainViewModelNavigationStore);
+		public DashboardViewModel(NavigationStore mainViewModelNavigationStore)
+		{
+			_credentialManager = new CredentialManagerService();
+			_credentialManager.Load();
+			Username = _credentialManager.GetUsername();
+			SignoutCommand = new SignoutCommand(mainViewModelNavigationStore);
 
-            _dashboardNavigationStore = new NavigationStore();
-            _dashboardNavigationStore.CurrentViewModel = new HomeViewModel();
-            _dashboardNavigationStore.CurrentViewModelChanged += OnCurrentDashboardViewModelChanged;
+			_dashboardNavigationStore = new NavigationStore();
+			_dashboardNavigationStore.CurrentViewModel = new HomeViewModel();
+			_dashboardNavigationStore.CurrentViewModelChanged += OnCurrentDashboardViewModelChanged;
 
-            NavigateToHome = new NavigateCommand<HomeViewModel>(_dashboardNavigationStore, () => new HomeViewModel());
-            NavigateToLibrary = new NavigateCommand<LibraryViewModel>(_dashboardNavigationStore, () => new LibraryViewModel());
-            NavigateToSettings = new NavigateCommand<SettingsViewModel>(_dashboardNavigationStore, () => new SettingsViewModel());
+			NavigateToHome = new NavigateCommand<HomeViewModel>(_dashboardNavigationStore, () => new HomeViewModel());
+			NavigateToSettings = new NavigateCommand<SettingsViewModel>(_dashboardNavigationStore, () => new SettingsViewModel());
+
+			InitializeLibraryNavigationAsync();
+		}
+
+		private async void InitializeLibraryNavigationAsync()
+		{
+			_libraryViewModel = await LibraryViewModel.CreateAsync();
+			NavigateToLibrary = new NavigateCommand<LibraryViewModel>(_dashboardNavigationStore, () => _libraryViewModel);
+			OnPropertyChanged(nameof(NavigateToLibrary));
 		}
 
 		private void OnCurrentDashboardViewModelChanged()

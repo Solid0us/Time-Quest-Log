@@ -36,7 +36,7 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock 
-                    Text="{Binding Username}" 
+                    Text="{Binding Username, FallbackValue='Username'}" 
                     Foreground="{StaticResource TextPrimaryBrush}" 
                     Style="{StaticResource HeaderText}"/>
                 <StackPanel Grid.Row="1">
@@ -45,8 +45,8 @@
                             Command="{Binding NavigateToHome}"
                             Style="{StaticResource NavButton}"
                             />
-                    <Button x:Name="btnAnalytics" 
-                            Content="Analytics" 
+                    <Button 
+                            Content="Game Library" 
                             Command="{Binding NavigateToLibrary}"
                             Style="{StaticResource NavButton}"
                             />
