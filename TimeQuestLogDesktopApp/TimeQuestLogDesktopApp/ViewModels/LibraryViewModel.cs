@@ -1,5 +1,7 @@
 ﻿using System.Collections.ObjectModel;
+using System.Windows.Input;
 using TimeQuestLogDesktopApp;
+using TimeQuestLogDesktopApp.Commands;
 using TimeQuestLogDesktopApp.Database;
 using TimeQuestLogDesktopApp.Models.DTOs;
 using TimeQuestLogDesktopApp.Repositories;
@@ -13,6 +15,8 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		private ObservableCollection<UserGameDTO> _userGameTable;
 		private readonly UserGameRepository _userGameRepository;
 		private readonly CredentialManagerService _credentialManagerService;
+
+		public ICommand ShowAddGameWindow {  get; set; }
 
 		public ObservableCollection<UserGameDTO> UserGamesTable
 		{
@@ -32,6 +36,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			_credentialManagerService = new CredentialManagerService();
 			_credentialManagerService.Load();
 			UserGamesTable = new ObservableCollection<UserGameDTO>();
+			ShowAddGameWindow = new ShowAddGameCommand();
 		}
 
 		public static async Task<LibraryViewModel> CreateAsync()

@@ -20,6 +20,14 @@
                     Text="Library"
                     Foreground="{StaticResource TextPrimaryBrush}" 
                     Style="{StaticResource HeaderText}"/>
+            <Button 
+                Content="+ Add Game"
+                Width="100"
+                Height="30"
+                Background="{StaticResource PrimaryBrush}"   
+                Foreground="{StaticResource TextPrimaryBrush}"
+                Command="{Binding ShowAddGameWindow}"
+                    />
             <DataGrid IsReadOnly="True" ItemsSource="{Binding UserGamesTable}" AutoGenerateColumns="False" Margin="10">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Cover" Width="*">

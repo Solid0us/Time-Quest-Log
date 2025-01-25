@@ -30,10 +30,10 @@ namespace TimeQuestLogDesktopApp.Commands
 			_httpService = new HttpService();
 			_sqliteDataAccess = new SqliteDataAccess();
 			_navigationStore = navigationStore;
+			EnvironmentVariableService = new EnvironmentVariableService();
         }
         protected override async Task ExecuteAsync(object? parameter)
 		{
-			EnvironmentVariableService = new EnvironmentVariableService();
 			try
 			{
 				string url = $"{EnvironmentVariableService.ApiBaseUrl}users/login";
