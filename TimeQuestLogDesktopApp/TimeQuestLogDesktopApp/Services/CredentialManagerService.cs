@@ -8,65 +8,129 @@ using System.Windows.Input;
 
 namespace TimeQuestLogDesktopApp.Services
 {
-	internal class CredentialManagerService
+	public class CredentialManagerService
 	{
-		private readonly Credential _credential;
-
-		public CredentialManagerService(string target = "timequestlog-app", PersistanceType persistanceType = PersistanceType.LocalComputer)
+		private static readonly CredentialManagerService _instance = new CredentialManagerService();
+		public enum CredentialType
 		{
-			_credential = new Credential
+			REFRESH,
+			JWT
+		}
+		private readonly Credential _refreshTokenCredential;
+		private readonly Credential _jwtCredential;
+
+		private CredentialManagerService()
+		{
+			_refreshTokenCredential = new Credential
 			{
-				Target = target,
-				PersistanceType = persistanceType
+				Target = "timequestlog-app",
+				PersistanceType = PersistanceType.LocalComputer
+			};
+
+			_jwtCredential = new Credential
+			{
+				Target = "timequestlog-app-JWT",
+				PersistanceType = PersistanceType.LocalComputer
 			};
 		}
 
-		public void SetUsername(string userId,  string username)
+		public static CredentialManagerService GetCredentialManagerService()
 		{
-			_credential.Username = userId + ";" + username;
+			return _instance;
 		}
 
-		public void SetPassword(string password)
+		public void SetUsername(CredentialType type, string userId,  string username)                 
 		{
-			_credential.Password = password;
+			if (type == CredentialType.REFRESH)
+			{
+				_refreshTokenCredential.Username = userId + ";" + username;   
+			}
+			else
+			{
+				_jwtCredential.Username = userId + ";" + username;
+			}
 		}
 
-		public void Save()
+		public void SetPassword(CredentialType type, string password)
 		{
-			_credential.Save();
+			if (type == CredentialType.REFRESH)
+			{
+				_refreshTokenCredential.Password = password;
+			}
+			else
+			{
+				_jwtCredential.Password = password;
+			}
 		}
 
-		public Credential Load()
+		public void Save(CredentialType type)
 		{
-			_credential.Load();
-			return _credential;
+			if (type == CredentialType.REFRESH)
+			{
+				_refreshTokenCredential.Save();
+			}
+			else
+			{
+				_jwtCredential.Save();
+			}
 		}
 
-		public void Delete()
+		public void LoadCredentials()
 		{
-			_credential.Delete();
+			_refreshTokenCredential.Load();
+			_jwtCredential.Load();
 		}
 
-		public string GetUsername()
+		public void Delete(CredentialType type)
+		{
+			if (type == CredentialType.REFRESH)
+			{
+				_refreshTokenCredential.Delete();
+			}
+			else
+			{
+				_jwtCredential.Delete();
+			}
+		}
+
+		public string GetUsername(CredentialType type)
 		{
 			string username = String.Empty;
-			if (_credential.Username != null)
+			if (type == CredentialType.REFRESH)
 			{
-				username = _credential.Username.Split(';')[1];
+				if (_refreshTokenCredential.Username != null)
+				{
+					username = _refreshTokenCredential.Username.Split(';')[1];
+				}
+			}
+			else
+			{
+				if (_jwtCredential.Username != null)
+				{
+					username = _jwtCredential.Username.Split(";")[1];
+				}
 			}
 			return username;
 		}
 
-		public string GetUserId()
+		public string GetUserId(CredentialType type)
 		{
 			string userId = String.Empty;
-			if (_credential.Username != null)
+			if (type == CredentialType.REFRESH)
 			{
-				userId = _credential.Username.Split(';')[0];
+				if (_refreshTokenCredential.Username != null)
+				{
+					userId = _refreshTokenCredential.Username.Split(';')[0];
+				}
+			}
+			else
+			{
+				if (_jwtCredential.Username != null)
+				{
+					userId = _jwtCredential.Username.Split(",")[0];
+				}
 			}
 			return userId;
 		}
-
-		public Credential GetCredential() => _credential;
 	}
 }

@@ -23,6 +23,7 @@ namespace TimeQuestLogDesktopApp.Commands
 		private readonly HttpService _httpService;
 		private EnvironmentVariableService EnvironmentVariableService;
 		private readonly SqliteDataAccess _sqliteDataAccess;
+		private readonly CredentialManagerService _credentialManagerService;
 		public SignupCommand(SignupViewModel signupViewModel, NavigationStore navigationStore) 
 		{
 			_signupViewModel = signupViewModel;
@@ -30,6 +31,7 @@ namespace TimeQuestLogDesktopApp.Commands
 			_httpService = new HttpService();
 			_sqliteDataAccess = new SqliteDataAccess();
 			EnvironmentVariableService = new EnvironmentVariableService();	
+			_credentialManagerService = CredentialManagerService.GetCredentialManagerService();
 		}
 
 		public bool IsValidUserRegistration()
@@ -68,10 +70,13 @@ namespace TimeQuestLogDesktopApp.Commands
 					if (response.IsSuccessStatusCode)
 					{
 						MessageBox.Show($"Hi {_signupViewModel.Username}, you have registered!", "Successful User Registration", MessageBoxButton.OK, MessageBoxImage.Information);
-						var credentialManager = new CredentialManagerService();
-						credentialManager.SetUsername(json?.UserId, json?.Username);
-						credentialManager.SetPassword(json?.RefreshToken);
-						credentialManager.Save();
+						_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.REFRESH, json?.UserId, json?.Username);
+						_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.REFRESH, json?.RefreshToken);
+						_credentialManagerService.Save(CredentialManagerService.CredentialType.REFRESH);
+
+						_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.JWT, json?.UserId, json?.Username);
+						_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.JWT, json?.Token);
+						_credentialManagerService.Save(CredentialManagerService.CredentialType.JWT);
 
 						SqliteConnectionFactory sqliteConnectionFactory = new SqliteConnectionFactory(_sqliteDataAccess.LoadConnectionString());
 						UserRepository userRepository = new UserRepository(sqliteConnectionFactory);

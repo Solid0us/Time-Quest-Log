@@ -23,6 +23,7 @@ namespace TimeQuestLogDesktopApp.Commands
 		private EnvironmentVariableService EnvironmentVariableService;
 		private readonly HttpService _httpService;
 		private readonly SqliteDataAccess _sqliteDataAccess;
+		private readonly CredentialManagerService _credentialManagerService;
 
         public LoginCommand(LoginViewModel loginViewModel, NavigationStore navigationStore)
         {
@@ -31,6 +32,7 @@ namespace TimeQuestLogDesktopApp.Commands
 			_sqliteDataAccess = new SqliteDataAccess();
 			_navigationStore = navigationStore;
 			EnvironmentVariableService = new EnvironmentVariableService();
+			_credentialManagerService = CredentialManagerService.GetCredentialManagerService();
         }
         protected override async Task ExecuteAsync(object? parameter)
 		{
@@ -44,10 +46,13 @@ namespace TimeQuestLogDesktopApp.Commands
 				if (response.IsSuccessStatusCode)
 				{
 					MessageBox.Show($"You have successfully logged in! Here is your token: {json?.Token}");
-					var credentialManager = new CredentialManagerService();
-					credentialManager.SetUsername(json?.UserId, json?.Username);
-					credentialManager.SetPassword(json?.RefreshToken);
-					credentialManager.Save();
+					_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.REFRESH,json?.UserId, json?.Username);
+					_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.REFRESH,json?.RefreshToken);
+					_credentialManagerService.Save(CredentialManagerService.CredentialType.REFRESH);
+
+					_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.JWT, json?.UserId, json?.Username);
+					_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.JWT, json?.Token);
+					_credentialManagerService.Save(CredentialManagerService.CredentialType.JWT);
 
 					SqliteConnectionFactory sqliteConnectionFactory = new SqliteConnectionFactory(_sqliteDataAccess.LoadConnectionString());
 					UserRepository userRepository = new UserRepository(sqliteConnectionFactory);

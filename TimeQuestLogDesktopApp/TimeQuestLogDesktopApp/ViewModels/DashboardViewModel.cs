@@ -1,5 +1,4 @@
 ﻿
-using CredentialManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,9 +25,9 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 		public DashboardViewModel(NavigationStore mainViewModelNavigationStore)
 		{
-			_credentialManager = new CredentialManagerService();
-			_credentialManager.Load();
-			Username = _credentialManager.GetUsername();
+			_credentialManager = CredentialManagerService.GetCredentialManagerService();
+			_credentialManager.LoadCredentials();
+			Username = _credentialManager.GetUsername(CredentialManagerService.CredentialType.REFRESH);
 			SignoutCommand = new SignoutCommand(mainViewModelNavigationStore);
 
 			_dashboardNavigationStore = new NavigationStore();

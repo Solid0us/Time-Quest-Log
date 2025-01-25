@@ -33,8 +33,8 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			var sqliteDataAccess = new SqliteDataAccess();
 			var sqliteConnectionFactory = new SqliteConnectionFactory(sqliteDataAccess.LoadConnectionString());
 			_userGameRepository = new UserGameRepository(sqliteConnectionFactory);
-			_credentialManagerService = new CredentialManagerService();
-			_credentialManagerService.Load();
+			_credentialManagerService = CredentialManagerService.GetCredentialManagerService();
+			_credentialManagerService.LoadCredentials();
 			UserGamesTable = new ObservableCollection<UserGameDTO>();
 			ShowAddGameWindow = new ShowAddGameCommand();
 		}
@@ -48,7 +48,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 		public async Task InitializeAsync()
 		{
-			var userId = _credentialManagerService.GetUserId();
+			var userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
 			var games = await Task.Run(() => _userGameRepository.GetUserGames(userId));
 
 			App.Current.Dispatcher.Invoke(() =>
