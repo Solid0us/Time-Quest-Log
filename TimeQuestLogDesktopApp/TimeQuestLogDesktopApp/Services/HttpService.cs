@@ -7,16 +7,20 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Reflection.PortableExecutable;
+using System.Net.Http.Headers;
 
 namespace TimeQuestLogDesktopApp.Services
 {
 	internal class HttpService
 	{
+		private static readonly HttpService _httpService = new HttpService();
+		private static CredentialManagerService _credentialService;
 		private readonly HttpClient _httpClient;
 		private readonly int HTTP_TIMEOUT = 30;
 		private readonly JsonSerializerSettings _jsonSerializerSettings;
 
-		public HttpService()
+		private HttpService()
 		{
 			_httpClient = new HttpClient
 			{
@@ -26,62 +30,78 @@ namespace TimeQuestLogDesktopApp.Services
 			{
 				ContractResolver = new CamelCasePropertyNamesContractResolver()
 			};
+			_credentialService = CredentialManagerService.GetInstance();
+			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _credentialService.GetPassword(CredentialManagerService.CredentialType.JWT));
+		}
+
+		public static HttpService GetInstance()
+		{
+			return _httpService;
+		}
+
+		public void SetHeaders(Dictionary<string, string> headers)
+		{
+			_httpClient.DefaultRequestHeaders.Clear();
+			foreach (var header in headers)
+			{
+				_httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+			}
 
 		}
 
-		public async Task<HttpResponseMessage> GetAsync(string url)
+		public async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string>? headers = null)
 		{
-			try
-			{
-				var response = await _httpClient.GetAsync(url);
-				return response;
-			}
-			catch (Exception ex)
-			{
-				throw new HttpRequestException($"Error making GET request to {url}: {ex.Message}", ex);
-			}
+			using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+			AddHeadersToRequest(requestMessage, headers);
+
+			return await _httpClient.SendAsync(requestMessage);
 		}
 
-		public async Task<HttpResponseMessage> PostAsync<T>(string url, T payload)
+		public async Task<HttpResponseMessage> PostAsync<T>(string url, T payload, Dictionary<string, string>? headers = null)
 		{
-			try
+			string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
+			var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+			using var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
 			{
-				string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
-				var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-				var response = await _httpClient.PostAsync(url, jsonContent);
-				return response;
-			}
-			catch (Exception ex)
-			{
-				throw new HttpRequestException($"Error making POST request to {url}: {ex.Message}", ex);
-			}
+				Content = jsonContent
+			};
+
+			AddHeadersToRequest(requestMessage, headers);
+
+			return await _httpClient.SendAsync(requestMessage);
 		}
 
-		public async Task<HttpResponseMessage> PutAsync<T>(string url, T payload)
+		public async Task<HttpResponseMessage> PutAsync<T>(string url, T payload, Dictionary<string, string>? headers = null)
 		{
-			try
+
+			string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
+			var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+			using var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
 			{
-				string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
-				var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-				var response = await _httpClient.PutAsync(url, jsonContent);
-				return response;
-			}
-			catch (Exception ex)
-			{
-				throw new HttpRequestException($"Error making PUT request to {url}: {ex.Message}", ex);
-			}
+				Content = jsonContent
+			};
+			AddHeadersToRequest(requestMessage, headers);
+
+			return await _httpClient.SendAsync(requestMessage);
 		}
 
-		public async Task<HttpResponseMessage> DeleteAsync(string url)
+		public async Task<HttpResponseMessage> DeleteAsync(string url, Dictionary<string, string>? headers = null)
 		{
-			try
+			using var requestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
+			AddHeadersToRequest(requestMessage, headers);
+
+			return await _httpClient.SendAsync(requestMessage);
+		}
+
+		private void AddHeadersToRequest(HttpRequestMessage requestMessage, Dictionary<string, string>? headers)
+		{
+			if (headers != null)
 			{
-				var response = await _httpClient.DeleteAsync(url);
-				return response;
-			}
-			catch (Exception ex)
-			{
-				throw new HttpRequestException($"Error making DELETE request to {url}: {ex.Message}", ex);
+				foreach (var header in headers)
+				{
+					requestMessage.Headers.Add(header.Key, header.Value);
+				}
 			}
 		}
 

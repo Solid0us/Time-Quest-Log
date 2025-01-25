@@ -20,7 +20,7 @@ namespace TimeQuestLogDesktopApp.Commands
 	{
 		private readonly SignupViewModel _signupViewModel;
 		private readonly NavigationStore _navigationStore;
-		private readonly HttpService _httpService;
+		private readonly HttpService _httpService = HttpService.GetInstance();
 		private EnvironmentVariableService EnvironmentVariableService;
 		private readonly SqliteDataAccess _sqliteDataAccess;
 		private readonly CredentialManagerService _credentialManagerService;
@@ -28,10 +28,9 @@ namespace TimeQuestLogDesktopApp.Commands
 		{
 			_signupViewModel = signupViewModel;
 			_navigationStore = navigationStore;
-			_httpService = new HttpService();
 			_sqliteDataAccess = new SqliteDataAccess();
 			EnvironmentVariableService = new EnvironmentVariableService();	
-			_credentialManagerService = CredentialManagerService.GetCredentialManagerService();
+			_credentialManagerService = CredentialManagerService.GetInstance();
 		}
 
 		public bool IsValidUserRegistration()

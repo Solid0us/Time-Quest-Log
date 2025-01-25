@@ -34,9 +34,18 @@ namespace TimeQuestLogDesktopApp.Services
 			};
 		}
 
-		public static CredentialManagerService GetCredentialManagerService()
+		public static CredentialManagerService GetInstance()
 		{
 			return _instance;
+		}
+
+		public string GetPassword(CredentialType type)
+		{
+			if (type == CredentialType.REFRESH)
+			{
+				return _refreshTokenCredential.Password;
+			}
+			return _jwtCredential.Password;
 		}
 
 		public void SetUsername(CredentialType type, string userId,  string username)                 

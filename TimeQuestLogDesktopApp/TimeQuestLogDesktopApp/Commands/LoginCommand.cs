@@ -21,18 +21,17 @@ namespace TimeQuestLogDesktopApp.Commands
 		private readonly LoginViewModel _loginViewModel;
 		private readonly NavigationStore _navigationStore;	
 		private EnvironmentVariableService EnvironmentVariableService;
-		private readonly HttpService _httpService;
+		private readonly HttpService _httpService = HttpService.GetInstance();
 		private readonly SqliteDataAccess _sqliteDataAccess;
 		private readonly CredentialManagerService _credentialManagerService;
 
         public LoginCommand(LoginViewModel loginViewModel, NavigationStore navigationStore)
         {
             _loginViewModel = loginViewModel;
-			_httpService = new HttpService();
 			_sqliteDataAccess = new SqliteDataAccess();
 			_navigationStore = navigationStore;
 			EnvironmentVariableService = new EnvironmentVariableService();
-			_credentialManagerService = CredentialManagerService.GetCredentialManagerService();
+			_credentialManagerService = CredentialManagerService.GetInstance();
         }
         protected override async Task ExecuteAsync(object? parameter)
 		{

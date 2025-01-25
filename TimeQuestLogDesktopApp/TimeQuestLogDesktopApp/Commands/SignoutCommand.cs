@@ -14,7 +14,7 @@ namespace TimeQuestLogDesktopApp.Commands
 		private readonly NavigationStore _mainViewModelNavigationStore;
 		public override void Execute(object? parameter)
 		{
-			CredentialManagerService credentialManagerService = CredentialManagerService.GetCredentialManagerService();
+			CredentialManagerService credentialManagerService = CredentialManagerService.GetInstance();
 			credentialManagerService.LoadCredentials();
 			credentialManagerService.Delete(CredentialManagerService.CredentialType.REFRESH);
 			credentialManagerService.Delete(CredentialManagerService.CredentialType.JWT);

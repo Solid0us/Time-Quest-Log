@@ -18,13 +18,12 @@ namespace TimeQuestLogDesktopApp.Commands
 	internal class SearchIGDBGamesCommand : AsyncCommandBase
 	{
         private readonly AddGameViewModel _gameViewModel;
-		private readonly HttpService _httpService;
+		private readonly HttpService _httpService = HttpService.GetInstance();
 		private readonly SqliteDataAccess _sqliteDataAccess;
 		private EnvironmentVariableService EnvironmentVariableService;
 		public SearchIGDBGamesCommand(AddGameViewModel gameViewModel)
 		{
             _gameViewModel = gameViewModel;
-			_httpService = new HttpService();
 			_sqliteDataAccess = new SqliteDataAccess();
 			EnvironmentVariableService = new EnvironmentVariableService();
 		}

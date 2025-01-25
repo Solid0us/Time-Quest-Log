@@ -33,7 +33,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			var sqliteDataAccess = new SqliteDataAccess();
 			var sqliteConnectionFactory = new SqliteConnectionFactory(sqliteDataAccess.LoadConnectionString());
 			_userGameRepository = new UserGameRepository(sqliteConnectionFactory);
-			_credentialManagerService = CredentialManagerService.GetCredentialManagerService();
+			_credentialManagerService = CredentialManagerService.GetInstance();
 			_credentialManagerService.LoadCredentials();
 			UserGamesTable = new ObservableCollection<UserGameDTO>();
 			ShowAddGameWindow = new ShowAddGameCommand();

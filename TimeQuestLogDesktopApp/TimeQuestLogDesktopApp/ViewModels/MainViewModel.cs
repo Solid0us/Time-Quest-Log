@@ -18,7 +18,7 @@ namespace TimeQuestLogDesktopApp.ViewModel
 		public MainViewModel(NavigationStore mainViewModelNavigationStore)
 		{
 			_mainViewModelNavigationStore = mainViewModelNavigationStore;
-			CredentialManagerService credentialManagerService = CredentialManagerService.GetCredentialManagerService();
+			CredentialManagerService credentialManagerService = CredentialManagerService.GetInstance();
 			credentialManagerService.LoadCredentials();
 			if (!string.IsNullOrEmpty(credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH))
 				&& !string.IsNullOrEmpty(credentialManagerService.GetUsername(CredentialManagerService.CredentialType.REFRESH)))
