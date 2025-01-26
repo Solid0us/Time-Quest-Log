@@ -13,6 +13,28 @@ namespace TimeQuestLogDesktopApp.ViewModels
 	{
 		private string _gameSearch;
 		private List<IGDBGame> _games;
+		private IGDBGame _selectedGame;
+		private string _exeName;
+
+		public string ExeName
+		{
+			get => _exeName;
+			set 
+			{ 
+				_exeName = value; 
+				OnPropertyChanged(nameof(ExeName));	
+			}
+		}
+
+		public IGDBGame SelectedGame
+		{
+			get => _selectedGame;
+			set 
+			{ 
+				_selectedGame = value; 
+				OnPropertyChanged(nameof(SelectedGame));
+			}
+		}
 
 		public string GameSearch
 		{
@@ -37,7 +59,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 		public ICommand SearchIGDBGames { get; set; }
 
-        public AddGameViewModel()
+		public AddGameViewModel()
         {
             GameSearch = string.Empty;
 			Games = new List<IGDBGame>();

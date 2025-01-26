@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -25,11 +27,22 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private MyUserDetailsService userDetailsService;
 
+    private final List<String> excludedUrls = Arrays.asList(
+            "/api/v1/users/login",
+            "/api/v1/users/register",
+            "/api/v1/users/refresh"
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
         try {
             addSecurityHeaders(response);
+
+            if (isExcludedUrl(request.getRequestURI())) {
+                filterChain.doFilter(request, response);
+                return;
+            }
 
             String token = extractTokenFromRequest(request);
             if (token == null) {
@@ -45,6 +58,10 @@ public class JwtFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             handleUnexpectedError(response);
         }
+    }
+
+    private boolean isExcludedUrl(String requestPath) {
+        return excludedUrls.stream().anyMatch(requestPath::startsWith);
     }
 
     private void addSecurityHeaders(HttpServletResponse response) {

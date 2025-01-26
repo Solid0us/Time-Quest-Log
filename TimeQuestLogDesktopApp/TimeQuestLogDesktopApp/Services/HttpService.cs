@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using System.Reflection.PortableExecutable;
 using System.Net.Http.Headers;
+using System.Net;
+using TimeQuestLogDesktopApp.Models.DTOs;
 
 namespace TimeQuestLogDesktopApp.Services
 {
@@ -19,6 +21,7 @@ namespace TimeQuestLogDesktopApp.Services
 		private readonly HttpClient _httpClient;
 		private readonly int HTTP_TIMEOUT = 30;
 		private readonly JsonSerializerSettings _jsonSerializerSettings;
+		private EnvironmentVariableService EnvironmentVariableService;
 
 		private HttpService()
 		{
@@ -31,7 +34,9 @@ namespace TimeQuestLogDesktopApp.Services
 				ContractResolver = new CamelCasePropertyNamesContractResolver()
 			};
 			_credentialService = CredentialManagerService.GetInstance();
+			_credentialService.LoadCredentials();
 			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _credentialService.GetPassword(CredentialManagerService.CredentialType.JWT));
+			EnvironmentVariableService = new EnvironmentVariableService();
 		}
 
 		public static HttpService GetInstance()
@@ -103,6 +108,31 @@ namespace TimeQuestLogDesktopApp.Services
 					requestMessage.Headers.Add(header.Key, header.Value);
 				}
 			}
+		}
+
+		public async Task<HttpResponseMessage> SendAndRepeatAuthorization(Task<HttpResponseMessage> httpRequest)
+		{
+			HttpResponseMessage response = await httpRequest;
+			if (response.StatusCode == HttpStatusCode.Unauthorized)
+			{
+				string url = $"{EnvironmentVariableService.ApiBaseUrl}users/refresh";
+				RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest
+				{
+					refreshToken = _credentialService.GetPassword(CredentialManagerService.CredentialType.REFRESH),
+					username = _credentialService.GetUsername(CredentialManagerService.CredentialType.REFRESH),
+				};
+				HttpResponseMessage refreshTokenResponse = await PostAsync(url, refreshTokenRequest);
+				if (refreshTokenResponse.IsSuccessStatusCode)
+				{
+					string message = await refreshTokenResponse.Content.ReadAsStringAsync();
+					RefreshTokenRequest json = JsonConvert.DeserializeObject<RefreshTokenRequest>(message);
+					_credentialService.SetPassword(CredentialManagerService.CredentialType.JWT, json.refreshToken);
+					_credentialService.LoadCredentials();
+					response = await httpRequest;
+				}
+			}
+
+			return response;
 		}
 
 		public void Dispose()

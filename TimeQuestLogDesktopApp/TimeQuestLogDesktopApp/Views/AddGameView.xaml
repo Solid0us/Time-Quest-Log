@@ -38,6 +38,7 @@
             Grid.ColumnSpan="3" 
             IsReadOnly="True" 
             ItemsSource="{Binding Games}" 
+            SelectedItem="{Binding SelectedGame}"
             AutoGenerateColumns="False" 
             Margin="10">
             <DataGrid.Columns>
@@ -69,9 +70,13 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                
             </DataGrid.Columns>
-            
         </DataGrid>
+        <StackPanel Grid.Column="1" Grid.Row="2">
+            <Label Content="Selected Game" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBox IsReadOnly="True" Text="{Binding SelectedGame.name, UpdateSourceTrigger=PropertyChanged}" />
+            <Label Content="Exe Name" Foreground="{StaticResource TextPrimaryBrush}" />
+            <TextBox Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
+        </StackPanel>
     </Grid>
 </Window>
