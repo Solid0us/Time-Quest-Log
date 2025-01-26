@@ -68,5 +68,21 @@ namespace TimeQuestLogDesktopApp.Repositories
 				return gamesDict.Values.ToList();
 			}
         }
+
+		public int CreateUserGame(UserGames userGame)
+		{
+			using(var cnn = _connectionFactory.CreateConnection())
+			{
+				string sql = @"
+					INSERT OR IGNORE INTO UserGames
+						(Id, ExeName, GameId, UserId)
+					VALUES	
+						(@Id, @ExeName, @GameId, @UserId)
+				";
+				var parameters = new { userGame.Id, userGame.ExeName, userGame.GameId, userGame.UserId };
+
+				return cnn.Execute(sql, parameters);
+			}
+		}
     }
 }

@@ -3,6 +3,7 @@ using System.Windows.Input;
 using TimeQuestLogDesktopApp;
 using TimeQuestLogDesktopApp.Commands;
 using TimeQuestLogDesktopApp.Database;
+using TimeQuestLogDesktopApp.Models;
 using TimeQuestLogDesktopApp.Models.DTOs;
 using TimeQuestLogDesktopApp.Repositories;
 using TimeQuestLogDesktopApp.Services;
@@ -36,7 +37,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_credentialManagerService.LoadCredentials();
 			UserGamesTable = new ObservableCollection<UserGameDTO>();
-			ShowAddGameWindow = new ShowAddGameCommand();
+			ShowAddGameWindow = new ShowAddGameCommand(LoadGames);
 		}
 
 		public static async Task<LibraryViewModel> CreateAsync()
@@ -47,6 +48,16 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		}
 
 		public async Task InitializeAsync()
+		{
+			LoadGames();
+		}
+
+		public async Task RefreshDataAsync()
+		{
+			await InitializeAsync();
+		}
+
+		public async void LoadGames()
 		{
 			var userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
 			var games = await Task.Run(() => _userGameRepository.GetUserGames(userId));
@@ -59,11 +70,6 @@ namespace TimeQuestLogDesktopApp.ViewModels
 					UserGamesTable.Add(game);
 				}
 			});
-		}
-
-		public async Task RefreshDataAsync()
-		{
-			await InitializeAsync();
 		}
 	}
 }

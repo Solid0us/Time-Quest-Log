@@ -58,7 +58,7 @@ namespace TimeQuestLogDesktopApp.Services
 		{
 			using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
 			AddHeadersToRequest(requestMessage, headers);
-
+			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _credentialService.GetPassword(CredentialManagerService.CredentialType.JWT));
 			return await _httpClient.SendAsync(requestMessage);
 		}
 
@@ -110,9 +110,9 @@ namespace TimeQuestLogDesktopApp.Services
 			}
 		}
 
-		public async Task<HttpResponseMessage> SendAndRepeatAuthorization(Task<HttpResponseMessage> httpRequest)
+		public async Task<HttpResponseMessage> SendAndRepeatAuthorization(Func<Task<HttpResponseMessage>> httpRequestFunc)
 		{
-			HttpResponseMessage response = await httpRequest;
+			HttpResponseMessage response = await httpRequestFunc();
 			if (response.StatusCode == HttpStatusCode.Unauthorized)
 			{
 				string url = $"{EnvironmentVariableService.ApiBaseUrl}users/refresh";
@@ -125,13 +125,13 @@ namespace TimeQuestLogDesktopApp.Services
 				if (refreshTokenResponse.IsSuccessStatusCode)
 				{
 					string message = await refreshTokenResponse.Content.ReadAsStringAsync();
-					RefreshTokenRequest json = JsonConvert.DeserializeObject<RefreshTokenRequest>(message);
-					_credentialService.SetPassword(CredentialManagerService.CredentialType.JWT, json.refreshToken);
+					RefreshTokenResponse json = JsonConvert.DeserializeObject<RefreshTokenResponse>(message);
+					_credentialService.SetPassword(CredentialManagerService.CredentialType.JWT, json.token);
+					_credentialService.Save(CredentialManagerService.CredentialType.JWT);
 					_credentialService.LoadCredentials();
-					response = await httpRequest;
+					response = await httpRequestFunc(); // Retry
 				}
 			}
-
 			return response;
 		}
 

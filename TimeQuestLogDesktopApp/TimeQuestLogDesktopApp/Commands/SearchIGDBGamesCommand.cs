@@ -32,7 +32,7 @@ namespace TimeQuestLogDesktopApp.Commands
         protected override async Task ExecuteAsync(object? parameter)
 		{
 			string url = $"{EnvironmentVariableService.ApiBaseUrl}games?name={_gameViewModel.GameSearch}";
-			HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(_httpService.GetAsync(url));
+			HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.GetAsync(url));
 			if (response.IsSuccessStatusCode)
 			{
 				string message = await response.Content.ReadAsStringAsync();

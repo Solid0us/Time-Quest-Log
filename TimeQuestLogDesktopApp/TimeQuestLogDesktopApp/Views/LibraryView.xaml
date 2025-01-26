@@ -12,7 +12,6 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
-            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <TextBlock 
@@ -28,7 +27,14 @@
                 Foreground="{StaticResource TextPrimaryBrush}"
                 Command="{Binding ShowAddGameWindow}"
                     />
-            <DataGrid IsReadOnly="True" ItemsSource="{Binding UserGamesTable}" AutoGenerateColumns="False" Margin="10">
+            <DataGrid
+                Height="600"
+                IsReadOnly="True" 
+                ItemsSource="{Binding UserGamesTable}" 
+                AutoGenerateColumns="False" 
+                Margin="10" 
+                HorizontalScrollBarVisibility="Auto" 
+                VerticalScrollBarVisibility="Auto">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Cover" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
