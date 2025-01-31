@@ -3,10 +3,74 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views"
+             xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views" xmlns:viewmodels="clr-namespace:TimeQuestLogDesktopApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:HomeViewModel}"
              mc:Ignorable="d" 
+             xmlns:converters="clr-namespace:TimeQuestLogDesktopApp.Converters"
              d:DesignHeight="450" d:DesignWidth="800">
+    <UserControl.Resources>
+        <converters:TimePlayedConverter x:Key="TimePlayedConverter" />
+    </UserControl.Resources>
+
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Label Foreground="{StaticResource TextPrimaryBrush}" Content="Home View"/>
+        <DataGrid 
+            Grid.Row="1" 
+            Grid.ColumnSpan="3"
+            Height="600"
+            IsReadOnly="True" 
+            ItemsSource="{Binding GameSessionTable}"
+            AutoGenerateColumns="False" 
+            Margin="10" 
+            HorizontalScrollBarVisibility="Auto" 
+            VerticalScrollBarVisibility="Auto"
+            >
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Game" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding SessionGame.Name}" 
+                                 VerticalAlignment="Center" 
+                                 Margin="5,0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Start Time" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding StartTime}" 
+                                 VerticalAlignment="Center" 
+                                 Margin="5,0" />    
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="End Time" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding EndTime}" 
+                                 VerticalAlignment="Center" 
+                                 Margin="5,0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Time Played" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding ., Converter={StaticResource TimePlayedConverter}}" 
+                               VerticalAlignment="Center" 
+                               Margin="5,0" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl>
