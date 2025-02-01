@@ -13,6 +13,7 @@ namespace TimeQuestLogDesktopApp.Models.DTOs
         private List<Genres> _genres = new List<Genres>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
+        public int GameId {  get; set; }
 
         public string Title { get; set; }
         public string Cover { get; set; }
@@ -27,8 +28,9 @@ namespace TimeQuestLogDesktopApp.Models.DTOs
             }
         }
 
-        public UserGameDTO(string title, string cover, string exe, string username)
+        public UserGameDTO(int gameId, string title, string cover, string exe, string username)
         {
+            GameId = gameId;
             Title = title;
             Cover = cover;
             Exe = exe;

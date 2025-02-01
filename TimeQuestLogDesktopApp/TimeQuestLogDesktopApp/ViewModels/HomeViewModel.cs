@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using TimeQuestLogDesktopApp.Database;
 using TimeQuestLogDesktopApp.Models.DTOs;
@@ -14,11 +16,12 @@ namespace TimeQuestLogDesktopApp.ViewModels
 {
 	internal class HomeViewModel : ViewModelBase
 	{
-		private List<GameSessionsDTO> _gameSessionTable = new List<GameSessionsDTO>();
+		private ObservableCollection<GameSessionsDTO> _gameSessionTable;
 		private GameSessionsRepository _gameSessionsRepository;
 		private readonly CredentialManagerService _credentialManagerService;
+		private GameSessionMonitoringService _gameSessionMonitoringService;
 
-		public List<GameSessionsDTO> GameSessionTable
+		public ObservableCollection<GameSessionsDTO> GameSessionTable
 		{
 			get { return _gameSessionTable; }
 			set 
@@ -28,26 +31,27 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			}
 		}
 
-
 		public HomeViewModel()
         {
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_credentialManagerService.LoadCredentials();
-			LoadGameSessions();
-        }
-
-		public void LoadGameSessions()
-		{
-			var sqliteDataAccess = new SqliteDataAccess();
-			var sqliteConnectionFactory = new SqliteConnectionFactory(sqliteDataAccess.LoadConnectionString());
-			_gameSessionsRepository = new GameSessionsRepository(sqliteConnectionFactory);
-			List<GameSessionsDTO> gameSessionsDTOs = _gameSessionsRepository.GetGameSessionsByUserId(_credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH));
-
-			_gameSessionTable.Clear();
-			foreach (var gameSession in gameSessionsDTOs)
-			{
-				_gameSessionTable.Add(gameSession);
-			}
+			_gameSessionMonitoringService = GameSessionMonitoringService.GetInstance;
+			_gameSessionTable = new ObservableCollection<GameSessionsDTO>(_gameSessionMonitoringService.GameSessions);
+			_gameSessionMonitoringService.GameSessionsChanged += OnGameSessionsChanged;
 		}
-    }
+
+		private void OnGameSessionsChanged(object sender, List<GameSessionsDTO> sessions)
+		{
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				GameSessionTable = new ObservableCollection<GameSessionsDTO>(sessions);
+			});
+		}
+
+		public override void Dispose()
+		{
+			_gameSessionMonitoringService.GameSessionsChanged -= OnGameSessionsChanged;
+			base.Dispose();
+		}
+	}
 }

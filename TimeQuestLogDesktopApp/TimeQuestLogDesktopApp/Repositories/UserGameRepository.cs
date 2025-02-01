@@ -48,7 +48,7 @@ namespace TimeQuestLogDesktopApp.Repositories
 					{
 						if (!gamesDict.TryGetValue(game.Id, out UserGameDTO existingGame))
 						{
-							UserGameDTO newUserGame = new UserGameDTO(game.Name, game.CoverUrl, userGame.ExeName, user.Username);
+							UserGameDTO newUserGame = new UserGameDTO(game.Id, game.Name, game.CoverUrl, userGame.ExeName, user.Username);
 
 							gamesDict.Add(game.Id, newUserGame);
 							existingGame = newUserGame;

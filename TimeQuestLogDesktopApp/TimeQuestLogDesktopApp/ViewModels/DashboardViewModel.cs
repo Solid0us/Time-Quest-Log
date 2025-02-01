@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
@@ -20,11 +21,24 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		public ICommand NavigateToHome { get; set; }
 		public ICommand NavigateToLibrary { get; private set; }
 		public ICommand NavigateToSettings { get; set; }
+		[DllImport("kernel32.dll")]
+		private static extern bool AllocConsole();
 		public string Username { get; private set; }
 		private readonly CredentialManagerService _credentialManager;
+		private readonly GameSessionMonitoringService _gameMonitoringService;
 
 		public DashboardViewModel(NavigationStore mainViewModelNavigationStore)
 		{
+			if (System.Diagnostics.Debugger.IsAttached)
+			{
+				AllocConsole();
+			}
+			_gameMonitoringService = GameSessionMonitoringService.GetInstance;
+			using (_gameMonitoringService)
+			{
+				_gameMonitoringService.StartMonitoring();
+			}
+			_gameMonitoringService.StartMonitoring();
 			_credentialManager = CredentialManagerService.GetInstance();
 			_credentialManager.LoadCredentials();
 			Username = _credentialManager.GetUsername(CredentialManagerService.CredentialType.REFRESH);

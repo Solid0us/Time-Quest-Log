@@ -59,5 +59,38 @@ namespace TimeQuestLogDesktopApp.Repositories
             }
             return gameSessionsDTOs;
         }
+
+        public GameSessions CreateGameSession(int gameId, string userId)
+        {
+            string sql = @"
+                INSERT INTO GameSessions
+                (Id, StartTime, GameId, UserId)
+                VALUES (@Id, @StartTime, @GameId, @UserId)
+            ";
+            string gameSessionId = Guid.NewGuid().ToString();
+            DateTime currentUtcDateTime = DateTime.UtcNow;
+            var parameters = new { Id = gameSessionId, StartTime = currentUtcDateTime, GameId = gameId, UserId = userId };
+            using (var cnn = _connectionFactory.CreateConnection())
+            {
+                cnn.Execute(sql, parameters);
+                return new GameSessions { Id = gameSessionId, StartTime = currentUtcDateTime, GameId = gameId, UserId = userId};
+            }
+        }
+
+        public void EndGameSession(string gameSessionId)
+        {
+            string sql = @"
+                UPDATE GameSessions
+                SET Endtime = @EndTime
+                WHERE Id = @GameSessionId
+            ";
+            var parameters = new { EndTime = DateTime.UtcNow, GameSessionId = gameSessionId };
+
+            using (var cnn = _connectionFactory.CreateConnection())
+            {
+                cnn.Execute(sql, parameters);
+            }
+
+        }
     }
 }

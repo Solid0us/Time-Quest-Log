@@ -44,7 +44,6 @@ namespace TimeQuestLogDesktopApp.Commands
 				AuthResponse json = JsonConvert.DeserializeObject<AuthResponse>(message);
 				if (response.IsSuccessStatusCode)
 				{
-					MessageBox.Show($"You have successfully logged in! Here is your refreshToken: {json?.Token}");
 					_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.REFRESH,json?.UserId, json?.Username);
 					_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.REFRESH,json?.RefreshToken);
 					_credentialManagerService.Save(CredentialManagerService.CredentialType.REFRESH);
@@ -62,6 +61,7 @@ namespace TimeQuestLogDesktopApp.Commands
 					}
 
 					_navigationStore.CurrentViewModel = new DashboardViewModel(_navigationStore);
+					GameSessionMonitoringService.GetInstance.LoadGameSessions();
 				}
 				else if (response.StatusCode == HttpStatusCode.Unauthorized)
 				{

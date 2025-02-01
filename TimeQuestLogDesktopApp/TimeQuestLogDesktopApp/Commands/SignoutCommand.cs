@@ -19,6 +19,7 @@ namespace TimeQuestLogDesktopApp.Commands
 			credentialManagerService.Delete(CredentialManagerService.CredentialType.REFRESH);
 			credentialManagerService.Delete(CredentialManagerService.CredentialType.JWT);
 			_mainViewModelNavigationStore.CurrentViewModel = new LoginViewModel(_mainViewModelNavigationStore);
+			GameSessionMonitoringService.GetInstance.ClearMapsAndSessions();
 		}
 
         public SignoutCommand(NavigationStore mainViewModelNavigationStore)
