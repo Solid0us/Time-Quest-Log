@@ -5,6 +5,7 @@ using System.Linq;
 using System.Management;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using TimeQuestLogDesktopApp.Database;
 using TimeQuestLogDesktopApp.Models;
 using TimeQuestLogDesktopApp.Models.DTOs;
@@ -62,7 +63,10 @@ namespace TimeQuestLogDesktopApp.Services
 				{
 					lock (lockObject)
 					{
-						_instance ??= new GameSessionMonitoringService();
+						if (_instance == null)
+						{
+							_instance = new GameSessionMonitoringService();
+						}
 					}
 				}
 				return _instance;
@@ -80,6 +84,8 @@ namespace TimeQuestLogDesktopApp.Services
 			_stopWatch = new ManagementEventWatcher(new WqlEventQuery(stopQuery));
 			_stopWatch.EventArrived += new EventArrivedEventHandler(ProcessStopped);
 			_stopWatch.Start();
+
+			isMonitoring = true;
 		}
 
 		public void StopMonitoring()
@@ -92,37 +98,50 @@ namespace TimeQuestLogDesktopApp.Services
 
 		private void ProcessStarted(object sender, EventArrivedEventArgs e)
 		{
-			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
-			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-			if (Debugger.IsAttached)
+			try
 			{
-				Console.WriteLine($"Process Started: {processName} (PID: {processId})");
+				string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
+				int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
+				if (Debugger.IsAttached)
+				{
+					Console.WriteLine($"Process Started: {processName} (PID: {processId})");
+				}
+				if (_gameMap.ContainsKey(processName) && !_gameSessionMap.ContainsKey(processId))
+				{
+					_processIdToNameMap[processId] = processName;
+					GameSessions gameSession = _gameSessionsRepository.CreateGameSession(_gameMap.GetValueOrDefault(processName), _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH));
+					_gameSessionMap.Add(processId, gameSession);
+					LoadGameSessions();
+				}
 			}
-			if (_gameMap.ContainsKey(processName) && !_gameSessionMap.ContainsKey(processId))
+			catch (Exception ex)
 			{
-				_processIdToNameMap[processId] = processName;
-				GameSessions gameSession = _gameSessionsRepository.CreateGameSession(_gameMap.GetValueOrDefault(processName), _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH));
-				_gameSessionMap.Add(processId, gameSession);
-				LoadGameSessions();
+				Console.WriteLine($"Error in ProcessStarted: {ex.Message}");
 			}
 		}
 
 		private void ProcessStopped(object sender, EventArrivedEventArgs e)
 		{
-			
-			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
-			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-			if (Debugger.IsAttached)
+			try
 			{
-				Console.WriteLine($"Process Stopped: {processName} (PID: {processId})");
-			}
-			if (_gameSessionMap.ContainsKey(processId))
-			{
+				string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
+				int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
+				if (Debugger.IsAttached)
+				{
+					Console.WriteLine($"Process Stopped: {processName} (PID: {processId})");
+				}
+				if (_gameSessionMap.ContainsKey(processId))
+				{
 				
-				_gameSessionsRepository.EndGameSession(_gameSessionMap.GetValueOrDefault(processId).Id);
-				_gameSessionMap.Remove(processId);
-				_processIdToNameMap.Remove(processId);
-				LoadGameSessions();
+					_gameSessionsRepository.EndGameSession(_gameSessionMap.GetValueOrDefault(processId).Id);
+					_gameSessionMap.Remove(processId);
+					_processIdToNameMap.Remove(processId);
+					LoadGameSessions();
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error in ProcessStopped: {ex.Message}");
 			}
 		}
 

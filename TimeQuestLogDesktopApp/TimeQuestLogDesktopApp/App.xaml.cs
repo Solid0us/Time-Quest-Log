@@ -1,6 +1,7 @@
 ﻿using System.Configuration;
 using System.Data;
 using System.Windows;
+using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.Stores;
 using TimeQuestLogDesktopApp.ViewModel;
 
@@ -25,6 +26,13 @@ namespace TimeQuestLogDesktopApp
 			};
 			MainWindow.Show();
 			base.OnStartup(e);
+			Current.Exit += OnApplicationExit;
+		}
+
+		private void OnApplicationExit(object sender, ExitEventArgs e)
+		{
+			GameSessionMonitoringService.Instance.StopMonitoring();
+			GameSessionMonitoringService.Instance.Dispose();
 		}
 
 	}
