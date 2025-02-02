@@ -32,28 +32,35 @@ namespace TimeQuestLogDesktopApp.Commands
         protected override async Task ExecuteAsync(object? parameter)
 		{
 			string url = $"{EnvironmentVariableService.ApiBaseUrl}games?name={_gameViewModel.GameSearch}";
-			HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.GetAsync(url));
-			if (response.IsSuccessStatusCode)
+			try
 			{
-				string message = await response.Content.ReadAsStringAsync();
-				ApiResponse <List<IGDBGame>> json = JsonConvert.DeserializeObject<ApiResponse<List<IGDBGame>>>(message);
-				foreach (IGDBGame game in json.Data)
+				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.GetAsync(url));
+				if (response.IsSuccessStatusCode)
 				{
-					if (game.cover != null)
+					string message = await response.Content.ReadAsStringAsync();
+					ApiResponse <List<IGDBGame>> json = JsonConvert.DeserializeObject<ApiResponse<List<IGDBGame>>>(message);
+					foreach (IGDBGame game in json.Data)
 					{
-						game.cover.url = "https:" + game.cover.url;
+						if (game.cover != null)
+						{
+							game.cover.url = "https:" + game.cover.url;
+						}
 					}
+					_gameViewModel.Games = new List<IGDBGame>(json.Data);
 				}
-				_gameViewModel.Games = new List<IGDBGame>(json.Data);
+				else if (response.StatusCode == HttpStatusCode.Unauthorized)
+				{
+					// TODO: Implement logout
+					MessageBox.Show("Your session has expired. Please signout and log back in.", "Session Expired", MessageBoxButton.OK, MessageBoxImage.Error);
+				}
+				else
+				{
+					MessageBox.Show("Something went wrong on the server side.", "Server Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				}
 			}
-			else if (response.StatusCode == HttpStatusCode.Unauthorized)
+			catch (HttpRequestException ex)
 			{
-				// TODO: Implement logout
-				MessageBox.Show("Your session has expired. Please signout and log back in.", "Session Expired", MessageBoxButton.OK, MessageBoxImage.Error);
-			}
-			else
-			{
-				MessageBox.Show("Something went wrong on the server side.", "Server Error", MessageBoxButton.OK, MessageBoxImage.Error);
+				MessageBox.Show(ex.Message, "Server Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
 		}
 	}
