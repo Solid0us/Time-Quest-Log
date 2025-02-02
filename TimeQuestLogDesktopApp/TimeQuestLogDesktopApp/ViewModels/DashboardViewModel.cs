@@ -33,7 +33,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			{
 				AllocConsole();
 			}
-			_gameMonitoringService = GameSessionMonitoringService.GetInstance;
+			_gameMonitoringService = GameSessionMonitoringService.Instance;
 			using (_gameMonitoringService)
 			{
 				_gameMonitoringService.StartMonitoring();

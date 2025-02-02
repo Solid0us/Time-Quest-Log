@@ -35,7 +35,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
         {
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_credentialManagerService.LoadCredentials();
-			_gameSessionMonitoringService = GameSessionMonitoringService.GetInstance;
+			_gameSessionMonitoringService = GameSessionMonitoringService.Instance;
 			_gameSessionTable = new ObservableCollection<GameSessionsDTO>(_gameSessionMonitoringService.GameSessions);
 			_gameSessionMonitoringService.GameSessionsChanged += OnGameSessionsChanged;
 		}

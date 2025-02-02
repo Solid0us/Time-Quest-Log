@@ -20,8 +20,9 @@ namespace TimeQuestLogDesktopApp.Services
         private ManagementEventWatcher _stopWatch;
 		private bool isMonitoring;
 		private bool disposed;
+		private Dictionary<int, string> _processIdToNameMap = new Dictionary<int, string>();
 		private Dictionary<string, int> _gameMap;
-		private Dictionary<string, GameSessions> _gameSessionMap;
+		private Dictionary<int, GameSessions> _gameSessionMap;
 		private List<GameSessionsDTO> _gameSessions = new List<GameSessionsDTO>();
 		private GameSessionsRepository _gameSessionsRepository;
 		private UserGameRepository _userGameRepository;
@@ -36,7 +37,7 @@ namespace TimeQuestLogDesktopApp.Services
 			_userGameRepository = new UserGameRepository(sqliteConnectionFactory);
 
 			_gameMap = new Dictionary<string, int>();
-			_gameSessionMap = new Dictionary<string, GameSessions>();
+			_gameSessionMap = new Dictionary<int, GameSessions>();
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_credentialManagerService.LoadCredentials();
 			LoadGameSessions();
@@ -53,7 +54,7 @@ namespace TimeQuestLogDesktopApp.Services
 			}
 		}
 
-        public static GameSessionMonitoringService GetInstance
+        public static GameSessionMonitoringService Instance
 		{
 			get
 			{
@@ -79,8 +80,6 @@ namespace TimeQuestLogDesktopApp.Services
 			_stopWatch = new ManagementEventWatcher(new WqlEventQuery(stopQuery));
 			_stopWatch.EventArrived += new EventArrivedEventHandler(ProcessStopped);
 			_stopWatch.Start();
-
-			Console.ReadLine();
 		}
 
 		public void StopMonitoring()
@@ -94,27 +93,35 @@ namespace TimeQuestLogDesktopApp.Services
 		private void ProcessStarted(object sender, EventArrivedEventArgs e)
 		{
 			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
-			if (_gameMap.ContainsKey(processName))
+			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
+			if (Debugger.IsAttached)
 			{
-				int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
 				Console.WriteLine($"Process Started: {processName} (PID: {processId})");
-
+			}
+			if (_gameMap.ContainsKey(processName) && !_gameSessionMap.ContainsKey(processId))
+			{
+				_processIdToNameMap[processId] = processName;
 				GameSessions gameSession = _gameSessionsRepository.CreateGameSession(_gameMap.GetValueOrDefault(processName), _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH));
-				_gameSessionMap.Add(processName, gameSession);
+				_gameSessionMap.Add(processId, gameSession);
 				LoadGameSessions();
 			}
 		}
 
 		private void ProcessStopped(object sender, EventArrivedEventArgs e)
 		{
+			
 			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
-			if (_gameMap.ContainsKey(processName) && _gameSessionMap.ContainsKey(processName))
+			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
+			if (Debugger.IsAttached)
 			{
-				int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
 				Console.WriteLine($"Process Stopped: {processName} (PID: {processId})");
-
-				_gameSessionsRepository.EndGameSession(_gameSessionMap.GetValueOrDefault(processName).Id);
-				_gameSessionMap.Remove(processName);	
+			}
+			if (_gameSessionMap.ContainsKey(processId))
+			{
+				
+				_gameSessionsRepository.EndGameSession(_gameSessionMap.GetValueOrDefault(processId).Id);
+				_gameSessionMap.Remove(processId);
+				_processIdToNameMap.Remove(processId);
 				LoadGameSessions();
 			}
 		}
@@ -187,6 +194,11 @@ namespace TimeQuestLogDesktopApp.Services
 			_gameMap.Clear();
 			_gameSessionMap.Clear();
 			_gameSessions.Clear();
+		}
+
+		public void MapGame(string exe, int gameId)
+		{
+			_gameMap.Add(exe, gameId);
 		}
 
 	}

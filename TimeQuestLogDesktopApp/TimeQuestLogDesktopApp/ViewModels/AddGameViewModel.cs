@@ -60,13 +60,15 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 		public ICommand SearchIGDBGames { get; set; }
 		public ICommand AddGameToLibraryCommand {  get; set; }
+        public ICommand SelectExecutableCommand { get; set; }
 
-		public AddGameViewModel(Action loadGames)
+        public AddGameViewModel(Action loadGames)
         {
             GameSearch = string.Empty;
 			Games = new List<IGDBGame>();
             SearchIGDBGames = new SearchIGDBGamesCommand(this);
 			AddGameToLibraryCommand = new AddGameToLibraryCommand(this);
+			SelectExecutableCommand = new SelectExecutableCommand(this);
 			_loadGames = loadGames;
         }
     }

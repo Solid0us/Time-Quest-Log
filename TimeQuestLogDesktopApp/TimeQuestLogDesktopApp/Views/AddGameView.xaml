@@ -76,7 +76,17 @@
             <Label Content="Selected Game" Foreground="{StaticResource TextPrimaryBrush}" />
             <TextBox IsReadOnly="True" Text="{Binding SelectedGame.name, UpdateSourceTrigger=PropertyChanged}" />
             <Label Content="Exe Name" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBox Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
+            <StackPanel
+                Orientation="Horizontal"
+                HorizontalAlignment="Center"
+                >
+                <TextBox Width="350" Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
+                <Button
+                    Width="100"
+                    Content="Select Game"
+                    Command="{Binding SelectExecutableCommand}"
+                    />
+            </StackPanel>
             <Button 
                 Command="{Binding AddGameToLibraryCommand}"
                 Background="{StaticResource PrimaryBrush}" 

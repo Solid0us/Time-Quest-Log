@@ -86,7 +86,8 @@ namespace TimeQuestLogDesktopApp.Commands
 						}
 
 						_navigationStore.CurrentViewModel = new DashboardViewModel(_navigationStore);
-
+						GameSessionMonitoringService.Instance.LoadGameSessions();
+						GameSessionMonitoringService.Instance.LoadExeMap();
 					}
 					else
 					{

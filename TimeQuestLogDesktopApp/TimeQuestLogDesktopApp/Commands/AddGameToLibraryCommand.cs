@@ -43,7 +43,6 @@ namespace TimeQuestLogDesktopApp.Commands
 			if (existingGame == null)
 			{
 				gameRepository.CreateGame(game);
-				// TODO: Add Genres
 				List<Genres> genres = new List<Genres>();
 				foreach (var genre in _addGameViewModel.SelectedGame.genres)
 				{
@@ -54,6 +53,7 @@ namespace TimeQuestLogDesktopApp.Commands
 			}
 			userGameRepository.CreateUserGame(userGame);
 			_addGameViewModel._loadGames();
+			GameSessionMonitoringService.Instance.MapGame(_addGameViewModel.ExeName, _addGameViewModel.SelectedGame.id);
 			MessageBox.Show($"{game.Name} has been successfully added to your library!", "Game Added", MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 
