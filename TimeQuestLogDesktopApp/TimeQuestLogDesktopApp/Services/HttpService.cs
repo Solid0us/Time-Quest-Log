@@ -21,7 +21,7 @@ namespace TimeQuestLogDesktopApp.Services
 		private readonly HttpClient _httpClient;
 		private readonly int HTTP_TIMEOUT = 30;
 		private readonly JsonSerializerSettings _jsonSerializerSettings;
-		private EnvironmentVariableService EnvironmentVariableService;
+		private EnvironmentVariableService _environmentVariableService;
 
 		private HttpService()
 		{
@@ -36,7 +36,7 @@ namespace TimeQuestLogDesktopApp.Services
 			_credentialService = CredentialManagerService.GetInstance();
 			_credentialService.LoadCredentials();
 			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _credentialService.GetPassword(CredentialManagerService.CredentialType.JWT));
-			EnvironmentVariableService = new EnvironmentVariableService();
+			_environmentVariableService = EnvironmentVariableService.Instance;
 		}
 
 		public static HttpService GetInstance()
@@ -82,7 +82,7 @@ namespace TimeQuestLogDesktopApp.Services
 
 			string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
 			var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-			using var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+			using var requestMessage = new HttpRequestMessage(HttpMethod.Put, url)
 			{
 				Content = jsonContent
 			};
@@ -115,7 +115,7 @@ namespace TimeQuestLogDesktopApp.Services
 			HttpResponseMessage response = await httpRequestFunc();
 			if (response.StatusCode == HttpStatusCode.Unauthorized)
 			{
-				string url = $"{EnvironmentVariableService.ApiBaseUrl}users/refresh";
+				string url = $"{_environmentVariableService.ApiBaseUrl}users/refresh";
 				RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest
 				{
 					refreshToken = _credentialService.GetPassword(CredentialManagerService.CredentialType.REFRESH),

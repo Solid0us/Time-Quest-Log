@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -52,6 +53,19 @@ namespace TimeQuestLogDesktopApp.Commands
 				gameGenresRepository.CreateGameGenres(game.Id, genres.Select(item => item.Id).ToList());
 			}
 			userGameRepository.CreateUserGame(userGame);
+			// Add to server
+			HttpService httpService = HttpService.GetInstance();
+			HttpResponseMessage response = await httpService.SendAndRepeatAuthorization(() => httpService.PutAsync(EnvironmentVariableService.Instance.ApiBaseUrl + $"user-games/{userGame.Id}",
+				new
+				{
+					user = new {id = userGame.UserId},
+					game = new {id = userGame.GameId},
+					exeName = userGame.ExeName
+				}));
+			if (response.IsSuccessStatusCode)
+			{
+				userGameRepository.UpdateSync(userGame.Id, true);
+			}
 			_addGameViewModel._loadGames();
 			GameSessionMonitoringService.Instance.MapGame(_addGameViewModel.ExeName, _addGameViewModel.SelectedGame.id);
 			MessageBox.Show($"{game.Name} has been successfully added to your library!", "Game Added", MessageBoxButton.OK, MessageBoxImage.Information);

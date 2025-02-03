@@ -84,5 +84,21 @@ namespace TimeQuestLogDesktopApp.Repositories
 				return cnn.Execute(sql, parameters);
 			}
 		}
+
+		public int UpdateSync(string id, bool isSynced)
+		{
+			using(var cnn = _connectionFactory.CreateConnection())
+			{
+				int syncValue = isSynced ? 1 : 0;
+				string sql = @"
+					UPDATE UserGames
+					SET IsSynced = @SyncValue
+					WHERE Id = @Id
+				";
+				var parameters = new { Id = id, SyncValue = syncValue };
+
+				return cnn.Execute(sql, parameters);
+			}
+		}
     }
 }

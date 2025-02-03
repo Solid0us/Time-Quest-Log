@@ -39,4 +39,15 @@ public class UserGameController {
                     .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
         }
     }
+
+    @PutMapping({"/{userGameId}", "/{userGameId}/"})
+    public ResponseEntity<ApiResponse<?>> updateUserGame(@PathVariable String userGameId, @RequestBody UserGames userGame) {
+        ServiceResult<UserGames> result = userGameService.upsertUserGame(UUID.fromString(userGameId), userGame);
+        if (result.isSuccess()){
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+        }
+    }
 }

@@ -110,6 +110,20 @@ public class IGDBService {
         return resultFuture.join();
     }
 
+    public ServiceResult<IGDBGame> searchGameById(int id) throws InterruptedException {
+        CompletableFuture<ServiceResult<IGDBGame>> resultFuture = new CompletableFuture<>();
+
+        addRequest(() -> {
+            try {
+                resultFuture.complete(executeSearchGameById(id));
+            } catch (Exception e) {
+                resultFuture.completeExceptionally(e);
+            }
+        });
+
+        return resultFuture.join();
+    }
+
     public ServiceResult<List<IGDBGenre>> getGenres() throws InterruptedException {
         CompletableFuture<ServiceResult<List<IGDBGenre>>> resultFuture = new CompletableFuture<>();
 
@@ -174,6 +188,59 @@ public class IGDBService {
                 .constructCollectionType(List.class, IGDBGame.class
                 ));
         return ServiceResult.success(games);
+    }
+
+    private ServiceResult<IGDBGame> executeSearchGameById(int id) throws IOException, InterruptedException{
+        String gamesUrl = apiBaseUrl + "games";
+        String fields = "fields name, first_release_date, genres.*, cover.*;";
+        String limit = "limit 500;";
+        String where = String.format("where id = %s;", id);
+        String requestBody = fields + where + limit;
+        List<ErrorDetail> errorDetails = new ArrayList<ErrorDetail>();
+        int retries = 0;
+
+        HttpResponse<String> response;
+        do {
+            try (HttpClient client = HttpClient.newHttpClient()) {
+                HttpRequest request = HttpRequest.newBuilder()
+                        .uri(URI.create(gamesUrl))
+                        .header("Client-ID", clientId)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .header("Content-Type", "text/plain")
+                        .POST(HttpRequest.BodyPublishers.ofString(requestBody))
+                        .build();
+
+                response = client.send(request, HttpResponse.BodyHandlers.ofString());
+                if (response.statusCode() == 401) {
+                    login();
+                    retries++;
+                    Thread.sleep(THREAD_BLOCK_MILLISECONDS);
+                }
+            }
+        } while(retries < MAX_RETRIES && response.statusCode() == 401);
+
+        if (retries == MAX_RETRIES) {
+            errorDetails.add(new ErrorDetail("loginCredentials", "Could not authorize with Twitch."));
+        } else if (response.statusCode() != 200) {
+            errorDetails.add(new ErrorDetail("igdb", "Could not obtain data from Twitch."));
+        }
+
+        if (!errorDetails.isEmpty()) {
+            return ServiceResult.failure(errorDetails);
+        }
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<IGDBGame> games = objectMapper.readValue
+                (response.body(),
+                        objectMapper
+                                .getTypeFactory()
+                                .constructCollectionType(List.class, IGDBGame.class
+                                ));
+        if (games.isEmpty()) {
+            errorDetails.add(new ErrorDetail("input", "Game not found."));
+            return ServiceResult.failure(errorDetails);
+        }
+        return ServiceResult.success(games.getFirst());
     }
 
     private ServiceResult<List<IGDBGenre>> executeGetGenres() throws IOException, InterruptedException {

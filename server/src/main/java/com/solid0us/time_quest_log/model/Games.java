@@ -14,7 +14,7 @@ public class Games {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "game_genre",
             joinColumns = @JoinColumn(name = "game_id"),

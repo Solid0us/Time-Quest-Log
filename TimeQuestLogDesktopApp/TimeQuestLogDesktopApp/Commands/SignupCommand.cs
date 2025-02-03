@@ -21,7 +21,7 @@ namespace TimeQuestLogDesktopApp.Commands
 		private readonly SignupViewModel _signupViewModel;
 		private readonly NavigationStore _navigationStore;
 		private readonly HttpService _httpService = HttpService.GetInstance();
-		private EnvironmentVariableService EnvironmentVariableService;
+		private EnvironmentVariableService _environmentVariableService;
 		private readonly SqliteDataAccess _sqliteDataAccess;
 		private readonly CredentialManagerService _credentialManagerService;
 		public SignupCommand(SignupViewModel signupViewModel, NavigationStore navigationStore) 
@@ -29,7 +29,7 @@ namespace TimeQuestLogDesktopApp.Commands
 			_signupViewModel = signupViewModel;
 			_navigationStore = navigationStore;
 			_sqliteDataAccess = new SqliteDataAccess();
-			EnvironmentVariableService = new EnvironmentVariableService();	
+			_environmentVariableService = EnvironmentVariableService.Instance;	
 			_credentialManagerService = CredentialManagerService.GetInstance();
 		}
 
@@ -61,7 +61,7 @@ namespace TimeQuestLogDesktopApp.Commands
 			{
 				try
 				{
-					string url = $"{EnvironmentVariableService.ApiBaseUrl}users/register";
+					string url = $"{_environmentVariableService.ApiBaseUrl}users/register";
 					HttpResponseMessage response = await _httpService.PostAsync(url, _signupViewModel);
 
 					string message = await response.Content.ReadAsStringAsync();

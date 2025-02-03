@@ -22,16 +22,16 @@ namespace TimeQuestLogDesktopApp.Commands
         private readonly AddGameViewModel _gameViewModel;
 		private readonly HttpService _httpService = HttpService.GetInstance();
 		private readonly SqliteDataAccess _sqliteDataAccess;
-		private EnvironmentVariableService EnvironmentVariableService;
+		private EnvironmentVariableService _environmentVariableService;
 		public SearchIGDBGamesCommand(AddGameViewModel gameViewModel)
 		{
             _gameViewModel = gameViewModel;
 			_sqliteDataAccess = new SqliteDataAccess();
-			EnvironmentVariableService = new EnvironmentVariableService();
+			_environmentVariableService = EnvironmentVariableService.Instance;
 		}
         protected override async Task ExecuteAsync(object? parameter)
 		{
-			string url = $"{EnvironmentVariableService.ApiBaseUrl}games?name={_gameViewModel.GameSearch}";
+			string url = $"{_environmentVariableService.ApiBaseUrl}games?name={_gameViewModel.GameSearch}";
 			try
 			{
 				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.GetAsync(url));

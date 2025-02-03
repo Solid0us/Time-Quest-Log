@@ -20,7 +20,7 @@ namespace TimeQuestLogDesktopApp.Commands
 	{
 		private readonly LoginViewModel _loginViewModel;
 		private readonly NavigationStore _navigationStore;	
-		private EnvironmentVariableService EnvironmentVariableService;
+		private EnvironmentVariableService _environmentVariableService;
 		private readonly HttpService _httpService = HttpService.GetInstance();
 		private readonly SqliteDataAccess _sqliteDataAccess;
 		private readonly CredentialManagerService _credentialManagerService;
@@ -30,14 +30,14 @@ namespace TimeQuestLogDesktopApp.Commands
             _loginViewModel = loginViewModel;
 			_sqliteDataAccess = new SqliteDataAccess();
 			_navigationStore = navigationStore;
-			EnvironmentVariableService = new EnvironmentVariableService();
+			_environmentVariableService = EnvironmentVariableService.Instance;
 			_credentialManagerService = CredentialManagerService.GetInstance();
         }
         protected override async Task ExecuteAsync(object? parameter)
 		{
 			try
 			{
-				string url = $"{EnvironmentVariableService.ApiBaseUrl}users/login";
+				string url = $"{_environmentVariableService.ApiBaseUrl}users/login";
 				HttpResponseMessage response = await _httpService.PostAsync(url, _loginViewModel);
 
 				string message = await response.Content.ReadAsStringAsync();
