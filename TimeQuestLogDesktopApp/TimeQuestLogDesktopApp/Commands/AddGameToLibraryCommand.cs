@@ -66,6 +66,10 @@ namespace TimeQuestLogDesktopApp.Commands
 			{
 				userGameRepository.UpdateSync(userGame.Id, true);
 			}
+			else
+			{
+				userGameRepository.UpdateSync(userGame.Id, false);
+			}
 			_addGameViewModel._loadGames();
 			GameSessionMonitoringService.Instance.MapGame(_addGameViewModel.ExeName, _addGameViewModel.SelectedGame.id);
 			MessageBox.Show($"{game.Name} has been successfully added to your library!", "Game Added", MessageBoxButton.OK, MessageBoxImage.Information);

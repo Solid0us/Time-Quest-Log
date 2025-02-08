@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,13 +23,15 @@ namespace TimeQuestLogDesktopApp.Services
         private ManagementEventWatcher _stopWatch;
 		private bool isMonitoring;
 		private bool disposed;
-		private Dictionary<int, string> _processIdToNameMap = new Dictionary<int, string>();
-		private Dictionary<string, int> _gameMap;
-		private Dictionary<int, GameSessions> _gameSessionMap;
+		private ConcurrentDictionary<int, string> _processIdToNameMap = new();
+		private ConcurrentDictionary<string, int> _gameMap = new();
+		private ConcurrentDictionary<int, GameSessions> _gameSessionMap = new();
 		private List<GameSessionsDTO> _gameSessions = new List<GameSessionsDTO>();
 		private GameSessionsRepository _gameSessionsRepository;
 		private UserGameRepository _userGameRepository;
 		private readonly CredentialManagerService _credentialManagerService;
+		private readonly EnvironmentVariableService _environmentVariableService;
+		private readonly HttpService _httpService;
 
 		public event EventHandler<List<GameSessionsDTO>> GameSessionsChanged;
 		private GameSessionMonitoringService()
@@ -36,9 +40,8 @@ namespace TimeQuestLogDesktopApp.Services
 			var sqliteConnectionFactory = new SqliteConnectionFactory(sqliteDataAccess.LoadConnectionString());
 			_gameSessionsRepository = new GameSessionsRepository(sqliteConnectionFactory);
 			_userGameRepository = new UserGameRepository(sqliteConnectionFactory);
-
-			_gameMap = new Dictionary<string, int>();
-			_gameSessionMap = new Dictionary<int, GameSessions>();
+			_environmentVariableService = EnvironmentVariableService.Instance;
+			_httpService = HttpService.GetInstance();
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_credentialManagerService.LoadCredentials();
 			LoadGameSessions();
@@ -96,7 +99,21 @@ namespace TimeQuestLogDesktopApp.Services
 			CleanupWatchers();
 		}
 
-		private void ProcessStarted(object sender, EventArrivedEventArgs e)
+		private Task<HttpResponseMessage> SendGameSessionAsync(GameSessions gameSession)
+		{
+
+			string url = _environmentVariableService.ApiBaseUrl + $"game-sessions/{gameSession.Id}";
+			return _httpService.PutAsync(url, new
+			{
+				user = new { id = gameSession.UserId },
+				game = new { id = gameSession.GameId },
+				startTime = gameSession.StartTime,
+				endTime = gameSession.EndTime
+			});
+
+		}
+
+		private async void ProcessStarted(object sender, EventArrivedEventArgs e)
 		{
 			try
 			{
@@ -106,13 +123,24 @@ namespace TimeQuestLogDesktopApp.Services
 				{
 					Console.WriteLine($"Process Started: {processName} (PID: {processId})");
 				}
-				if (_gameMap.ContainsKey(processName) && !_gameSessionMap.ContainsKey(processId))
-				{
-					_processIdToNameMap[processId] = processName;
-					GameSessions gameSession = _gameSessionsRepository.CreateGameSession(_gameMap.GetValueOrDefault(processName), _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH));
-					_gameSessionMap.Add(processId, gameSession);
-					LoadGameSessions();
-				}
+
+				if (!_gameMap.TryGetValue(processName, out var game))
+					return;
+
+				string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
+				GameSessions gameSession = new GameSessions(_gameMap[processName], userId);
+				if (!_gameSessionMap.TryAdd(processId, gameSession))
+					return;
+
+				_processIdToNameMap.TryAdd(processId, processName);
+				_gameSessionsRepository.CreateGameSession(gameSession);
+				string url = _environmentVariableService.ApiBaseUrl + $"game-sessions/{gameSession.Id}";
+
+				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => SendGameSessionAsync(gameSession));
+
+				_gameSessionsRepository.UpdateSync(gameSession.Id, response.IsSuccessStatusCode);
+
+				LoadGameSessions();
 			}
 			catch (Exception ex)
 			{
@@ -120,7 +148,7 @@ namespace TimeQuestLogDesktopApp.Services
 			}
 		}
 
-		private void ProcessStopped(object sender, EventArrivedEventArgs e)
+		private async void ProcessStopped(object sender, EventArrivedEventArgs e)
 		{
 			try
 			{
@@ -130,14 +158,20 @@ namespace TimeQuestLogDesktopApp.Services
 				{
 					Console.WriteLine($"Process Stopped: {processName} (PID: {processId})");
 				}
-				if (_gameSessionMap.ContainsKey(processId))
-				{
-				
-					_gameSessionsRepository.EndGameSession(_gameSessionMap.GetValueOrDefault(processId).Id);
-					_gameSessionMap.Remove(processId);
-					_processIdToNameMap.Remove(processId);
-					LoadGameSessions();
-				}
+
+				if (!_gameSessionMap.TryRemove(processId, out var gameSessionToEnd))
+					return;
+
+				_processIdToNameMap.TryRemove(processId, out _);
+				gameSessionToEnd.EndTime = DateTime.UtcNow;
+				_gameSessionsRepository.EndGameSession(gameSessionToEnd);
+				string url = _environmentVariableService.ApiBaseUrl + $"game-sessions/{gameSessionToEnd.Id}";
+				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => SendGameSessionAsync(gameSessionToEnd));
+
+				_gameSessionsRepository.UpdateSync(gameSessionToEnd.Id, response.IsSuccessStatusCode);
+
+
+				LoadGameSessions();
 			}
 			catch (Exception ex)
 			{
@@ -204,7 +238,7 @@ namespace TimeQuestLogDesktopApp.Services
 			_gameMap.Clear();
 			foreach(var userGame in userGames)
 			{
-				_gameMap.Add(userGame.Exe, userGame.GameId);
+				_gameMap.TryAdd(userGame.Exe, userGame.GameId);
 			}
 		}
 
@@ -217,7 +251,7 @@ namespace TimeQuestLogDesktopApp.Services
 
 		public void MapGame(string exe, int gameId)
 		{
-			_gameMap.Add(exe, gameId);
+			_gameMap.TryAdd(exe, gameId);
 		}
 
 	}

@@ -41,4 +41,15 @@ public class GameSessionController {
         }
 
     }
+
+    @PutMapping({"/{id}", "/{id}/"})
+    public ResponseEntity<ApiResponse<?>> updateGameSession(@PathVariable String id, @RequestBody GameSessions gameSession) {
+        ServiceResult<GameSessionsDTO> result = gameSessionService.updateGameSession(id, gameSession);
+        if (result.isSuccess()){
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("Unable to update game session.", result.getErrors()));
+        }
+    }
 }

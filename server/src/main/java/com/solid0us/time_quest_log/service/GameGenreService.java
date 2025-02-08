@@ -1,11 +1,11 @@
 package com.solid0us.time_quest_log.service;
 
-import com.solid0us.time_quest_log.model.GameGenres;
-import com.solid0us.time_quest_log.model.ServiceResult;
+import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.repositories.GameGenreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service

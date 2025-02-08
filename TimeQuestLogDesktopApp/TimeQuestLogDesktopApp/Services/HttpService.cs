@@ -113,6 +113,7 @@ namespace TimeQuestLogDesktopApp.Services
 		public async Task<HttpResponseMessage> SendAndRepeatAuthorization(Func<Task<HttpResponseMessage>> httpRequestFunc)
 		{
 			HttpResponseMessage response = await httpRequestFunc();
+			_credentialService.LoadCredentials();
 			if (response.StatusCode == HttpStatusCode.Unauthorized)
 			{
 				string url = $"{_environmentVariableService.ApiBaseUrl}users/refresh";

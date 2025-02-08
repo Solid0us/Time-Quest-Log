@@ -17,10 +17,19 @@ namespace TimeQuestLogDesktopApp.Models
         public GameSessions()
         {
             Id = string.Empty;
-            StartTime = DateTime.Now;
+            StartTime = DateTime.UtcNow;
             EndTime = null;
             GameId = 0;
             UserId = string.Empty;
+        }
+
+        public GameSessions(int gameId, string userId)
+        {
+            Id = Guid.NewGuid().ToString();
+            StartTime = DateTime.UtcNow;
+            EndTime = null;
+            GameId = gameId;
+            UserId = userId;
         }
     }
 }

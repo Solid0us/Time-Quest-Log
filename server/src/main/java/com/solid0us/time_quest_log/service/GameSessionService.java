@@ -1,9 +1,7 @@
 package com.solid0us.time_quest_log.service;
 
-import com.solid0us.time_quest_log.model.ErrorDetail;
-import com.solid0us.time_quest_log.model.GameSessions;
-import com.solid0us.time_quest_log.model.GameSessionsDTO;
-import com.solid0us.time_quest_log.model.ServiceResult;
+import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.repositories.GameRepository;
 import com.solid0us.time_quest_log.repositories.GameSessionRepository;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +16,15 @@ import java.util.UUID;
 public class GameSessionService {
     @Autowired
     private GameSessionRepository gameSessionRepository;
+
+    @Autowired
+    private GameRepository  gameRepository;
+
+    @Autowired
+    private IGDBService igdbService;
+
+    @Autowired
+    private GameGenreService gameGenreService;
 
     public ServiceResult<GameSessionsDTO> createGameSession(GameSessions gameSession) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
@@ -54,4 +61,62 @@ public class GameSessionService {
         return ServiceResult.failure(errorDetails);
     }
 
+    public ServiceResult<GameSessionsDTO> updateGameSession(String id, GameSessions gameSession) {
+        List<ErrorDetail> errorDetails = new ArrayList<>();
+        GameSessions existingGameSession = gameSessionRepository.findById(UUID.fromString(id)).orElse(null);
+        if (existingGameSession == null) {
+            Games existingGame = gameRepository.findById(gameSession.getGame().getId()).orElse(null);
+            if (existingGame == null) {
+                ServiceResult<IGDBGame> result = null;
+                try {
+                    result = igdbService.searchGameById(gameSession.getGame().getId());
+                    IGDBGame gameToCreate = result.getData();
+                    if (result.isSuccess()) {
+                        Games newGame = new Games();
+                        newGame.setId(gameToCreate.getId());
+                        newGame.setName(gameToCreate.getName());
+                        newGame.setCoverUrl(gameToCreate.getCover().getUrl());
+                        gameRepository.save(newGame);
+                        List<GameGenres> genres = new ArrayList<>();
+                        for (IGDBGenre genre : gameToCreate.getGenres()){
+                            GameGenres gameGenre = new GameGenres();
+                            Genres newGenre = new Genres();
+                            Games gameToAdd = new Games();
+                            gameToAdd.setId(newGame.getId());
+                            newGenre.setId(genre.getId());
+                            newGenre.setName(genre.getName());
+                            gameGenre.setId(new GameGenreIdComposite(newGame.getId(), newGenre.getId()));
+                            genres.add(gameGenre);
+                        }
+                        gameSession.setGame(newGame);
+                        gameGenreService.createGameGenres(genres);
+                    } else {
+                        errorDetails.add(new ErrorDetail("input", "Game not found."));
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            try {
+                gameSession.setId(UUID.fromString(id));
+                GameSessions createdGameSession = gameSessionRepository.save(gameSession);
+                return ServiceResult.success(new GameSessionsDTO(createdGameSession));
+            } catch (Exception e) {
+                errorDetails.add(new ErrorDetail("input", "Unknown error occurred while updating game session."));
+            }
+        }
+        else {
+            GameSessions gameSessionToSave = gameSessionRepository.findById(UUID.fromString(id))
+                    .map(session -> {
+                        session.setGame(gameSession.getGame());
+                        session.setStartTime(gameSession.getStartTime());
+                        session.setEndTime(gameSession.getEndTime());
+                        session.setUser(gameSession.getUser());
+                        return session;
+                    })
+                    .orElse(gameSession);
+            return ServiceResult.success(new GameSessionsDTO(gameSessionRepository.save(gameSessionToSave)));
+        }
+        return ServiceResult.failure(errorDetails);
+    }
 }

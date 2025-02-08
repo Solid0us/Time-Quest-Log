@@ -11,16 +11,16 @@ using TimeQuestLogDesktopApp.Models.DTOs;
 
 namespace TimeQuestLogDesktopApp.Repositories
 {
-	internal class GameSessionsRepository : SqliteDataAccess
-	{
-		private readonly IDbConnectionFactory _connectionFactory;
+    internal class GameSessionsRepository : SqliteDataAccess
+    {
+        private readonly IDbConnectionFactory _connectionFactory;
 
         public GameSessionsRepository(SqliteConnectionFactory connectionFactory)
         {
-            _connectionFactory = connectionFactory; 
+            _connectionFactory = connectionFactory;
         }
 
-        public List<GameSessionsDTO>GetGameSessionsByUserId(string userId)
+        public List<GameSessionsDTO> GetGameSessionsByUserId(string userId)
         {
             List<GameSessionsDTO> gameSessionsDTOs = new List<GameSessionsDTO>();
             string sql = @"
@@ -53,44 +53,80 @@ namespace TimeQuestLogDesktopApp.Repositories
                         gameSessionsDTOs.Add(gameSessionsDTO);
                         return new GameSessionsDTO();
                     },
-					 parameters,
-					 splitOn: "Id"
-					);
+                     parameters,
+                     splitOn: "Id"
+                    );
             }
             return gameSessionsDTOs;
         }
 
-        public GameSessions CreateGameSession(int gameId, string userId)
+        public GameSessions CreateGameSession(GameSessions gameSession)
         {
             string sql = @"
                 INSERT INTO GameSessions
                 (Id, StartTime, GameId, UserId)
                 VALUES (@Id, @StartTime, @GameId, @UserId)
             ";
-            string gameSessionId = Guid.NewGuid().ToString();
-            DateTime currentUtcDateTime = DateTime.UtcNow;
-            var parameters = new { Id = gameSessionId, StartTime = currentUtcDateTime, GameId = gameId, UserId = userId };
+            var parameters = new { gameSession.Id, gameSession.StartTime, gameSession.GameId, gameSession.UserId };
             using (var cnn = _connectionFactory.CreateConnection())
             {
                 cnn.Execute(sql, parameters);
-                return new GameSessions { Id = gameSessionId, StartTime = currentUtcDateTime, GameId = gameId, UserId = userId};
+                return new GameSessions 
+                {
+                    Id = gameSession.Id, 
+                    StartTime = gameSession.StartTime,
+                    GameId = gameSession.GameId, 
+                    UserId = gameSession.UserId 
+                };
             }
         }
 
-        public void EndGameSession(string gameSessionId)
+        public void EndGameSession(GameSessions gameSession)
         {
             string sql = @"
                 UPDATE GameSessions
                 SET Endtime = @EndTime
                 WHERE Id = @GameSessionId
             ";
-            var parameters = new { EndTime = DateTime.UtcNow, GameSessionId = gameSessionId };
+            var parameters = new { gameSession.EndTime, GameSessionId = gameSession.Id };
 
             using (var cnn = _connectionFactory.CreateConnection())
             {
                 cnn.Execute(sql, parameters);
             }
 
+        }
+
+        public int UpdateSync(string id, bool isSynced)
+        {
+            using (var cnn = _connectionFactory.CreateConnection())
+            {
+                int syncValue = isSynced ? 1 : 0;
+                string sql = @"
+					UPDATE GameSessions
+					SET IsSynced = @SyncValue
+					WHERE Id = @Id
+				";
+                var parameters = new { Id = id, SyncValue = syncValue };
+
+                return cnn.Execute(sql, parameters);
+            }
+        }
+
+        public bool IsUserGameInProgress(string userId, int gameId)
+        {
+            using (var cnn = _connectionFactory.CreateConnection())
+            {
+                string sql = @"
+                    SELECT COUNT(1) 
+                    FROM GameSessions
+                    WHERE GameId = @GameId
+                    AND UserId = @UserId
+                    AND EndTime IS NULL
+                ";
+                var parameters = new { GameId = gameId, UserId = userId };
+				return cnn.ExecuteScalar<int>(sql, parameters) > 0;
+			}
         }
     }
 }
