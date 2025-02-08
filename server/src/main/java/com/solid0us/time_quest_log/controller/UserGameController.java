@@ -1,6 +1,7 @@
 package com.solid0us.time_quest_log.controller;
 
 import com.solid0us.time_quest_log.model.ApiResponse;
+import com.solid0us.time_quest_log.model.ErrorDetail;
 import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.model.UserGames;
 import com.solid0us.time_quest_log.service.UserGameService;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -49,5 +51,24 @@ public class UserGameController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
         }
+    }
+
+    @PutMapping({"/sync/{userId}", "/sync/{userId}/"})
+    public ResponseEntity<ApiResponse<?>> syncUserGames(@PathVariable String userId, @RequestBody UserGames[] userGames) {
+        List<ErrorDetail> errorDetails = new ArrayList<>();
+        List<UserGames> successfullySyncedUserGames = new ArrayList<>();
+        for (UserGames game : userGames){
+            ServiceResult<UserGames> result = userGameService.upsertUserGame(game.getId(), game);
+            if(result.isSuccess()){
+                successfullySyncedUserGames.add(result.getData());
+            } else {
+                errorDetails.addAll(result.getErrors());
+            }
+        }
+        if(errorDetails.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("All user games have been synced", successfullySyncedUserGames));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure("One or more games could not be synced.",successfullySyncedUserGames, errorDetails));
     }
 }

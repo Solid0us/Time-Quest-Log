@@ -71,12 +71,12 @@ namespace TimeQuestLogDesktopApp.Repositories
             using (var cnn = _connectionFactory.CreateConnection())
             {
                 cnn.Execute(sql, parameters);
-                return new GameSessions 
+                return new GameSessions
                 {
-                    Id = gameSession.Id, 
+                    Id = gameSession.Id,
                     StartTime = gameSession.StartTime,
-                    GameId = gameSession.GameId, 
-                    UserId = gameSession.UserId 
+                    GameId = gameSession.GameId,
+                    UserId = gameSession.UserId
                 };
             }
         }
@@ -125,8 +125,22 @@ namespace TimeQuestLogDesktopApp.Repositories
                     AND EndTime IS NULL
                 ";
                 var parameters = new { GameId = gameId, UserId = userId };
-				return cnn.ExecuteScalar<int>(sql, parameters) > 0;
-			}
+                return cnn.ExecuteScalar<int>(sql, parameters) > 0;
+            }
+        }
+
+        public IEnumerable<GameSessions> GetUnsyncedGameSessionsByUserId(string userId)
+        {
+            using (var cnn = _connectionFactory.CreateConnection())
+            {
+                string sql = @"
+                    SELECT * FROM GameSessions
+                    WHERE UserId = @UserId
+                    AND IsSynced = 0
+                ";
+                var parameters = new { UserId = userId };
+                return cnn.Query<GameSessions>(sql, parameters);
+            }
         }
     }
 }

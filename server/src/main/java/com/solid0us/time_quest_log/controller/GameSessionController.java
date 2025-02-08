@@ -1,16 +1,15 @@
 package com.solid0us.time_quest_log.controller;
 
-import com.solid0us.time_quest_log.model.ApiResponse;
-import com.solid0us.time_quest_log.model.GameSessions;
-import com.solid0us.time_quest_log.model.GameSessionsDTO;
-import com.solid0us.time_quest_log.model.ServiceResult;
+import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.service.GameSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/game-sessions")
@@ -51,5 +50,24 @@ public class GameSessionController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.failure("Unable to update game session.", result.getErrors()));
         }
+    }
+
+    @PutMapping({"/sync/{userId}", "/sync/{userId}/"})
+    public ResponseEntity<ApiResponse<?>> syncUserGames(@PathVariable String userId, @RequestBody GameSessions[] gameSessions){
+        List<ErrorDetail> errorDetails = new ArrayList<>();
+        List<GameSessionsDTO> successfullySyncedSessions = new ArrayList<>();
+        for (GameSessions game : gameSessions){
+            ServiceResult<GameSessionsDTO> result = gameSessionService.updateGameSession(game.getId().toString(), game);
+            if(result.isSuccess()){
+                successfullySyncedSessions.add(result.getData());
+            } else {
+                errorDetails.addAll(result.getErrors());
+            }
+        }
+        if(errorDetails.isEmpty()){
+            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("All user games have been synced", successfullySyncedSessions));
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ApiResponse.failure("One or more games could not be synced.",successfullySyncedSessions, errorDetails));
     }
 }

@@ -13,12 +13,14 @@ namespace TimeQuestLogDesktopApp.Models.DTOs
         private List<Genres> _genres = new List<Genres>();
 
         public event PropertyChangedEventHandler? PropertyChanged;
+        public string Id { get; set; }
         public int GameId {  get; set; }
 
         public string Title { get; set; }
         public string Cover { get; set; }
         public string Exe { get; set; }
         public string Username { get; set; }
+        public UserGameDTO() { }
         public List<Genres> Genres
         {
             get => _genres;
@@ -28,8 +30,9 @@ namespace TimeQuestLogDesktopApp.Models.DTOs
             }
         }
 
-        public UserGameDTO(int gameId, string title, string cover, string exe, string username)
+        public UserGameDTO(string id, int gameId, string title, string cover, string exe, string username)
         {
+            Id = id;
             GameId = gameId;
             Title = title;
             Cover = cover;
@@ -38,7 +41,17 @@ namespace TimeQuestLogDesktopApp.Models.DTOs
             Genres = new List<Genres>();
         }
 
-        public string GenresToString => string.Join(", ", Genres.Select(genre => genre.Name));
+		public UserGameDTO(int gameId, string title, string cover, string exe, string username)
+		{
+			GameId = gameId;
+			Title = title;
+			Cover = cover;
+			Exe = exe;
+			Username = username;
+			Genres = new List<Genres>();
+		}
+
+		public string GenresToString => string.Join(", ", Genres.Select(genre => genre.Name));
 
     }
 }

@@ -56,14 +56,22 @@
                             Style="{StaticResource NavButton}"
                             />
                 </StackPanel>
-                <Button x:Name="btnSignOut"
-                        Grid.Row="2"
-                        Content="Sign Out"
-                        Command="{Binding SignoutCommand}"
+                <StackPanel Grid.Row="2">
+                    <Button x:Name="btnSync"
+                        Content="Sync"
+                        Command="{Binding SyncData}"
                         Margin="0,20,0,0"
-                        Style="{StaticResource DangerButton}"
-                       >
-                </Button>
+                        Style="{StaticResource NavButton}"
+                    >   
+                    </Button>
+                    <Button x:Name="btnSignOut"
+                            Content="Sign Out"
+                            Command="{Binding SignoutCommand}"
+                            Margin="0,20,0,0"
+                            Style="{StaticResource DangerButton}"
+                           >
+                    </Button>
+                </StackPanel>
             </Grid>
         </Border>
         <ContentControl

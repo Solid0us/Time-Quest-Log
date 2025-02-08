@@ -21,6 +21,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		public ICommand NavigateToHome { get; set; }
 		public ICommand NavigateToLibrary { get; private set; }
 		public ICommand NavigateToSettings { get; set; }
+		public ICommand SyncData {  get; set; }
 		[DllImport("kernel32.dll")]
 		private static extern bool AllocConsole();
 		public string Username { get; private set; }
@@ -50,6 +51,8 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 			NavigateToHome = new NavigateCommand<HomeViewModel>(_dashboardNavigationStore, () => new HomeViewModel());
 			NavigateToSettings = new NavigateCommand<SettingsViewModel>(_dashboardNavigationStore, () => new SettingsViewModel());
+
+			SyncData = new SyncDataCommand();
 
 			InitializeLibraryNavigationAsync();
 		}
