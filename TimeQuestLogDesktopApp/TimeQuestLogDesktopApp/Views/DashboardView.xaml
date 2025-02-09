@@ -7,8 +7,12 @@
              mc:Ignorable="d" 
              xmlns:vms="clr-namespace:TimeQuestLogDesktopApp.ViewModels"
              xmlns:views="clr-namespace:TimeQuestLogDesktopApp.Views"
+             xmlns:converters="clr-namespace:TimeQuestLogDesktopApp.Converters"
              d:DesignHeight="450" d:DesignWidth="800"
              Background="#121212">
+    <UserControl.Resources>
+        <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vms:HomeViewModel}">
@@ -58,12 +62,23 @@
                 </StackPanel>
                 <StackPanel Grid.Row="2">
                     <Button x:Name="btnSync"
-                        Content="Sync"
                         Command="{Binding SyncData}"
                         Margin="0,20,0,0"
                         Style="{StaticResource NavButton}"
-                    >   
+                        IsEnabled="{Binding IsSyncButtonEnabled}"
+                        Opacity="{Binding IsSyncButtonEnabled, Converter={StaticResource BoolToOpacityConverter}}"
+                    >
+                        <StackPanel Orientation="Horizontal" Margin="5,0,0,0">
+                            <TextBlock Text="Sync" Margin="0 0 10 0"/>
+                            <Image Source="/Resources/SyncIcon.png" 
+                           Height="20" 
+                           Width="20" 
+                           Margin="0,0,5,0"
+                           />
+                            <TextBlock Foreground="{StaticResource TextPrimaryBrush}" Text="{Binding NumberUnsynced}" />
+                        </StackPanel>
                     </Button>
+
                     <Button x:Name="btnSignOut"
                             Content="Sign Out"
                             Command="{Binding SignoutCommand}"

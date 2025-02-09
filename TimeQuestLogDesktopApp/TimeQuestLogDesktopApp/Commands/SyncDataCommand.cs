@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using TimeQuestLogDesktopApp.Database;
 using TimeQuestLogDesktopApp.Models.API;
 using TimeQuestLogDesktopApp.Models.DTOs;
@@ -20,6 +21,7 @@ namespace TimeQuestLogDesktopApp.Commands
 		private EnvironmentVariableService _environmentVariableService;
 		private CredentialManagerService _credentialManagerService;
 		private HttpService _httpService;
+		private GameSessionMonitoringService _gameSessionMonitoringService;
 		private const int BatchSize = 100;
 		public SyncDataCommand() 
 		{
@@ -30,14 +32,27 @@ namespace TimeQuestLogDesktopApp.Commands
 			_environmentVariableService = EnvironmentVariableService.Instance;
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_httpService = HttpService.GetInstance();
+			_gameSessionMonitoringService = GameSessionMonitoringService.Instance;
 		}
 		protected async override Task ExecuteAsync(object? parameter)
 		{
 			string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
 			var unsyncedGameSessions = _gameSessionsRepository.GetUnsyncedGameSessionsByUserId(userId);
-			bool bRet = await SyncUserGames();
-			bRet = await SyncUserGameSessions();
-			
+			try
+			{
+				bool bRet = await SyncUserGames();
+				bRet = await SyncUserGameSessions();
+				_gameSessionMonitoringService.UpdateUnsyncedCounter();
+			}
+			catch (HttpRequestException ex)
+			{
+				MessageBox.Show(ex.Message, "HTTP Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show(ex.Message, "Unknown Error", MessageBoxButton.OK, MessageBoxImage.Error);
+			}
+
 		}
 
 		private async Task<bool> SyncUserGames()
@@ -68,14 +83,25 @@ namespace TimeQuestLogDesktopApp.Commands
 					});
 				}
 			}
-			HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.PutAsync(userGameUrl, data));
-			string message = await response.Content.ReadAsStringAsync();
-			ApiResponse<List<UserGameDTO>> json = JsonConvert.DeserializeObject<ApiResponse<List<UserGameDTO>>>(message);
-			foreach (var userGameDTO in json.Data)
+			try
 			{
-				_userGameRepository.UpdateSync(userGameDTO.Id, true);
+				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.PutAsync(userGameUrl, data));
+				string message = await response.Content.ReadAsStringAsync();
+				ApiResponse<List<UserGameDTO>> json = JsonConvert.DeserializeObject<ApiResponse<List<UserGameDTO>>>(message);
+				foreach (var userGameDTO in json.Data)
+				{
+					_userGameRepository.UpdateSync(userGameDTO.Id, true);
+				}
+				return true;
 			}
-			return true;
+			catch (HttpRequestException ex)
+			{
+				throw new HttpRequestException(ex.Message, ex);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
+			}
 		}
 
 		private async Task<bool> SyncUserGameSessions()
@@ -105,14 +131,25 @@ namespace TimeQuestLogDesktopApp.Commands
 					});
 				}
 			}
-			HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.PutAsync(userGameUrl, data));
-			string message = await response.Content.ReadAsStringAsync();
-			ApiResponse<List<UserGameDTO>> json = JsonConvert.DeserializeObject<ApiResponse<List<UserGameDTO>>>(message);
-			foreach (var userGameDTO in json.Data)
+			try
 			{
-				_gameSessionsRepository.UpdateSync(userGameDTO.Id, true);
+				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.PutAsync(userGameUrl, data));
+				string message = await response.Content.ReadAsStringAsync();
+				ApiResponse<List<UserGameDTO>> json = JsonConvert.DeserializeObject<ApiResponse<List<UserGameDTO>>>(message);
+				foreach (var userGameDTO in json.Data)
+				{
+					_gameSessionsRepository.UpdateSync(userGameDTO.Id, true);
+				}
+				return true;
 			}
-			return true;
+			catch (HttpRequestException ex)
+			{
+				throw new HttpRequestException(ex.Message, ex);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
+			}
 		}
 
 	}

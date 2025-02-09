@@ -1,12 +1,15 @@
 ﻿
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using TimeQuestLogDesktopApp.Commands;
+using TimeQuestLogDesktopApp.Database;
+using TimeQuestLogDesktopApp.Repositories;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.Stores;
 
@@ -17,24 +20,39 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		private readonly NavigationStore _dashboardNavigationStore;
 		public ViewModelBase CurrentDashboardViewModel => _dashboardNavigationStore.CurrentViewModel;
 		private LibraryViewModel _libraryViewModel;
+
+		public int NumberUnsynced
+		{
+			get { return _gameMonitoringService.NumberUnsynced; }
+			set
+			{
+				_gameMonitoringService.NumberUnsynced = value;
+				OnPropertyChanged(nameof(NumberUnsynced));
+			}
+		}
+
+		private bool _isSyncButtonEnabled;
+
+		public bool IsSyncButtonEnabled => NumberUnsynced != 0;
+
 		public ICommand SignoutCommand { get; set; }
 		public ICommand NavigateToHome { get; set; }
 		public ICommand NavigateToLibrary { get; private set; }
 		public ICommand NavigateToSettings { get; set; }
-		public ICommand SyncData {  get; set; }
+		public ICommand SyncData { get; set; }
 		[DllImport("kernel32.dll")]
 		private static extern bool AllocConsole();
 		public string Username { get; private set; }
 		private readonly CredentialManagerService _credentialManager;
-		private readonly GameSessionMonitoringService _gameMonitoringService;
+		private readonly GameSessionMonitoringService _gameMonitoringService = GameSessionMonitoringService.Instance;
 
 		public DashboardViewModel(NavigationStore mainViewModelNavigationStore)
 		{
+			_gameMonitoringService.PropertyChanged += GameMonitoringService_PropertyChanged;
 			if (System.Diagnostics.Debugger.IsAttached)
 			{
 				AllocConsole();
 			}
-			_gameMonitoringService = GameSessionMonitoringService.Instance;
 			using (_gameMonitoringService)
 			{
 				_gameMonitoringService.StartMonitoring();
@@ -53,8 +71,18 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			NavigateToSettings = new NavigateCommand<SettingsViewModel>(_dashboardNavigationStore, () => new SettingsViewModel());
 
 			SyncData = new SyncDataCommand();
+			UpdateUnsyncedCounter();
 
 			InitializeLibraryNavigationAsync();
+		}
+
+		private void GameMonitoringService_PropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(GameSessionMonitoringService.NumberUnsynced))
+			{
+				OnPropertyChanged(nameof(NumberUnsynced));
+				OnPropertyChanged(nameof(IsSyncButtonEnabled));
+			}
 		}
 
 		private async void InitializeLibraryNavigationAsync()
@@ -68,5 +96,18 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		{
 			OnPropertyChanged(nameof(CurrentDashboardViewModel));
 		}
+
+		public void UpdateUnsyncedCounter()
+		{
+			var sqliteDataAccess = new SqliteDataAccess();
+			var sqliteConnectionFactory = new SqliteConnectionFactory(sqliteDataAccess.LoadConnectionString());
+			string userId = _credentialManager.GetUserId(CredentialManagerService.CredentialType.REFRESH);
+			GameSessionsRepository gameSessionRepository = new GameSessionsRepository(sqliteConnectionFactory);
+			UserGameRepository userGameRepository = new UserGameRepository(sqliteConnectionFactory);
+			NumberUnsynced = gameSessionRepository.GetUnsyncedGameSessionsByUserId(userId).Count()
+								+ userGameRepository.GetUnsyncedUserGamesByUserId(userId).Count();
+		}
+
+	
 	}
 }

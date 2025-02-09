@@ -5,28 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using TimeQuestLogDesktopApp.Models.DTOs;
 
 namespace TimeQuestLogDesktopApp.Converters
 {
-	internal class TimePlayedConverter : IValueConverter
+	internal class BoolToOpacityConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			if (value is GameSessionsDTO session)
-			{
-				if (session.EndTime.HasValue)
-				{
-					TimeSpan timePlayed = session.EndTime.Value - session.StartTime;
-					return $"{(int)timePlayed.TotalHours} hr {timePlayed.Minutes} min {timePlayed.Seconds} sec";
-				}
-				else
-				{
-					return "In Progress";
-				}
-			}
-
-			return string.Empty;
+			return (bool)value ? 1.0 : 0.3;
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

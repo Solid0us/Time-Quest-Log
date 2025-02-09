@@ -55,24 +55,31 @@ namespace TimeQuestLogDesktopApp.Commands
 			userGameRepository.CreateUserGame(userGame);
 			// Add to server
 			HttpService httpService = HttpService.GetInstance();
-			HttpResponseMessage response = await httpService.SendAndRepeatAuthorization(() => httpService.PutAsync(EnvironmentVariableService.Instance.ApiBaseUrl + $"user-games/{userGame.Id}",
-				new
+			try
+			{
+				HttpResponseMessage response = await httpService.SendAndRepeatAuthorization(() => httpService.PutAsync(EnvironmentVariableService.Instance.ApiBaseUrl + $"user-games/{userGame.Id}",
+					new
+					{
+						user = new {id = userGame.UserId},
+						game = new {id = userGame.GameId},
+						exeName = userGame.ExeName
+					}));
+				if (response.IsSuccessStatusCode)
 				{
-					user = new {id = userGame.UserId},
-					game = new {id = userGame.GameId},
-					exeName = userGame.ExeName
-				}));
-			if (response.IsSuccessStatusCode)
-			{
-				userGameRepository.UpdateSync(userGame.Id, true);
+					userGameRepository.UpdateSync(userGame.Id, true);
+				}
+				else
+				{
+					userGameRepository.UpdateSync(userGame.Id, false);
+				}
+				_addGameViewModel._loadGames();
+				GameSessionMonitoringService.Instance.MapGame(_addGameViewModel.ExeName, _addGameViewModel.SelectedGame.id);
+				MessageBox.Show($"{game.Name} has been successfully added to your library!", "Game Added", MessageBoxButton.OK, MessageBoxImage.Information);
 			}
-			else
+			catch (Exception ex)
 			{
-				userGameRepository.UpdateSync(userGame.Id, false);
+				MessageBox.Show(ex.Message, "HTTP Error", MessageBoxButton.OK, MessageBoxImage.Error);
 			}
-			_addGameViewModel._loadGames();
-			GameSessionMonitoringService.Instance.MapGame(_addGameViewModel.ExeName, _addGameViewModel.SelectedGame.id);
-			MessageBox.Show($"{game.Name} has been successfully added to your library!", "Game Added", MessageBoxButton.OK, MessageBoxImage.Information);
 		}
 
         public AddGameToLibraryCommand(AddGameViewModel addGameViewModel)

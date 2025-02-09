@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Management;
@@ -15,7 +16,7 @@ using TimeQuestLogDesktopApp.Repositories;
 
 namespace TimeQuestLogDesktopApp.Services
 {
-    class GameSessionMonitoringService : IDisposable
+    class GameSessionMonitoringService : IDisposable, INotifyPropertyChanged
     {
 		private static GameSessionMonitoringService _instance;
 		private static readonly object lockObject = new object();
@@ -33,7 +34,20 @@ namespace TimeQuestLogDesktopApp.Services
 		private readonly EnvironmentVariableService _environmentVariableService;
 		private readonly HttpService _httpService;
 
+		private int _numberUnsynced = 0;
+		public int NumberUnsynced
+		{
+			get { return _numberUnsynced; }
+			set
+			{
+				_numberUnsynced = value;
+				OnPropertyChanged(nameof(NumberUnsynced));
+			}
+		}
+
 		public event EventHandler<List<GameSessionsDTO>> GameSessionsChanged;
+		public event PropertyChangedEventHandler? PropertyChanged;
+
 		private GameSessionMonitoringService()
         {
 			var sqliteDataAccess = new SqliteDataAccess();
@@ -45,7 +59,8 @@ namespace TimeQuestLogDesktopApp.Services
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_credentialManagerService.LoadCredentials();
 			LoadGameSessions();
-			LoadExeMap();	
+			LoadExeMap();
+			UpdateUnsyncedCounter();
 		}
 
         public List<GameSessionsDTO> GameSessions 
@@ -58,7 +73,12 @@ namespace TimeQuestLogDesktopApp.Services
 			}
 		}
 
-        public static GameSessionMonitoringService Instance
+		protected void OnPropertyChanged(string propertyName)
+		{
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+		}
+
+		public static GameSessionMonitoringService Instance
 		{
 			get
 			{
@@ -115,67 +135,68 @@ namespace TimeQuestLogDesktopApp.Services
 
 		private async void ProcessStarted(object sender, EventArrivedEventArgs e)
 		{
+			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
+			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
+			if (Debugger.IsAttached)
+			{
+				Console.WriteLine($"Process Started: {processName} (PID: {processId})");
+			}
+
+			if (!_gameMap.TryGetValue(processName, out var game))
+				return;
+
+			string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
+			GameSessions gameSession = new GameSessions(_gameMap[processName], userId);
+			if (!_gameSessionMap.TryAdd(processId, gameSession))
+				return;
+			_processIdToNameMap.TryAdd(processId, processName);
+			_gameSessionsRepository.CreateGameSession(gameSession);
 			try
 			{
-				string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
-				int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-				if (Debugger.IsAttached)
-				{
-					Console.WriteLine($"Process Started: {processName} (PID: {processId})");
-				}
-
-				if (!_gameMap.TryGetValue(processName, out var game))
-					return;
-
-				string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
-				GameSessions gameSession = new GameSessions(_gameMap[processName], userId);
-				if (!_gameSessionMap.TryAdd(processId, gameSession))
-					return;
-
-				_processIdToNameMap.TryAdd(processId, processName);
-				_gameSessionsRepository.CreateGameSession(gameSession);
 				string url = _environmentVariableService.ApiBaseUrl + $"game-sessions/{gameSession.Id}";
-
 				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => SendGameSessionAsync(gameSession));
-
 				_gameSessionsRepository.UpdateSync(gameSession.Id, response.IsSuccessStatusCode);
-
-				LoadGameSessions();
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"Error in ProcessStarted: {ex.Message}");
 			}
+			finally
+			{
+				LoadGameSessions();
+				UpdateUnsyncedCounter();
+			}
 		}
 
 		private async void ProcessStopped(object sender, EventArrivedEventArgs e)
 		{
+			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
+			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
+			if (Debugger.IsAttached)
+			{
+				Console.WriteLine($"Process Stopped: {processName} (PID: {processId})");
+			}
+
+			if (!_gameSessionMap.TryRemove(processId, out var gameSessionToEnd))
+				return;
+
+			_processIdToNameMap.TryRemove(processId, out _);
+			gameSessionToEnd.EndTime = DateTime.UtcNow;
+			_gameSessionsRepository.EndGameSession(gameSessionToEnd);
 			try
 			{
-				string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
-				int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-				if (Debugger.IsAttached)
-				{
-					Console.WriteLine($"Process Stopped: {processName} (PID: {processId})");
-				}
-
-				if (!_gameSessionMap.TryRemove(processId, out var gameSessionToEnd))
-					return;
-
-				_processIdToNameMap.TryRemove(processId, out _);
-				gameSessionToEnd.EndTime = DateTime.UtcNow;
-				_gameSessionsRepository.EndGameSession(gameSessionToEnd);
 				string url = _environmentVariableService.ApiBaseUrl + $"game-sessions/{gameSessionToEnd.Id}";
 				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => SendGameSessionAsync(gameSessionToEnd));
-
 				_gameSessionsRepository.UpdateSync(gameSessionToEnd.Id, response.IsSuccessStatusCode);
-
-
-				LoadGameSessions();
 			}
 			catch (Exception ex)
 			{
 				Console.WriteLine($"Error in ProcessStopped: {ex.Message}");
+			}
+			finally
+			{
+				LoadGameSessions();
+				UpdateUnsyncedCounter();
 			}
 		}
 
@@ -252,6 +273,17 @@ namespace TimeQuestLogDesktopApp.Services
 		public void MapGame(string exe, int gameId)
 		{
 			_gameMap.TryAdd(exe, gameId);
+		}
+
+		public void UpdateUnsyncedCounter()
+		{
+			var sqliteDataAccess = new SqliteDataAccess();
+			var sqliteConnectionFactory = new SqliteConnectionFactory(sqliteDataAccess.LoadConnectionString());
+			string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
+			GameSessionsRepository gameSessionRepository = new GameSessionsRepository(sqliteConnectionFactory);
+			UserGameRepository userGameRepository = new UserGameRepository(sqliteConnectionFactory);
+			NumberUnsynced = gameSessionRepository.GetUnsyncedGameSessionsByUserId(userId).Count()
+								+ userGameRepository.GetUnsyncedUserGamesByUserId(userId).Count();
 		}
 
 	}

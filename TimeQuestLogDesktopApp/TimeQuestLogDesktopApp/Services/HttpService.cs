@@ -11,6 +11,8 @@ using System.Reflection.PortableExecutable;
 using System.Net.Http.Headers;
 using System.Net;
 using TimeQuestLogDesktopApp.Models.DTOs;
+using System.Net.Sockets;
+using System.Net.WebSockets;
 
 namespace TimeQuestLogDesktopApp.Services
 {
@@ -56,47 +58,90 @@ namespace TimeQuestLogDesktopApp.Services
 
 		public async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string>? headers = null)
 		{
-			using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
-			AddHeadersToRequest(requestMessage, headers);
-			_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _credentialService.GetPassword(CredentialManagerService.CredentialType.JWT));
-			return await _httpClient.SendAsync(requestMessage);
+			try
+			{
+				using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
+				AddHeadersToRequest(requestMessage, headers);
+				_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _credentialService.GetPassword(CredentialManagerService.CredentialType.JWT));
+				return await _httpClient.SendAsync(requestMessage);
+			}
+			catch (HttpRequestException ex)
+			{
+				throw new HttpRequestException(ex.Message, ex);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
+			}
 		}
 
 		public async Task<HttpResponseMessage> PostAsync<T>(string url, T payload, Dictionary<string, string>? headers = null)
 		{
-			string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
-			var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-
-			using var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+			try
 			{
-				Content = jsonContent
-			};
+				string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
+				var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-			AddHeadersToRequest(requestMessage, headers);
+				using var requestMessage = new HttpRequestMessage(HttpMethod.Post, url)
+				{
+					Content = jsonContent
+				};
 
-			return await _httpClient.SendAsync(requestMessage);
+				AddHeadersToRequest(requestMessage, headers);
+
+				return await _httpClient.SendAsync(requestMessage);
+			}
+			catch (HttpRequestException ex)
+			{
+				throw new HttpRequestException(ex.Message, ex);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
+			}
 		}
 
 		public async Task<HttpResponseMessage> PutAsync<T>(string url, T payload, Dictionary<string, string>? headers = null)
 		{
-
-			string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
-			var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-			using var requestMessage = new HttpRequestMessage(HttpMethod.Put, url)
+			try
 			{
-				Content = jsonContent
-			};
-			AddHeadersToRequest(requestMessage, headers);
+				string jsonPayload = JsonConvert.SerializeObject(payload, _jsonSerializerSettings);
+				var jsonContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+				using var requestMessage = new HttpRequestMessage(HttpMethod.Put, url)
+				{
+					Content = jsonContent
+				};
+				AddHeadersToRequest(requestMessage, headers);
 
-			return await _httpClient.SendAsync(requestMessage);
+				return await _httpClient.SendAsync(requestMessage);
+			}
+			catch (HttpRequestException ex)
+			{
+				throw new HttpRequestException(ex.Message, ex);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
+			}
 		}
 
 		public async Task<HttpResponseMessage> DeleteAsync(string url, Dictionary<string, string>? headers = null)
 		{
-			using var requestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
-			AddHeadersToRequest(requestMessage, headers);
+			try
+			{
+				using var requestMessage = new HttpRequestMessage(HttpMethod.Delete, url);
+				AddHeadersToRequest(requestMessage, headers);
 
-			return await _httpClient.SendAsync(requestMessage);
+				return await _httpClient.SendAsync(requestMessage);
+			}
+			catch (HttpRequestException ex)
+			{
+				throw new HttpRequestException("Failed to complete the request due to network error", ex);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("An unexpected error occurred during authorization", ex);
+			}
 		}
 
 		private void AddHeadersToRequest(HttpRequestMessage requestMessage, Dictionary<string, string>? headers)
@@ -112,28 +157,40 @@ namespace TimeQuestLogDesktopApp.Services
 
 		public async Task<HttpResponseMessage> SendAndRepeatAuthorization(Func<Task<HttpResponseMessage>> httpRequestFunc)
 		{
-			HttpResponseMessage response = await httpRequestFunc();
-			_credentialService.LoadCredentials();
-			if (response.StatusCode == HttpStatusCode.Unauthorized)
+			try
 			{
-				string url = $"{_environmentVariableService.ApiBaseUrl}users/refresh";
-				RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest
+				HttpResponseMessage response = await httpRequestFunc();
+				_credentialService.LoadCredentials();
+				if (response.StatusCode == HttpStatusCode.Unauthorized)
 				{
-					refreshToken = _credentialService.GetPassword(CredentialManagerService.CredentialType.REFRESH),
-					username = _credentialService.GetUsername(CredentialManagerService.CredentialType.REFRESH),
-				};
-				HttpResponseMessage refreshTokenResponse = await PostAsync(url, refreshTokenRequest);
-				if (refreshTokenResponse.IsSuccessStatusCode)
-				{
-					string message = await refreshTokenResponse.Content.ReadAsStringAsync();
-					RefreshTokenResponse json = JsonConvert.DeserializeObject<RefreshTokenResponse>(message);
-					_credentialService.SetPassword(CredentialManagerService.CredentialType.JWT, json.token);
-					_credentialService.Save(CredentialManagerService.CredentialType.JWT);
-					_credentialService.LoadCredentials();
-					response = await httpRequestFunc(); // Retry
+					string url = $"{_environmentVariableService.ApiBaseUrl}users/refresh";
+					RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest
+					{
+						refreshToken = _credentialService.GetPassword(CredentialManagerService.CredentialType.REFRESH),
+						username = _credentialService.GetUsername(CredentialManagerService.CredentialType.REFRESH),
+					};
+					HttpResponseMessage refreshTokenResponse = await PostAsync(url, refreshTokenRequest);
+					if (refreshTokenResponse.IsSuccessStatusCode)
+					{
+						string message = await refreshTokenResponse.Content.ReadAsStringAsync();
+						RefreshTokenResponse json = JsonConvert.DeserializeObject<RefreshTokenResponse>(message);
+						_credentialService.SetPassword(CredentialManagerService.CredentialType.JWT, json.token);
+						_credentialService.Save(CredentialManagerService.CredentialType.JWT);
+						_credentialService.LoadCredentials();
+						_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", json.token);
+						response = await httpRequestFunc();
+					}
 				}
+				return response;
 			}
-			return response;
+			catch (HttpRequestException ex)
+			{
+				throw new HttpRequestException(ex.Message, ex);
+			}
+			catch (Exception ex)
+			{
+				throw new Exception(ex.Message, ex);
+			}
 		}
 
 		public void Dispose()
