@@ -118,7 +118,7 @@
 						</goals>
 						<configuration>
 							<files>
-								<file>${basedir}/.env</file>
+								<file>.env</file>
 							</files>
 						</configuration>
 					</execution>
