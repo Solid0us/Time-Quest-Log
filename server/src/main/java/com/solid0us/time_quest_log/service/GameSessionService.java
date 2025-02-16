@@ -3,6 +3,7 @@ package com.solid0us.time_quest_log.service;
 import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.repositories.GameRepository;
 import com.solid0us.time_quest_log.repositories.GameSessionRepository;
+import jakarta.transaction.Transactional;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,6 +27,7 @@ public class GameSessionService {
     @Autowired
     private GameGenreService gameGenreService;
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<GameSessionsDTO> createGameSession(GameSessions gameSession) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         try {
@@ -41,6 +43,7 @@ public class GameSessionService {
         return ServiceResult.failure(errorDetails);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<List<GameSessionsDTO>> getGameSessions(String userId) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         List<GameSessions> gameSessions;
@@ -61,6 +64,7 @@ public class GameSessionService {
         return ServiceResult.failure(errorDetails);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<GameSessionsDTO> updateGameSession(String id, GameSessions gameSession) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         GameSessions existingGameSession = gameSessionRepository.findById(UUID.fromString(id)).orElse(null);

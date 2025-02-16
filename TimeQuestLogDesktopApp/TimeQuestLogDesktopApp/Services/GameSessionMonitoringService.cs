@@ -137,11 +137,6 @@ namespace TimeQuestLogDesktopApp.Services
 		{
 			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
 			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-			if (Debugger.IsAttached)
-			{
-				Console.WriteLine($"Process Started: {processName} (PID: {processId})");
-			}
-
 			if (!_gameMap.TryGetValue(processName, out var game))
 				return;
 
@@ -172,11 +167,6 @@ namespace TimeQuestLogDesktopApp.Services
 		{
 			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
 			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-			if (Debugger.IsAttached)
-			{
-				Console.WriteLine($"Process Stopped: {processName} (PID: {processId})");
-			}
-
 			if (!_gameSessionMap.TryRemove(processId, out var gameSessionToEnd))
 				return;
 

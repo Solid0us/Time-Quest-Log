@@ -5,6 +5,7 @@ import com.solid0us.time_quest_log.model.Games;
 import com.solid0us.time_quest_log.model.IGDBGame;
 import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.repositories.GameRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class GameService {
         }
     }
 
+    @Transactional
     public ServiceResult<Optional<Games>> getGameById(int id){
         Optional<Games> game = Optional.ofNullable(gameRepository.findById(id).orElse(null));
         List<ErrorDetail> errorDetails = new ArrayList<>();
@@ -42,6 +44,7 @@ public class GameService {
         return ServiceResult.failure(errorDetails);
     }
 
+    @Transactional
     public ServiceResult<Games> createGame(Games game) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         try {

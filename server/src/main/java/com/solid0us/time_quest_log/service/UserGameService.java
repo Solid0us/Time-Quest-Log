@@ -3,6 +3,7 @@ package com.solid0us.time_quest_log.service;
 import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.repositories.GameRepository;
 import com.solid0us.time_quest_log.repositories.UserGameRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class UserGameService {
     @Autowired
     private GameService gameService;
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<UserGames> saveUserGame(UserGames userGame) {
         ServiceResult<Optional<Games>> gameExistsResult = gameService.getGameById(userGame.getGame().getId());
         List<ErrorDetail> errorDetails = new ArrayList<>();
@@ -46,10 +48,12 @@ public class UserGameService {
         return ServiceResult.failure(errorDetails);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<List<UserGames>> getUserGamesByUserId(UUID userId) {
         return ServiceResult.success(userGameRepository.findByUser_Id(userId));
     }
 
+    @Transactional
     public ServiceResult<UserGames> upsertUserGame(UUID uuid, UserGames userGame) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         Games existingGame = gameRepository.findById(userGame.getGame().getId()).orElse(null);

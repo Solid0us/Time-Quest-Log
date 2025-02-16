@@ -5,6 +5,7 @@ import com.solid0us.time_quest_log.model.Genres;
 import com.solid0us.time_quest_log.model.IGDBGenre;
 import com.solid0us.time_quest_log.model.ServiceResult;
 import com.solid0us.time_quest_log.repositories.GenreRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ public class GenreService {
     @Autowired
     GenreRepository genreRepository;
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<List<Genres>> getAllGenres() {
         List<Genres> dbGenres = genreRepository.findAll();
         List<ErrorDetail> errors = new ArrayList<ErrorDetail>();
@@ -37,6 +39,7 @@ public class GenreService {
         return ServiceResult.success(dbGenres);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<List<IGDBGenre>> getAllGenresFromIGDB (){
         try {
             return igdbService.getGenres();

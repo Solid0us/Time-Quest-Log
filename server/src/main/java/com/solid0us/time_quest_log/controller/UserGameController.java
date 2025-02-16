@@ -35,6 +35,9 @@ public class UserGameController {
     public ResponseEntity<ApiResponse<?>> getUserGamesByUserId(@PathVariable String userId) {
         ServiceResult<List<UserGames>> result = userGameService.getUserGamesByUserId(UUID.fromString(userId));
         if (result.isSuccess()){
+            for (UserGames game : result.getData()){
+                game.getUser().setPassword(null);
+            }
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -45,6 +48,7 @@ public class UserGameController {
     @PutMapping({"/{userGameId}", "/{userGameId}/"})
     public ResponseEntity<ApiResponse<?>> updateUserGame(@PathVariable String userGameId, @RequestBody UserGames userGame) {
         ServiceResult<UserGames> result = userGameService.upsertUserGame(UUID.fromString(userGameId), userGame);
+
         if (result.isSuccess()){
             return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
         } else {

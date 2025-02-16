@@ -160,7 +160,24 @@ namespace TimeQuestLogDesktopApp.Services
 			try
 			{
 				HttpResponseMessage response = await httpRequestFunc();
-				_credentialService.LoadCredentials();
+				if (response.StatusCode == HttpStatusCode.InternalServerError)
+				{
+					int retryCount = 0;
+					while (retryCount < 5 && response.StatusCode == HttpStatusCode.InternalServerError)
+					{
+						await Task.Delay(1000);
+						retryCount++;
+						Console.WriteLine($"Internal server error: Retry attempt {retryCount}...");
+						response.Dispose();
+						response = await httpRequestFunc();
+					}
+					if (retryCount == 5 && response.StatusCode == HttpStatusCode.InternalServerError)
+					{
+						Console.WriteLine("Internal server error: Maximum retry attempts reached");
+						return response;
+					}
+				}
+
 				if (response.StatusCode == HttpStatusCode.Unauthorized)
 				{
 					string url = $"{_environmentVariableService.ApiBaseUrl}users/refresh";

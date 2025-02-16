@@ -6,6 +6,7 @@ import com.solid0us.time_quest_log.repositories.RefreshTokenRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -49,7 +50,7 @@ public class JWTService {
                 .compact();
     }
 
-    // Only generates during user login and signup
+    @Transactional(rollbackOn = Exception.class)
     public String generateRefreshToken(Users user) {
         Map<String, Object> claims = new HashMap<>();
         long expirationTime = System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_MILLISECONDS;
@@ -84,6 +85,7 @@ public class JWTService {
         return (userName.equals(userDetails.getUsername().toLowerCase()) && !isTokenExpired(token, false));
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public boolean validateRefreshToken(String token) {
         RefreshTokens existingRefreshToken = refreshTokenRepository.findByRefreshToken(token);
         return existingRefreshToken != null

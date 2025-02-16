@@ -3,6 +3,7 @@ package com.solid0us.time_quest_log.service;
 import com.solid0us.time_quest_log.model.UserPrincipal;
 import com.solid0us.time_quest_log.model.Users;
 import com.solid0us.time_quest_log.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,6 +16,7 @@ public class MyUserDetailsService implements UserDetailsService{
     private UserRepository userRepo;
 
     @Override
+    @Transactional(rollbackOn = Exception.class)
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Users user = userRepo.findByUsername(username);
         if (user == null) {

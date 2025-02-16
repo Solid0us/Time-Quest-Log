@@ -2,6 +2,7 @@ package com.solid0us.time_quest_log.service;
 
 import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.repositories.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,6 +38,7 @@ public class UserService  {
         return ServiceResult.success(usersDTO);
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public ServiceResult<UsersDTO> getUserById(UUID id) {
         Users user = userRepository.findById(id).orElse(null);
         List<ErrorDetail> errors = new ArrayList<>();
@@ -47,6 +49,7 @@ public class UserService  {
         return ServiceResult.success(new UsersDTO(user));
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public AuthResponse createUser(Users user) {
         if (userRepository.findByUsername(user.getUsername()) != null) {
             return new AuthResponse(user.getUsername(), "Username already exists. Please select a different name.");
@@ -66,6 +69,7 @@ public class UserService  {
         return null;
     }
 
+    @Transactional(rollbackOn = Exception.class)
     public Users getUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
