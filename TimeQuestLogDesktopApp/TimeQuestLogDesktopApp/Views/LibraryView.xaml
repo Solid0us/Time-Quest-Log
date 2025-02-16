@@ -29,6 +29,7 @@
                     />
             <DataGrid
                 Height="600"
+                CanUserReorderColumns="False"
                 IsReadOnly="True" 
                 ItemsSource="{Binding UserGamesTable}" 
                 AutoGenerateColumns="False" 
@@ -63,6 +64,15 @@
                                 <TextBlock Text="{Binding GenresToString}" 
                              VerticalAlignment="Center"
                              Margin="5,0" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Exe Name"  Width="*">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Exe}" 
+                                 VerticalAlignment="Center"
+                                 Margin="5,0" />    
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
