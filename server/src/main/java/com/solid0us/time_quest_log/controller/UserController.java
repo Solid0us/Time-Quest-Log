@@ -31,11 +31,15 @@ public class UserController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<?>> getUserById(@PathVariable String id) {
-        ServiceResult<UsersDTO> user = userService.getUserById(UUID.fromString(id));
-        if (user.isSuccess()) {
-            return ResponseEntity.ok().body(ApiResponse.success("", user.getData()));
+        try {
+            ServiceResult<UsersDTO> user = userService.getUserById(UUID.fromString(id));
+            if (user.isSuccess()) {
+                return ResponseEntity.ok().body(ApiResponse.success("", user.getData()));
+            }
+            return ResponseEntity.status(404).body(ApiResponse.failure("Could not find user.", user.getErrors()));
+        } catch (IllegalArgumentException e){
+            return ResponseEntity.status(400).body(ApiResponse.failure("Invalid UUID format.", null));
         }
-        return ResponseEntity.status(404).body(ApiResponse.failure("Could not find user.", user.getErrors()));
     }
 
     @PutMapping("/{id}")

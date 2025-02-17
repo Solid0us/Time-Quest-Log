@@ -33,27 +33,42 @@ public class UserGameController {
 
     @GetMapping({"/{userId}", "/{userId}/"})
     public ResponseEntity<ApiResponse<?>> getUserGamesByUserId(@PathVariable String userId) {
-        ServiceResult<List<UserGames>> result = userGameService.getUserGamesByUserId(UUID.fromString(userId));
-        if (result.isSuccess()){
-            for (UserGames game : result.getData()){
-                game.getUser().setPassword(null);
+        try {
+            ServiceResult<List<UserGames>> result = userGameService.getUserGamesByUserId(UUID.fromString(userId));
+            if (result.isSuccess()){
+                for (UserGames game : result.getData()){
+                    game.getUser().setPassword(null);
+                }
+                return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
             }
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
-        } else {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+                    .body(ApiResponse.failure("Invalid UUID provided.", null));
         }
     }
 
     @PutMapping({"/{userGameId}", "/{userGameId}/"})
     public ResponseEntity<ApiResponse<?>> updateUserGame(@PathVariable String userGameId, @RequestBody UserGames userGame) {
-        ServiceResult<UserGames> result = userGameService.upsertUserGame(UUID.fromString(userGameId), userGame);
-
-        if (result.isSuccess()){
-            return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
-        } else {
+        List<ErrorDetail> errors = new ArrayList<>();
+        try {
+            ServiceResult<UserGames> result = userGameService.upsertUserGame(UUID.fromString(userGameId), userGame);
+            if (result.isSuccess()){
+                return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+            }
+        } catch (IllegalArgumentException e) {
+            errors.add(new ErrorDetail("userGameId", "Invalid UUID provided."));
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+                    .body(ApiResponse.failure("Invalid UUID provided.", errors));
+        } catch (Exception e) {
+            errors.add(new ErrorDetail("request", e.getMessage()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("An unknown server error occurred.", errors));
         }
     }
 
