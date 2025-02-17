@@ -37,12 +37,13 @@ public class JWTService {
     @Value("${REFRESH_TOKEN_SECRET}")
     private String refreshTokenSecret;
 
-    public String generateToken(String username) {
+    public String generateToken(Users user) {
         Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(username.toLowerCase())
+                .add("id",user.getId().toString())
+                .subject(user.getUsername().toLowerCase())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION_MILLISECONDS))
                 .and()
@@ -57,6 +58,7 @@ public class JWTService {
         String refreshToken  = Jwts.builder()
                 .claims()
                 .add(claims)
+                .add("id",user.getId().toString())
                 .subject(user.getUsername().toLowerCase())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(expirationTime))

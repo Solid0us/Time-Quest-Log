@@ -13,7 +13,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/v1/users")
 public class UserController {
-    
+
+    @Autowired
     private final UserService userService;
 
     @Autowired
@@ -70,27 +71,23 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody Users user) {
-        String token = userService.verify(user);
-        if (token == null) {
+    public ResponseEntity<AuthResponse> login(@RequestBody Users requestedUser) {
+        AuthResponse tokenResponse = userService.verify(requestedUser);
+        if (tokenResponse.getError() != null) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body(new AuthResponse(user.getUsername(), "Invalid username or password."));
+                    .body(tokenResponse);
         }
-        Users existingUser = userService.getUserByUsername(user.getUsername());
-        String refreshToken = userService.generateRefreshToken(existingUser);
-        return ResponseEntity.ok().body(new AuthResponse(token, refreshToken, existingUser));
+        return ResponseEntity.ok().body(tokenResponse);
     }
 
     @PostMapping("/refresh")
     public ResponseEntity<RefreshJwtResponse> refresh(@RequestBody RefreshTokenBody refreshTokenBody) {
-        String username = refreshTokenBody.getUsername();
-        String refreshToken = refreshTokenBody.getRefreshToken();
-        boolean isValidRefreshToken = userService.verifyRefreshToken(refreshToken);
-        if (isValidRefreshToken) {
+        RefreshJwtResponse refreshJwtResponse = userService.refreshToken(refreshTokenBody.getRefreshToken());
+        if (refreshJwtResponse.getToken() != null) {
             return ResponseEntity
                     .status(HttpStatus.CREATED)
-                    .body(new RefreshJwtResponse(jwtService.generateToken(username)));
+                    .body(refreshJwtResponse);
         }
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)

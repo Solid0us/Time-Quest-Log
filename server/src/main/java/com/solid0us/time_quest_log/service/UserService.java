@@ -4,6 +4,8 @@ import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,6 +18,7 @@ import java.util.*;
 
 @Service
 public class UserService  {
+
     @Autowired
     private UserRepository userRepository;
 
@@ -56,9 +59,8 @@ public class UserService  {
         }
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         Users createdUser = userRepository.save(user);
-        String userName = createdUser.getUsername();
         String refreshToken = generateRefreshToken(createdUser);
-        return new AuthResponse(jwtService.generateToken(userName), refreshToken, user);
+        return new AuthResponse(jwtService.generateToken(user), refreshToken, user);
     }
 
     public UsersDTO updateUser(String id, Users user) {
@@ -78,18 +80,41 @@ public class UserService  {
         return users.remove(id) != null;
     }
 
-    public String verify(Users user) {
+    public AuthResponse verify(Users requestedUser) {
+        Users existingUser = getUserByUsername(requestedUser.getUsername());
+        String jwtToken = null;
+        String refreshToken = null;
+        if (existingUser == null) {
+            return new AuthResponse(requestedUser.getUsername(), "Could not find username in the database");
+        }
         try {
         Authentication authentication =
-                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+                authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestedUser.getUsername(), requestedUser.getPassword()));
             if (authentication.isAuthenticated()){
-                return jwtService.generateToken(user.getUsername());
+                jwtToken = jwtService.generateToken(existingUser);
+                refreshToken = generateRefreshToken(existingUser);
             }
-            return null;
-
         } catch (AuthenticationException e){
             System.out.println(e.getStackTrace().toString());
-            return null;
+        }
+        if (jwtToken == null || refreshToken == null){
+            return new AuthResponse(requestedUser.getUsername(), "Invalid username or password");
+        }
+        return new AuthResponse(jwtToken, refreshToken, existingUser);
+    }
+
+    public RefreshJwtResponse refreshToken(String refreshToken) {
+        try {
+            String username = jwtService.extractUsername(refreshToken, true);
+            Users user = getUserByUsername(username);
+            if (user == null || !verifyRefreshToken(refreshToken)) {
+                return new RefreshJwtResponse(null);
+            }
+            String newAccessToken = jwtService.generateToken(user);
+            return new RefreshJwtResponse(newAccessToken);
+        } catch (Exception e) {
+            System.out.println("Could not parse refresh token");
+            return new RefreshJwtResponse(null);
         }
     }
 
