@@ -1,4 +1,4 @@
-import HorizontalNavbar from "@/components/HorizontalNavbar";
+import HorizontalNavbar from "@/pages/Home/HorizontalNavbar";
 import HeroSection from "./HeroSection";
 
 const Home = () => {

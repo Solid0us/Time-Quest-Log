@@ -9,11 +9,20 @@ const HeroSection = () => {
         />
         <h1 className="text-4xl sm:text-6xl md:text-8xl">TimeQuest Log</h1>
       </div>
-      <p className="text-xl md:text-2xl max-w-lg md:max-w-xl text-center">
-        Track your <span className="font-bold text-primary">playtime</span>,
-        analyze your <span className="font-bold text-primary">habits</span>, and{" "}
-        <span className="font-bold text-primary">level up</span> your gaming
-        experience.
+      <p className="text-xl md:text-2xl max-w-md md:max-w-lg text-center">
+        Track your{" "}
+        <span className="font-bold text-primary hover:brightness-125">
+          playtime
+        </span>
+        , analyze your{" "}
+        <span className="font-bold text-primary hover:brightness-125">
+          habits
+        </span>
+        , and{" "}
+        <span className="font-bold text-primary hover:brightness-125">
+          level up
+        </span>{" "}
+        your gaming experience.
       </p>
     </div>
   );
