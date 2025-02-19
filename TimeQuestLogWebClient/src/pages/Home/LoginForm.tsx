@@ -17,10 +17,10 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
-  username: z.string().min(0, {
+  username: z.string().min(1, {
     message: "Username cannot be empty!",
   }),
-  password: z.string().min(0, {
+  password: z.string().min(1, {
     message: "Password cannot be empty!",
   }),
 });
@@ -37,6 +37,7 @@ const LoginForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      password: "",
     },
   });
 
@@ -58,7 +59,9 @@ const LoginForm = () => {
       navigate("/dashboard", { replace: true });
     },
     onError: (e) => {
-      alert(e);
+      form.setError("root", {
+        message: e.message,
+      });
     },
   });
 
@@ -68,6 +71,11 @@ const LoginForm = () => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="flex flex-col items-center gap-3"
       >
+        {form.formState.errors.root?.message && (
+          <p className="text-destructive">
+            {form.formState.errors.root.message}
+          </p>
+        )}
         <FormField
           control={form.control}
           name="username"
@@ -95,7 +103,7 @@ const LoginForm = () => {
           )}
         />
         <Button type="submit" className="w-1/2 mt-5">
-          Submit
+          Log in
         </Button>
       </form>
     </Form>
