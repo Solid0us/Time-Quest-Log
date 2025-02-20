@@ -120,10 +120,10 @@ const SignupForm = () => {
           control={form.control}
           name="username"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/4">
               <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input placeholder="Username" {...field} />
+                <Input className="w-full" placeholder="Username" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -133,7 +133,7 @@ const SignupForm = () => {
           control={form.control}
           name="firstName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/4">
               <FormLabel>First Name</FormLabel>
               <FormControl>
                 <Input placeholder="First Name" {...field} />
@@ -146,7 +146,7 @@ const SignupForm = () => {
           control={form.control}
           name="lastName"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/4">
               <FormLabel>Last Name</FormLabel>
               <FormControl>
                 <Input placeholder="Last Name" {...field} />
@@ -159,7 +159,7 @@ const SignupForm = () => {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/4">
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input placeholder="Password" type="password" {...field} />
@@ -172,7 +172,7 @@ const SignupForm = () => {
           control={form.control}
           name="confirmPassword"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/4">
               <FormLabel>Confirm Password</FormLabel>
               <FormControl>
                 <Input

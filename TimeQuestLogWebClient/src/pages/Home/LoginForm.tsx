@@ -80,7 +80,7 @@ const LoginForm = () => {
           control={form.control}
           name="username"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/4">
               <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input placeholder="username" {...field} />
@@ -93,7 +93,7 @@ const LoginForm = () => {
           control={form.control}
           name="password"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="w-3/4">
               <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input placeholder="password" type="password" {...field} />
