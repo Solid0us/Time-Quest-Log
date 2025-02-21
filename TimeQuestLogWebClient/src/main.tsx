@@ -9,6 +9,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import DashboardLayout from "./components/layouts/DashboardLayout.tsx";
 import MainDashboard from "./pages/Dashboard/MainDashboard.tsx";
+import StatisticsDashboard from "./pages/Dashboard/StatisticsDashboard.tsx";
+import SettingsDashboard from "./pages/Dashboard/SettingsDashboard.tsx";
+import GameLibraryDashboard from "./pages/Dashboard/GameLibraryDashboard.tsx";
 
 const queryClient = new QueryClient();
 
@@ -19,14 +22,17 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
             <Route element={<HomeLayout />}>
-              <Route index element={<Home />}></Route>
+              <Route path="/" element={<Home />} />
+            </Route>
+
+            <Route path="/dashboard" element={<DashboardLayout />}>
+              <Route path="home" element={<MainDashboard />} />
+              <Route path="statistics" element={<StatisticsDashboard />} />
+              <Route path="settings" element={<SettingsDashboard />} />
+              <Route path="library" element={<GameLibraryDashboard />} />
             </Route>
           </Routes>
-          <Routes>
-            <Route element={<DashboardLayout />}>
-              <Route path="/dashboard" element={<MainDashboard />}></Route>
-            </Route>
-          </Routes>
+          <ReactQueryDevtools initialIsOpen={false} />
         </BrowserRouter>
       </ThemeProvider>
       <ReactQueryDevtools initialIsOpen={false} />

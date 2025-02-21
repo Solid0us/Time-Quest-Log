@@ -10,19 +10,14 @@ import LoginForm from "./LoginForm";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SignupForm from "./SignupForm";
+import LogoutButton from "@/components/LogoutButton";
 
 const HorizontalNavbar = () => {
-  const [jwt, setJwt] = useLocalStorage<string | null>("jwt", null);
   const [refreshToken, setRefreshToken] = useLocalStorage<string | null>(
     "refreshToken",
     null
   );
 
-  const logout = async () => {
-    setJwt(null);
-    setRefreshToken(null);
-    window.location.reload;
-  };
   return (
     <div className="z-50 w-full bg-secondary pt-3 pb-3 pl-2 pr-2 flex items-center justify-between fixed top-0">
       <div className="flex gap-2 items-center">
@@ -69,12 +64,10 @@ const HorizontalNavbar = () => {
           </>
         ) : (
           <>
-            <a href="/dashboard">
+            <a href="/dashboard/home">
               <Button>Go To Dashboard</Button>
             </a>
-            <Button onClick={logout} variant={"destructive"}>
-              Logout
-            </Button>
+            <LogoutButton />
           </>
         )}
 

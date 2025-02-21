@@ -1,9 +1,10 @@
+import SideNavbar from "@/pages/Dashboard/SideNavbar";
 import { Outlet } from "react-router";
 
 const DashboardLayout = () => {
   return (
-    <div className="w-full h-screen">
-      This is the dashboard view!
+    <div className="flex w-full h-screen">
+      <SideNavbar />
       <Outlet />
     </div>
   );
