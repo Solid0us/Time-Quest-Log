@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const SideNavbar = () => {
   const [jwt] = useLocalStorage<string | null>("jwt", null);
   return (
-    <div className="static left-0 bg-secondary h-screen w-60 flex flex-col p-3">
+    <div className="static left-0 bg-secondary h-screen min-w-60 flex flex-col p-3">
       {jwt !== null && (
         <p className="text-center capitalize font-bold text-2xl md:text-4xl">
           {getJwtPayload(jwt)?.sub}

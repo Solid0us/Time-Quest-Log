@@ -59,3 +59,87 @@ export const registerUser = async (registerForm: RegisterForm) => {
   }
   throw new Error("Unknown server error occurred.");
 };
+
+let isRefreshing = false;
+let refreshPromise: Promise<string> | null = null;
+
+interface TokenResponse {
+  token: string | null;
+}
+
+async function performTokenRefresh(): Promise<string> {
+  const url = import.meta.env.VITE_API_BASE_URL + "api/v1/users/refresh";
+  const refreshToken = localStorage
+    .getItem("refreshToken")
+    ?.replace(/^"(.*)"$/, "$1");
+
+  if (!refreshToken) {
+    throw new Error("No refresh token available");
+  }
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Token refresh failed");
+    }
+
+    const { token }: TokenResponse = await response.json();
+
+    if (token) localStorage.setItem("jwt", token);
+
+    return token ?? "";
+  } catch (error) {
+    throw error;
+  }
+}
+
+export async function authFetch(
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+  retryCount: number = 0
+): Promise<Response> {
+  const maxRetries = 1;
+  const jwt = localStorage.getItem("jwt")?.replace(/^"(.*)"$/, "$1");
+  let headers =
+    init.headers instanceof Headers
+      ? init.headers
+      : new Headers(init.headers || {});
+  headers.set("Content-Type", "application/json");
+  if (jwt) {
+    headers.set("Authorization", `Bearer ${jwt}`);
+  }
+  const config: RequestInit = {
+    ...init,
+    headers,
+  };
+
+  const response = await fetch(input, config);
+  if (response.status === 401) {
+    if (retryCount >= maxRetries) {
+      throw new Error("Maximum authentication retries exceeded");
+    }
+
+    if (!isRefreshing) {
+      isRefreshing = true;
+      refreshPromise = performTokenRefresh().finally(() => {
+        isRefreshing = false;
+      });
+    }
+
+    try {
+      await refreshPromise;
+      return authFetch(input, init, retryCount + 1);
+    } catch (error) {
+      throw new Error("Session expired. Please log in again.");
+    }
+  }
+
+  return response;
+}
