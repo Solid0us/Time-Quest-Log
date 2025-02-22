@@ -26,7 +26,7 @@ export const useGetUserDetails = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to fetch user detaills");
+        throw new Error("Failed to fetch user details");
       }
 
       return response.json();

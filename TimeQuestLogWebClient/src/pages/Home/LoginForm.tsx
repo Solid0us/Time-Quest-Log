@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/services/authServices";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const formSchema = z.object({
   username: z.string().min(1, {
@@ -26,11 +26,7 @@ const formSchema = z.object({
 });
 
 const LoginForm = () => {
-  const [jwt, setJwt] = useLocalStorage<string | null>("jwt", null);
-  const [refreshToken, setRefreshToken] = useLocalStorage<string | null>(
-    "refreshToken",
-    null
-  );
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -45,17 +41,16 @@ const LoginForm = () => {
     mutation.mutate(values);
   };
 
-  const login = async (values: z.infer<typeof formSchema>) => {
+  const loginFn = async (values: z.infer<typeof formSchema>) => {
     const data = await loginUser(values);
     return data;
   };
 
   const mutation = useMutation({
-    mutationFn: login,
+    mutationFn: loginFn,
     onSuccess: (data) => {
       const { token, refreshToken } = data;
-      setJwt(token);
-      setRefreshToken(refreshToken);
+      login(token ?? "", refreshToken ?? "");
       navigate("/dashboard", { replace: true });
     },
     onError: (e) => {

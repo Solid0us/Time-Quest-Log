@@ -1,22 +1,17 @@
 import { useNavigate } from "react-router";
 import { Button } from "./ui/button";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import { useAuth } from "@/hooks/useAuth";
 
 const LogoutButton = () => {
-  const [jwt, setJwt] = useLocalStorage<string | null>("jwt", null);
-  const [refreshToken, setRefreshToken] = useLocalStorage<string | null>(
-    "refreshToken",
-    null
-  );
+  const { logout } = useAuth();
   const navigate = useNavigate();
-  const logout = async () => {
-    setJwt(null);
-    setRefreshToken(null);
+  const logoutUser = async () => {
+    logout();
     navigate("/");
     navigate(0);
   };
   return (
-    <Button onClick={logout} variant={"destructive"}>
+    <Button onClick={logoutUser} variant={"destructive"}>
       Logout
     </Button>
   );

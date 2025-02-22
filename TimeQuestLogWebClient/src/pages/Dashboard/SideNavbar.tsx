@@ -1,12 +1,12 @@
 import LogoutButton from "@/components/LogoutButton";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { getJwtPayload } from "@/utils/jwtUtils";
 import DashboardNavItem from "./DashboardNavItem";
 import ThemeModeToggle from "@/components/ThemeModeToggle";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const SideNavbar = () => {
-  const [jwt] = useLocalStorage<string | null>("jwt", null);
+  const { jwt } = useAuth();
   return (
     <div className="static left-0 bg-secondary h-screen min-w-60 flex flex-col p-3">
       {jwt !== null && (

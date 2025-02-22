@@ -8,16 +8,12 @@ import {
 } from "@/components/ui/dialog";
 import LoginForm from "./LoginForm";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import SignupForm from "./SignupForm";
 import LogoutButton from "@/components/LogoutButton";
+import { useAuth } from "@/hooks/useAuth";
 
 const HorizontalNavbar = () => {
-  const [refreshToken, setRefreshToken] = useLocalStorage<string | null>(
-    "refreshToken",
-    null
-  );
-
+  const { refreshToken } = useAuth();
   return (
     <div className="z-50 w-full bg-secondary pt-3 pb-3 pl-2 pr-2 flex items-center justify-between fixed top-0">
       <div className="flex gap-2 items-center">

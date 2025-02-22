@@ -1,12 +1,13 @@
 import { AuthResponse } from "@/types/apiTypes";
 
-type LoginForm = {
+export type LoginForm = {
   username: string;
   password: string;
 };
 
 type RegisterForm = {
   username: string;
+  email: string;
   firstName: string;
   lastName: string;
   password: string;
@@ -38,7 +39,7 @@ export const loginUser = async (
 
 export const registerUser = async (registerForm: RegisterForm) => {
   const url = import.meta.env.VITE_API_BASE_URL + "api/v1/users/register";
-  const { confirmPassword, firstName, lastName, password, username } =
+  const { confirmPassword, firstName, lastName, password, username, email } =
     registerForm;
   const response = await fetch(url, {
     method: "POST",
@@ -49,6 +50,7 @@ export const registerUser = async (registerForm: RegisterForm) => {
       username,
       firstName,
       lastName,
+      email,
       password,
       confirmPassword,
     }),
@@ -91,7 +93,6 @@ async function performTokenRefresh(): Promise<string> {
     }
 
     const { token }: TokenResponse = await response.json();
-
     if (token) localStorage.setItem("jwt", token);
 
     return token ?? "";

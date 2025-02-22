@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { registerUser } from "@/services/authServices";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 
 const formSchema = z
   .object({
@@ -33,6 +33,7 @@ const formSchema = z
           });
         }
       }),
+    email: z.string().email("Must be a valid email"),
     firstName: z
       .string()
       .min(1, {
@@ -79,16 +80,13 @@ const formSchema = z
   });
 
 const SignupForm = () => {
-  const [jwt, setJwt] = useLocalStorage<string | null>("jwt", null);
-  const [refreshToken, setRefreshToken] = useLocalStorage<string | null>(
-    "refreshToken",
-    null
-  );
+  const { login } = useAuth();
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
+      email: "",
       firstName: "",
       lastName: "",
       password: "",
@@ -102,8 +100,7 @@ const SignupForm = () => {
     mutationFn: registerUser,
     onSuccess: (data) => {
       const { token, refreshToken } = data;
-      setJwt(token);
-      setRefreshToken(refreshToken);
+      login(token ?? "", refreshToken ?? "");
       navigate("/dashboard", { replace: true });
     },
     onError: (e) => {
@@ -124,6 +121,19 @@ const SignupForm = () => {
               <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input className="w-full" placeholder="Username" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem className="w-3/4">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input className="w-full" placeholder="Email" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
