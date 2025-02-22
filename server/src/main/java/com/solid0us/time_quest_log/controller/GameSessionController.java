@@ -17,8 +17,8 @@ public class GameSessionController {
     private GameSessionService gameSessionService;
 
     @GetMapping({"/", ""})
-    public ResponseEntity<ApiResponse<?>> getGameSessions(@RequestParam(required = false) String userId) {
-        ServiceResult<List<GameSessionsDTO>> result = gameSessionService.getGameSessions(userId);
+    public ResponseEntity<ApiResponse<?>> getGameSessions() {
+        ServiceResult<List<GameSessionsDTO>> result = gameSessionService.getGameSessions();
         if (result.isSuccess()){
             return ResponseEntity.status(HttpStatus.OK)
                     .body(ApiResponse.success("", result.getData()));
@@ -48,6 +48,18 @@ public class GameSessionController {
         } else {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ApiResponse.failure("Unable to update game session.", result.getErrors()));
+        }
+    }
+
+    @GetMapping({"/user/{userId}", "/user/{userId}/"})
+    public ResponseEntity<ApiResponse<?>> getUserGameSessions(@PathVariable String userId) {
+        ServiceResult<List<GameSessionsDTO>> result = gameSessionService.getGameSessionByUser(userId);
+        if (result.isSuccess()){
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ApiResponse.success("", result.getData()));
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("Unable to retrieve user's games.", result.getErrors()));
         }
     }
 

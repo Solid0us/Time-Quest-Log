@@ -44,15 +44,28 @@ public class GameSessionService {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public ServiceResult<List<GameSessionsDTO>> getGameSessions(String userId) {
+    public ServiceResult<List<GameSessionsDTO>> getGameSessions() {
         List<ErrorDetail> errorDetails = new ArrayList<>();
-        List<GameSessions> gameSessions;
         try {
-            if (userId == null) {
-                gameSessions = gameSessionRepository.findAll();
-            } else {
-                gameSessions = gameSessionRepository.findByUser_Id(UUID.fromString(userId));
+            List<GameSessions> gameSessions = gameSessionRepository.findAll();
+            List<GameSessionsDTO> gameSessionsDTO = new ArrayList<>();
+            for (GameSessions gameSession : gameSessions) {
+                gameSessionsDTO.add(new GameSessionsDTO(gameSession));
             }
+            return ServiceResult.success(gameSessionsDTO);
+        } catch (IllegalArgumentException e){
+            errorDetails.add(new ErrorDetail("input", "Invalid UUID format."));
+        } catch (Exception e) {
+            errorDetails.add(new ErrorDetail("input", "Unknown error occurred while retrieving game sessions."));
+        }
+        return ServiceResult.failure(errorDetails);
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    public ServiceResult<List<GameSessionsDTO>> getGameSessionByUser(String userId) {
+        List<ErrorDetail> errorDetails = new ArrayList<>();
+        try {
+            List<GameSessions> gameSessions = gameSessionRepository.findByUser_Id(UUID.fromString(userId));
             List<GameSessionsDTO> gameSessionsDTO = new ArrayList<>();
             for (GameSessions gameSession : gameSessions) {
                 gameSessionsDTO.add(new GameSessionsDTO(gameSession));
