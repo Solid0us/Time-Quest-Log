@@ -1,6 +1,7 @@
 package com.solid0us.time_quest_log.controller;
 
 import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.model.DTOs.GameSessionsDTO;
 import com.solid0us.time_quest_log.service.GameSessionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

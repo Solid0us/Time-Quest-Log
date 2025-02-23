@@ -1,4 +1,7 @@
-package com.solid0us.time_quest_log.model;
+package com.solid0us.time_quest_log.model.DTOs;
+
+import com.solid0us.time_quest_log.model.GameSessions;
+import com.solid0us.time_quest_log.model.Games;
 
 import java.sql.Timestamp;
 import java.util.UUID;

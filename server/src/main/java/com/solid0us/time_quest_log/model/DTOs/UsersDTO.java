@@ -1,4 +1,6 @@
-package com.solid0us.time_quest_log.model;
+package com.solid0us.time_quest_log.model.DTOs;
+
+import com.solid0us.time_quest_log.model.Users;
 
 import java.util.UUID;
 

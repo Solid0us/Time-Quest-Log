@@ -1,6 +1,7 @@
 package com.solid0us.time_quest_log.service;
 
 import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.model.DTOs.GameSessionsDTO;
 import com.solid0us.time_quest_log.repositories.GameRepository;
 import com.solid0us.time_quest_log.repositories.GameSessionRepository;
 import jakarta.transaction.Transactional;

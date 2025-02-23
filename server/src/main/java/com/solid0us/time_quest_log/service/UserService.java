@@ -1,11 +1,10 @@
 package com.solid0us.time_quest_log.service;
 
 import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.model.DTOs.UsersDTO;
 import com.solid0us.time_quest_log.repositories.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;

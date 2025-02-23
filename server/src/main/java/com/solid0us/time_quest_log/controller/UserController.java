@@ -1,5 +1,6 @@
 package com.solid0us.time_quest_log.controller;
 import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.model.DTOs.UsersDTO;
 import com.solid0us.time_quest_log.service.JWTService;
 import com.solid0us.time_quest_log.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,9 +1,7 @@
 package com.solid0us.time_quest_log.controller;
 
-import com.solid0us.time_quest_log.model.ApiResponse;
-import com.solid0us.time_quest_log.model.ErrorDetail;
-import com.solid0us.time_quest_log.model.ServiceResult;
-import com.solid0us.time_quest_log.model.UserGames;
+import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.model.DTOs.GameStatsDTO;
 import com.solid0us.time_quest_log.service.UserGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,6 +37,22 @@ public class UserGameController {
                 for (UserGames game : result.getData()){
                     game.getUser().setPassword(null);
                 }
+                return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("Invalid UUID provided.", null));
+        }
+    }
+
+    @GetMapping({"/{userId}/stats", "/{userId}/stats/" })
+    public ResponseEntity<ApiResponse<?>> getUserGameStats(@PathVariable String userId) {
+        try {
+            ServiceResult<GameStatsDTO> result = userGameService.getUserGameStats(UUID.fromString(userId));
+            if (result.isSuccess()){
                 return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)

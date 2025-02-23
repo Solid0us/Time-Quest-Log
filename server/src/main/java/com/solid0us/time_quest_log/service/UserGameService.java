@@ -1,20 +1,29 @@
 package com.solid0us.time_quest_log.service;
 
 import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.model.DTOs.GameHoursDTO;
+import com.solid0us.time_quest_log.model.DTOs.GameStatsDTO;
+import com.solid0us.time_quest_log.model.DTOs.GameYearlyBreakdownDTO;
+import com.solid0us.time_quest_log.model.DTOs.GenreYearlyBreakdownDTO;
+import com.solid0us.time_quest_log.model.aggregates.HoursPlayedByGenre;
+import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYear;
+import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYearPerMonthPerGame;
+import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYearPerMonthPerGenre;
 import com.solid0us.time_quest_log.repositories.GameRepository;
+import com.solid0us.time_quest_log.repositories.GameSessionRepository;
 import com.solid0us.time_quest_log.repositories.UserGameRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class UserGameService {
+    @Autowired
+    private GameSessionRepository gameSessionRepository;
+
     @Autowired
     private UserGameRepository userGameRepository;
 
@@ -57,6 +66,8 @@ public class UserGameService {
     public ServiceResult<UserGames> upsertUserGame(UUID uuid, UserGames userGame) {
         List<ErrorDetail> errorDetails = new ArrayList<>();
         Games existingGame = gameRepository.findById(userGame.getGame().getId()).orElse(null);
+        int hoursPlayed = 0;
+
         if (existingGame == null) {
             try {
                 ServiceResult<IGDBGame> gameServiceResult = igdbService.searchGameById(userGame.getGame().getId());
@@ -98,5 +109,54 @@ public class UserGameService {
                 .orElse(userGame);
         gameToSave.setId(uuid);
         return ServiceResult.success(userGameRepository.save(gameToSave));
+    }
+
+    public ServiceResult<GameStatsDTO> getUserGameStats(UUID uuid) {
+        Double hoursPlayed = gameSessionRepository.findTotalPlaytimeInHoursByUserId(uuid);
+        int distinctGames = userGameRepository.findDistinctGamesByUserId(uuid);
+        List<HoursPlayedByGenre> hoursPlayedByGenre = gameSessionRepository.findTotalPlaytimeByGenre(uuid);
+        HashMap<String, Double> hoursPlayedByGenreMap = new HashMap<>();
+        hoursPlayedByGenre.forEach(hoursPlayedByGenre1 -> {
+            hoursPlayedByGenreMap.put(hoursPlayedByGenre1.getName(), hoursPlayedByGenre1.getHoursPlayed());
+        });
+        List<GameHoursDTO> hoursPlayedPerGame = gameSessionRepository.findHoursPlayedPerGame(uuid);
+        List<HoursPlayedPerYear> hoursPlayedPerYear = gameSessionRepository.findHoursPlayedPerYear(uuid);
+        HashMap<String, Double> hoursPlayedPerYearMap = new HashMap<>();
+        hoursPlayedPerYear.forEach(entry -> {
+            hoursPlayedPerYearMap.put(entry.getYear(), entry.getHoursPlayed());
+        });
+
+        List<HoursPlayedPerYearPerMonthPerGenre> hoursPlayedPerYearPerMonthPerGenre = gameSessionRepository.findHoursPlayedPerYearPerMonthPerGenre(uuid);
+        List<GenreYearlyBreakdownDTO> genreYearlyBreakdown = new ArrayList<>();
+
+        hoursPlayedPerYearPerMonthPerGenre.forEach(entry -> {
+            genreYearlyBreakdown.add(new GenreYearlyBreakdownDTO(entry.getId(),
+                    entry.getGenre(),
+                    Map.of(entry.getYear(), entry.getHoursPlayed()),
+                    Map.of(entry.getYear(), Map.of(entry.getMonth(),entry.getHoursPlayed()))));
+        });
+
+        List<HoursPlayedPerYearPerMonthPerGame> hoursPlayedPerYearPerMonthPerGame = gameSessionRepository.findHoursPlayedPerYearPerMonthPerGame(uuid);
+        List<GameYearlyBreakdownDTO> gameYearlyBreakdown = new ArrayList<>();
+
+        hoursPlayedPerYearPerMonthPerGame.forEach(entry -> {
+            gameYearlyBreakdown.add(new GameYearlyBreakdownDTO(entry.getGameId(),
+                    entry.getGameTitle(),
+                    Map.of(entry.getYear(), entry.getHoursPlayed()),
+                    Map.of(entry.getYear(), Map.of(entry.getMonth(), entry.getHoursPlayed()))));
+        });
+
+        GameStatsDTO stats = new GameStatsDTO(
+                uuid.toString(),
+                hoursPlayed,
+                distinctGames,
+                hoursPlayedByGenreMap,
+                hoursPlayedPerGame,
+                hoursPlayedPerYearMap,
+                genreYearlyBreakdown,
+                gameYearlyBreakdown
+        );
+
+        return ServiceResult.success(stats);
     }
 }
