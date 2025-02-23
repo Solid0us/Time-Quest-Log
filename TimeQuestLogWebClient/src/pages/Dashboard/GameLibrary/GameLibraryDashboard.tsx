@@ -1,6 +1,6 @@
 import { useGetUserGames, UserGame } from "@/services/userGameServices";
 import { ColumnDef } from "@tanstack/react-table";
-import GameLibraryTable from "./GameLibraryTable";
+import DataTable from "../../../components/DataTable";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -71,7 +71,7 @@ const GameLibraryDashboard = () => {
 
   return (
     <div className="p-5 w-full">
-      {data && <GameLibraryTable columns={columns} data={data?.data ?? []} />}
+      {data && <DataTable columns={columns} data={data?.data ?? []} />}
     </div>
   );
 };

@@ -51,7 +51,7 @@ public class GameSessionController {
         }
     }
 
-    @GetMapping({"/user/{userId}", "/user/{userId}/"})
+    @GetMapping({"/users/{userId}", "/users/{userId}/"})
     public ResponseEntity<ApiResponse<?>> getUserGameSessions(@PathVariable String userId) {
         ServiceResult<List<GameSessionsDTO>> result = gameSessionService.getGameSessionByUser(userId);
         if (result.isSuccess()){
