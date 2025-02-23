@@ -9,7 +9,9 @@ const GameLibraryDashboard = () => {
   const columns: ColumnDef<UserGame>[] = [
     {
       accessorKey: "game.coverUrl",
-      header: "",
+      header: ({ column }) => {
+        return <div className="min-w-24"></div>;
+      },
       cell: ({ row }) => (
         <img
           src={row.original.game.coverUrl}
