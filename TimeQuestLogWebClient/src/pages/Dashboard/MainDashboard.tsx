@@ -5,26 +5,13 @@ import {
   getHourMinSecFromMilliseconds,
   getTimeDifferenceInMilliSeconds,
 } from "@/utils/timeUtils";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, SortingState } from "@tanstack/react-table";
 import { ArrowUpDown, ArrowUpDownIcon } from "lucide-react";
 
 const MainDashboard = () => {
   const { data } = useGetGameSessions();
+  const sorting: SortingState = [{ id: "startTime", desc: true }];
   const columns: ColumnDef<GameSession>[] = [
-    {
-      accessorKey: "id",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Id
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        );
-      },
-    },
     {
       accessorKey: "game.name",
       header: ({ column }) => {
@@ -112,7 +99,13 @@ const MainDashboard = () => {
   ];
   return (
     <div className="p-5 w-full">
-      {data && <DataTable columns={columns} data={data?.data ?? []} />}
+      {data && (
+        <DataTable
+          columns={columns}
+          data={data?.data ?? []}
+          defaultSorting={sorting}
+        />
+      )}
     </div>
   );
 };
