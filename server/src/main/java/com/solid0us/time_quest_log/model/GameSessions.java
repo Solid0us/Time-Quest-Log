@@ -1,7 +1,6 @@
 package com.solid0us.time_quest_log.model;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.sql.Timestamp;
 import java.util.UUID;
@@ -21,7 +20,6 @@ public class GameSessions {
     @JoinColumn(name = "game_id", referencedColumnName = "id", nullable = false)
     private Games game;
 
-    @CreationTimestamp
     @Column(name = "start_time", nullable = false)
     private Timestamp startTime;
 
