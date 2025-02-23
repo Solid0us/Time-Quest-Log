@@ -1,3 +1,4 @@
+import ThemeModeToggle from "@/components/ThemeModeToggle";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetUserDetails } from "@/services/userServices";
@@ -5,7 +6,7 @@ import { useGetUserDetails } from "@/services/userServices";
 const SettingsDashboard = () => {
   const { data, isFetching } = useGetUserDetails();
   return (
-    <div className="p-5 w-screen">
+    <div className="p-10 w-screen">
       {isFetching && "Fetching..."}
       {data && (
         <>
@@ -25,6 +26,10 @@ const SettingsDashboard = () => {
               <Input value={data?.data.email} readOnly={true} />
             </div>
           </section>
+          <div className="p-5 gap-3 flex items-center justify-center">
+            <Label>Theme</Label>
+            <ThemeModeToggle />
+          </div>
         </>
       )}
     </div>

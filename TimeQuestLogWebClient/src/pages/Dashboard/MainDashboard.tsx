@@ -98,13 +98,15 @@ const MainDashboard = () => {
     },
   ];
   return (
-    <div className="p-5 w-full">
+    <div className="p-10 w-full overflow-auto">
       {data && (
-        <DataTable
-          columns={columns}
-          data={data?.data ?? []}
-          defaultSorting={sorting}
-        />
+        <>
+          <DataTable
+            columns={columns}
+            data={data?.data ?? []}
+            defaultSorting={sorting}
+          />
+        </>
       )}
     </div>
   );
