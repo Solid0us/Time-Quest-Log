@@ -9,7 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import DashboardLayout from "./components/layouts/DashboardLayout.tsx";
 import MainDashboard from "./pages/Dashboard/MainDashboard.tsx";
-import StatisticsDashboard from "./pages/Dashboard/StatisticsDashboard.tsx";
+import StatisticsDashboard from "./pages/Dashboard/Statistics/StatisticsDashboard.tsx";
 import SettingsDashboard from "./pages/Dashboard/SettingsDashboard.tsx";
 import GameLibraryDashboard from "./pages/Dashboard/GameLibrary/GameLibraryDashboard.tsx";
 import { AuthProvider } from "./context/auth-provider.tsx";
