@@ -3,8 +3,6 @@ package com.solid0us.time_quest_log.service;
 import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.model.DTOs.GameHoursDTO;
 import com.solid0us.time_quest_log.model.DTOs.GameStatsDTO;
-import com.solid0us.time_quest_log.model.DTOs.GameYearlyBreakdownDTO;
-import com.solid0us.time_quest_log.model.DTOs.GenreYearlyBreakdownDTO;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedByGenre;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYear;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYearPerMonthPerGame;
@@ -127,24 +125,8 @@ public class UserGameService {
         });
 
         List<HoursPlayedPerYearPerMonthPerGenre> hoursPlayedPerYearPerMonthPerGenre = gameSessionRepository.findHoursPlayedPerYearPerMonthPerGenre(uuid);
-        List<GenreYearlyBreakdownDTO> genreYearlyBreakdown = new ArrayList<>();
-
-        hoursPlayedPerYearPerMonthPerGenre.forEach(entry -> {
-            genreYearlyBreakdown.add(new GenreYearlyBreakdownDTO(entry.getId(),
-                    entry.getGenre(),
-                    Map.of(entry.getYear(), entry.getHoursPlayed()),
-                    Map.of(entry.getYear(), Map.of(entry.getMonth(),entry.getHoursPlayed()))));
-        });
-
         List<HoursPlayedPerYearPerMonthPerGame> hoursPlayedPerYearPerMonthPerGame = gameSessionRepository.findHoursPlayedPerYearPerMonthPerGame(uuid);
-        List<GameYearlyBreakdownDTO> gameYearlyBreakdown = new ArrayList<>();
 
-        hoursPlayedPerYearPerMonthPerGame.forEach(entry -> {
-            gameYearlyBreakdown.add(new GameYearlyBreakdownDTO(entry.getGameId(),
-                    entry.getGameTitle(),
-                    Map.of(entry.getYear(), entry.getHoursPlayed()),
-                    Map.of(entry.getYear(), Map.of(entry.getMonth(), entry.getHoursPlayed()))));
-        });
 
         GameStatsDTO stats = new GameStatsDTO(
                 uuid.toString(),
@@ -153,8 +135,8 @@ public class UserGameService {
                 hoursPlayedByGenreMap,
                 hoursPlayedPerGame,
                 hoursPlayedPerYearMap,
-                genreYearlyBreakdown,
-                gameYearlyBreakdown
+                hoursPlayedPerYearPerMonthPerGenre,
+                hoursPlayedPerYearPerMonthPerGame
         );
 
         return ServiceResult.success(stats);

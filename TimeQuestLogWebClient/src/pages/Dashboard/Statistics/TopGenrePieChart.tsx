@@ -90,7 +90,7 @@ const TopGenrePieChart = ({ data }: TopGenrePieChartProps) => {
               cursor={{ fill: "transparent" }}
             />
             <ChartLegend
-              className="flex flex-col lg:flex-row items-center text-[0.6rem] md:text-xs"
+              className="flex-wrap"
               content={<ChartLegendContent />}
             />
           </PieChart>

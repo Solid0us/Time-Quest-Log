@@ -6,7 +6,7 @@ import { useGetUserDetails } from "@/services/userServices";
 const SettingsDashboard = () => {
   const { data, isFetching } = useGetUserDetails();
   return (
-    <div className="p-10 w-screen">
+    <div className="p-3 md:p-10 w-screen">
       {isFetching && "Fetching..."}
       {data && (
         <>

@@ -61,10 +61,10 @@ public interface GameSessionRepository extends JpaRepository<GameSessions, UUID>
     List<HoursPlayedPerYear> findHoursPlayedPerYear(@Param("userId") UUID userId);
 
     @Query(value = """
-          SELECT gen.id AS id,
-                 gen.name AS genre,
+          SELECT gen.id AS genreId,
+                 gen.name AS genreName,
                  EXTRACT(YEAR FROM gs.start_time)::varchar(255) AS year,
-                 trim(to_char(gs.start_time, 'Month')) AS month,
+                 EXTRACT(MONTH FROM gs.start_time)::varchar(255) AS month,
                  COALESCE(SUM(EXTRACT(EPOCH FROM (gs.end_time - gs.start_time)) / 3600)::double precision, 0) AS hoursPlayed
           FROM game_sessions gs
           JOIN games g ON gs.game_id = g.id
@@ -72,7 +72,7 @@ public interface GameSessionRepository extends JpaRepository<GameSessions, UUID>
           JOIN genres gen ON g_gen.genre_id = gen.id
           WHERE gs.user_id = :userId
           AND gs.end_time IS NOT NULL
-          GROUP BY gen.id, gen.name, EXTRACT(YEAR FROM gs.start_time), to_char(gs.start_time, 'Month');
+          GROUP BY gen.id, gen.name, EXTRACT(YEAR FROM gs.start_time), EXTRACT(MONTH FROM gs.start_time);
     """, nativeQuery = true)
     List<HoursPlayedPerYearPerMonthPerGenre> findHoursPlayedPerYearPerMonthPerGenre(@Param("userId") UUID userId);
 
@@ -80,13 +80,13 @@ public interface GameSessionRepository extends JpaRepository<GameSessions, UUID>
            SELECT g.id as gameId,
                   g.name AS gameTitle,
                   EXTRACT(YEAR FROM gs.start_time)::varchar(255) AS year,
-                  trim(to_char(gs.start_time, 'Month')) AS month,
+                  EXTRACT(MONTH FROM gs.start_time)::varchar(255) AS month,
                   COALESCE(SUM(EXTRACT(EPOCH FROM (gs.end_time - gs.start_time)) / 3600)::double precision, 0) AS hoursPlayed
            FROM game_sessions gs
            JOIN games g ON gs.game_id = g.id
            WHERE gs.user_id = :userId
            AND gs.end_time IS NOT NULL
-           GROUP BY EXTRACT(YEAR FROM gs.start_time), to_char(gs.start_time, 'Month'), g.name, g.id
+           GROUP BY EXTRACT(YEAR FROM gs.start_time), EXTRACT(MONTH FROM gs.start_time)::varchar(255), g.name, g.id
     """, nativeQuery = true)
     List<HoursPlayedPerYearPerMonthPerGame> findHoursPlayedPerYearPerMonthPerGame(@Param("userId") UUID userId);
 

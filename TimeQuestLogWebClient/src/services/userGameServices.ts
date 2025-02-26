@@ -43,26 +43,16 @@ export type UserGameStats = {
   hoursPlayedDistributionPerYearPerGenre: {
     genreId: number;
     genreName: string;
-    yearlyBreakdown: {
-      [key: string]: number;
-    };
-    monthlyBreakdownPerYear: {
-      [key: string]: {
-        [key: string]: number;
-      };
-    };
+    year: string;
+    month: string;
+    hoursPlayed: number;
   }[];
   hoursPlayedDistributionPerYearPerGame: {
     gameId: number;
     gameTitle: string;
-    yearlyBreakdown: {
-      [key: string]: number;
-    };
-    monthlyBreakdownPerYear: {
-      [key: string]: {
-        [key: string]: number;
-      };
-    };
+    year: string;
+    month: string;
+    hoursPlayed: string;
   }[];
 };
 

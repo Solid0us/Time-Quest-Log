@@ -1,5 +1,8 @@
 package com.solid0us.time_quest_log.model.DTOs;
 
+import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYearPerMonthPerGame;
+import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYearPerMonthPerGenre;
+
 import java.util.List;
 import java.util.Map;
 
@@ -7,17 +10,17 @@ public class GameStatsDTO {
     private String userId;
     private double totalHoursPlayed;
     private int totalGames;
-    private Map<String, Double> hoursPlayedPerGenre; // Genre -> Hours
+    private Map<String, Double> hoursPlayedPerGenre;
     private List<GameHoursDTO> hoursPlayedPerGame;
-    private Map<String, Double> hoursPlayedDistributionPerYear; // Year -> Hours
-    private List<GenreYearlyBreakdownDTO> hoursPlayedDistributionPerYearPerGenre; // Year -> (Genre -> Hours)
-    private List<GameYearlyBreakdownDTO> hoursPlayedDistributionPerYearPerGame; // Now includes monthly stats
+    private Map<String, Double> hoursPlayedDistributionPerYear;
+    private List<HoursPlayedPerYearPerMonthPerGenre> hoursPlayedDistributionPerYearPerGenre;
+    private List<HoursPlayedPerYearPerMonthPerGame> hoursPlayedDistributionPerYearPerGame;
 
     public GameStatsDTO(String userId, double totalHoursPlayed, int totalGames,
                         Map<String, Double> hoursPlayedPerGenre, List<GameHoursDTO> hoursPlayedPerGame,
                         Map<String, Double> hoursPlayedDistributionPerYear,
-                        List<GenreYearlyBreakdownDTO> hoursPlayedDistributionPerYearPerGenre,
-                        List<GameYearlyBreakdownDTO> hoursPlayedDistributionPerYearPerGame) {
+                        List<HoursPlayedPerYearPerMonthPerGenre> hoursPlayedDistributionPerYearPerGenre,
+                        List<HoursPlayedPerYearPerMonthPerGame> hoursPlayedDistributionPerYearPerGame) {
         this.userId = userId;
         this.totalHoursPlayed = totalHoursPlayed;
         this.totalGames = totalGames;
@@ -76,19 +79,19 @@ public class GameStatsDTO {
         this.hoursPlayedDistributionPerYear = hoursPlayedDistributionPerYear;
     }
 
-    public List<GenreYearlyBreakdownDTO> getHoursPlayedDistributionPerYearPerGenre() {
+    public List<HoursPlayedPerYearPerMonthPerGenre> getHoursPlayedDistributionPerYearPerGenre() {
         return hoursPlayedDistributionPerYearPerGenre;
     }
 
-    public void setHoursPlayedDistributionPerYearPerGenre(List<GenreYearlyBreakdownDTO> hoursPlayedDistributionPerYearPerGenre) {
+    public void setHoursPlayedDistributionPerYearPerGenre(List<HoursPlayedPerYearPerMonthPerGenre> hoursPlayedDistributionPerYearPerGenre) {
         this.hoursPlayedDistributionPerYearPerGenre = hoursPlayedDistributionPerYearPerGenre;
     }
 
-    public List<GameYearlyBreakdownDTO> getHoursPlayedDistributionPerYearPerGame() {
+    public List<HoursPlayedPerYearPerMonthPerGame> getHoursPlayedDistributionPerYearPerGame() {
         return hoursPlayedDistributionPerYearPerGame;
     }
 
-    public void setHoursPlayedDistributionPerYearPerGame(List<GameYearlyBreakdownDTO> hoursPlayedDistributionPerYearPerGame) {
+    public void setHoursPlayedDistributionPerYearPerGame(List<HoursPlayedPerYearPerMonthPerGame> hoursPlayedDistributionPerYearPerGame) {
         this.hoursPlayedDistributionPerYearPerGame = hoursPlayedDistributionPerYearPerGame;
     }
 }

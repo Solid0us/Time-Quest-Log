@@ -1,26 +1,26 @@
 package com.solid0us.time_quest_log.model.aggregates;
 
 public class HoursPlayedPerYearPerMonthPerGenre {
-    private int id;
-    private String genre;
+    private int genreId;
+    private String genreName;
     private String year;
     private String month;
     private double hoursPlayed;
 
     public HoursPlayedPerYearPerMonthPerGenre(int id, String genre, String year, String month, double hoursPlayed) {
-        this.id = id;
-        this.genre = genre;
+        this.genreId = id;
+        this.genreName = genre;
         this.year = year;
         this.month = month;
         this.hoursPlayed = hoursPlayed;
     }
 
-    public int getId() {
-        return id;
+    public int getGenreId() {
+        return genreId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setGenreId(int genreId) {
+        this.genreId = genreId;
     }
 
     public String getYear() {
@@ -39,12 +39,12 @@ public class HoursPlayedPerYearPerMonthPerGenre {
         this.month = month;
     }
 
-    public String getGenre() {
-        return genre;
+    public String getGenreName() {
+        return genreName;
     }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setGenreName(String genreName) {
+        this.genreName = genreName;
     }
 
     public double getHoursPlayed() {

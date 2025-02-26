@@ -98,7 +98,7 @@ const MainDashboard = () => {
     },
   ];
   return (
-    <div className="p-10 w-full overflow-auto">
+    <div className="p-3 md:p-10 w-full overflow-auto">
       {data && (
         <>
           <DataTable
