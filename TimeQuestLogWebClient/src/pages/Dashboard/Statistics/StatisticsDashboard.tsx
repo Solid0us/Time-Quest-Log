@@ -3,7 +3,8 @@ import { useGetUserGameStats } from "@/services/userGameServices";
 import GeneralStatsTable from "./AllTimeStatsTable";
 import TopGamesPieChart from "./TopGamesPieChart";
 import TopGenrePieChart from "./TopGenrePieChart";
-import HoursPlayedOverTimeBarChart from "./HoursPlayedOverTimeBarChart";
+import GenresPlayedOvertimeAreaChart from "./GenresPlayedOvertimeAreaChart";
+import GameHoursPlayedOverTimeAreaChart from "./GameHoursPlayedOverTimeAreaChart";
 
 const StatisticsDashboard = () => {
   const { data } = useGetUserGameStats();
@@ -34,8 +35,9 @@ const StatisticsDashboard = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="w-full">
-              <div className="flex flex-col gap-5 lg:flex-row items-center justify-center">
-                <HoursPlayedOverTimeBarChart stats={data.data} />
+              <div className="flex flex-col gap-5 items-center justify-center">
+                <GenresPlayedOvertimeAreaChart stats={data.data} />
+                <GameHoursPlayedOverTimeAreaChart stats={data.data} />
               </div>
             </CardContent>
           </Card>
