@@ -3,12 +3,10 @@ import { useMemo, useState } from "react";
 import AreaChartContainer from "./AreaChartContainer";
 import {
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import { getUTCMonthName } from "@/utils/timeUtils";
 
 type ChartSeriesConfig = {
@@ -49,22 +47,22 @@ const GameHoursPlayedOverTimeAreaChart = ({
       chartDescription="Total hours played over the course of the year by month."
       year={year}
       setYear={setYear}
-      yearSelectList={Object.entries(stats.hoursPlayedDistributionPerYear).map(
-        (entry) => entry[0]
-      )}
+      yearSelectList={Object.entries(stats.hoursPlayedDistributionPerYear)
+        .map((entry) => entry[0])
+        .reverse()}
     >
       <ChartContainer
         config={chartConfig}
         className="aspect-auto h-[300px] w-full"
       >
-        <AreaChart data={monthlyData}>
+        <AreaChart margin={{ left: 10, right: 10 }} data={monthlyData}>
           <CartesianGrid vertical={false} />
           <XAxis
             dataKey="date"
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            minTickGap={32}
+            minTickGap={5}
             tickFormatter={(value: string) => {
               return getUTCMonthName(value, "short");
             }}
@@ -80,6 +78,13 @@ const GameHoursPlayedOverTimeAreaChart = ({
               />
             }
           />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            domain={[0, "auto"]}
+            width={50}
+          />
           <Area
             dataKey={"hours"}
             type="monotone"
@@ -87,7 +92,6 @@ const GameHoursPlayedOverTimeAreaChart = ({
             stroke={`var(--chart-1)`}
             stackId="a"
           />
-          <ChartLegend className="flex-wrap" content={<ChartLegendContent />} />
         </AreaChart>
       </ChartContainer>
     </AreaChartContainer>

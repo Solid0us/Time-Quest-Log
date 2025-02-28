@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
 import {
   ChartContainer,
   ChartLegend,
@@ -65,22 +65,22 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
     return Array.from(genreSet);
   }, [monthlyData]);
   const chartConfig = createChartConfig(genreNames);
-
+  console.log(monthlyData);
   return (
     <AreaChartContainer
       chartTitle="Genre Preference"
       chartDescription="Hours played across different genres over the course of the year."
       year={year}
       setYear={setYear}
-      yearSelectList={Object.entries(stats.hoursPlayedDistributionPerYear).map(
-        (entry) => entry[0]
-      )}
+      yearSelectList={Object.entries(stats.hoursPlayedDistributionPerYear)
+        .map((entry) => entry[0])
+        .reverse()}
     >
       <ChartContainer
         config={chartConfig}
         className="aspect-auto h-[300px] w-full"
       >
-        <AreaChart data={monthlyData}>
+        <AreaChart margin={{ left: 10, right: 10 }} data={monthlyData}>
           <defs>
             {genreNames.map((genre) => (
               <linearGradient
@@ -114,10 +114,17 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            minTickGap={32}
+            minTickGap={5}
             tickFormatter={(value: string) => {
               return getUTCMonthName(value, "short");
             }}
+          />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            domain={[0, "auto"]}
+            width={50}
           />
           <ChartTooltip
             cursor={false}
@@ -153,7 +160,9 @@ export const formatYearMonthGenreDataToMonthlyDataPoint = (
 ) => {
   const allGenres = new Set<string>();
   stats.hoursPlayedDistributionPerYearPerGenre.forEach((entry) => {
-    allGenres.add(entry.genreName);
+    if (year === entry.year) {
+      allGenres.add(entry.genreName);
+    }
   });
 
   const yearData = stats.hoursPlayedDistributionPerYearPerGenre.filter(
