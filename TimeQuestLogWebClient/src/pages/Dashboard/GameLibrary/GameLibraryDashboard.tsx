@@ -3,6 +3,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import DataTable from "../../../components/DataTable";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import DashboardTitle from "../DashboardTitle";
 
 const GameLibraryDashboard = () => {
   const { data } = useGetUserGames();
@@ -73,6 +74,7 @@ const GameLibraryDashboard = () => {
 
   return (
     <div className="p-3 md:p-10 w-full overflow-auto">
+      <DashboardTitle text="Game Library" />
       {data && <DataTable columns={columns} data={data?.data ?? []} />}
     </div>
   );

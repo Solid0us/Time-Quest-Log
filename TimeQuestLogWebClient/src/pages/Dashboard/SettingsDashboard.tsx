@@ -2,11 +2,13 @@ import ThemeModeToggle from "@/components/ThemeModeToggle";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGetUserDetails } from "@/services/userServices";
+import DashboardTitle from "./DashboardTitle";
 
 const SettingsDashboard = () => {
   const { data, isFetching } = useGetUserDetails();
   return (
     <div className="p-3 md:p-10 w-screen">
+      <DashboardTitle text="Settings" />
       {isFetching && "Fetching..."}
       {data && (
         <>

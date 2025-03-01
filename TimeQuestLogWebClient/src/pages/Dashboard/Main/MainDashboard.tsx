@@ -6,7 +6,9 @@ import {
   getTimeDifferenceInMilliSeconds,
 } from "@/utils/timeUtils";
 import { ColumnDef, SortingState } from "@tanstack/react-table";
-import { ArrowUpDown, ArrowUpDownIcon } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
+import WeeklyHoursChart from "./WeeklyHoursChart";
+import DashboardTitle from "../DashboardTitle";
 
 const MainDashboard = () => {
   const { data } = useGetGameSessions();
@@ -99,8 +101,10 @@ const MainDashboard = () => {
   ];
   return (
     <div className="p-3 md:p-10 w-full overflow-auto">
+      <DashboardTitle text="Game Sessions" />
       {data && (
         <>
+          <WeeklyHoursChart data={data.data} />
           <DataTable
             columns={columns}
             data={data?.data ?? []}

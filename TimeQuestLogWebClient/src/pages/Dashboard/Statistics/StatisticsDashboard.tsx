@@ -5,11 +5,13 @@ import TopGamesPieChart from "./TopGamesPieChart";
 import TopGenrePieChart from "./TopGenrePieChart";
 import GenresPlayedOvertimeAreaChart from "./GenresPlayedOvertimeAreaChart";
 import GameHoursPlayedOverTimeAreaChart from "./GameHoursPlayedOverTimeAreaChart";
+import DashboardTitle from "../DashboardTitle";
 
 const StatisticsDashboard = () => {
   const { data } = useGetUserGameStats();
   return (
     <div className="p-3 md:p-10 w-full overflow-auto flex flex-col gap-5">
+      <DashboardTitle text="Statistics" />
       {data?.data && (
         <>
           <Card>

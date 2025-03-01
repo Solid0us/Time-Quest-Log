@@ -101,7 +101,7 @@ const SignupForm = () => {
     onSuccess: (data) => {
       const { token, refreshToken } = data;
       login(token ?? "", refreshToken ?? "");
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard/home", { replace: true });
     },
     onError: (e) => {
       alert(e);
