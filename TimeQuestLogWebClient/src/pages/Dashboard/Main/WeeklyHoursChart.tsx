@@ -39,13 +39,12 @@ const WeeklyHoursChart = ({ data }: WeeklyHoursChartProps) => {
       hours: 0,
     }));
 
-    const currentDate = new Date();
+    const currentDate = new Date(new Date().toLocaleDateString());
     const currentDay = currentDate.getDay();
     const startGraphDay =
       currentDate.getTime() - currentDay * 24 * 60 * 60 * 1000;
     const endGraphDay =
       currentDate.getTime() + (7 - currentDay) * 24 * 60 * 60 * 1000;
-
     for (let i = 0; i < data.length; i++) {
       const sessionStartDate = new Date(data[i].startTime);
       if (
@@ -66,7 +65,7 @@ const WeeklyHoursChart = ({ data }: WeeklyHoursChartProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Hours Played This Week</CardTitle>
+        <CardTitle>Hours Played This Week (Local Time)</CardTitle>
         <CardDescription>
           You have played{" "}
           {weeklyData.reduce((prev, curr) => prev + curr.hours, 0).toFixed(2)}{" "}
