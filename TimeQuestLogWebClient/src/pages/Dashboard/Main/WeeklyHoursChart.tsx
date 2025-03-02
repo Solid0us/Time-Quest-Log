@@ -77,7 +77,11 @@ const WeeklyHoursChart = ({ data }: WeeklyHoursChartProps) => {
           className="w-full h-[300px] aspect-auto"
           config={chartConfig}
         >
-          <AreaChart accessibilityLayer data={weeklyData}>
+          <AreaChart
+            accessibilityLayer
+            data={weeklyData}
+            margin={{ left: -25 }}
+          >
             <XAxis
               dataKey="day"
               tickLine={false}
