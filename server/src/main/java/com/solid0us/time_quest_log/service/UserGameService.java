@@ -3,6 +3,7 @@ package com.solid0us.time_quest_log.service;
 import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.model.DTOs.GameHoursDTO;
 import com.solid0us.time_quest_log.model.DTOs.GameStatsDTO;
+import com.solid0us.time_quest_log.model.DTOs.UserGameWithHoursDTO;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedByGenre;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYear;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYearPerMonthPerGame;
@@ -58,6 +59,11 @@ public class UserGameService {
     @Transactional(rollbackOn = Exception.class)
     public ServiceResult<List<UserGames>> getUserGamesByUserId(UUID userId) {
         return ServiceResult.success(userGameRepository.findByUser_Id(userId));
+    }
+
+    @Transactional
+    public ServiceResult<List<UserGameWithHoursDTO>> getUserGameWithHoursById(UUID userId) {
+        return ServiceResult.success(userGameRepository.getUserGameWithHoursPlayed(userId));
     }
 
     @Transactional

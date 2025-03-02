@@ -4,25 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/useAuth";
 
 export type UserGame = {
-  id: string;
-  user: {
-    id: string;
-    email: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    createdAt: Date;
-  };
-  game: {
-    id: string;
-    name: string;
-    genres: {
-      id: number;
-      name: string;
-    }[];
-    coverUrl: string;
-  };
+  gameId: number;
+  gameName: string;
+  coverUrl: string;
   exeName: string;
+  genres: string;
+  hoursPlayed: number;
 };
 
 export type UserGameStats = {
@@ -58,7 +45,9 @@ export type UserGameStats = {
 
 export const useGetUserGames = () => {
   const { userId } = useAuth();
-  const url = import.meta.env.VITE_API_BASE_URL + `api/v1/user-games/${userId}`;
+  const url =
+    import.meta.env.VITE_API_BASE_URL +
+    `api/v1/user-games/${userId}/?hours=true`;
   return useQuery<ApiResponse<UserGame[]>>({
     queryKey: ["userGames", userId],
     queryFn: async () => {

@@ -92,7 +92,9 @@
   --accent-foreground: hsl(240, 5.9%, 10%);
   --destructive: hsl(0, 84.2%, 60.2%);
   --destructive-foreground: hsl(0, 0%, 98%);
-  --border: hsl(240, 5.9%, 90%);
+  /* original border */
+  /* --border: hsl(240, 5.9%, 90%); */
+  --border: hsl(166, 40%, 57%);
   --input: hsl(240, 5.9%, 90%);
   --ring: hsl(142.1, 76.2%, 36.3%);
   --radius: 0.75rem;
@@ -135,11 +137,11 @@
   --accent-foreground: hsl(0, 0%, 98%);
   --destructive: hsl(0, 100%, 65%);
   --destructive-foreground: hsl(0, 85.7%, 97.3%);
-  --border: hsl(240, 3.7%, 15.9%);
+  --border: hsl(165, 32%, 39%);
   --input: hsl(240, 3.7%, 15.9%);
   --ring: hsl(165, 60%, 43%);
-  --chart-1: hsl(220, 70%, 50%);
-  --chart-2: hsl(160, 60%, 45%);
+  --chart-1: hsl(157, 95%, 77%);
+  --chart-2: hsl(220, 70%, 50%);
   --chart-3: hsl(30, 80%, 55%);
   --chart-4: hsl(280, 65%, 60%);
   --chart-5: hsl(340, 75%, 55%);

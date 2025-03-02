@@ -2,6 +2,7 @@ package com.solid0us.time_quest_log.controller;
 
 import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.model.DTOs.GameStatsDTO;
+import com.solid0us.time_quest_log.model.DTOs.UserGameWithHoursDTO;
 import com.solid0us.time_quest_log.service.UserGameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,21 +31,37 @@ public class UserGameController {
     }
 
     @GetMapping({"/{userId}", "/{userId}/"})
-    public ResponseEntity<ApiResponse<?>> getUserGamesByUserId(@PathVariable String userId) {
-        try {
-            ServiceResult<List<UserGames>> result = userGameService.getUserGamesByUserId(UUID.fromString(userId));
-            if (result.isSuccess()){
-                for (UserGames game : result.getData()){
-                    game.getUser().setPassword(null);
+    public ResponseEntity<ApiResponse<?>> getUserGamesByUserId(@PathVariable String userId, @RequestParam(required = false) String hours){
+        if (hours != null && hours.toLowerCase().equals("true")){
+            try {
+                ServiceResult<List<UserGameWithHoursDTO>> result = userGameService.getUserGameWithHoursById(UUID.fromString(userId));
+                if (result.isSuccess()){
+                    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
                 }
-                return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
             }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ApiResponse.failure("Invalid UUID provided.", null));
+            catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.failure("Invalid UUID provided.", null));
+            }
+        } else {
+            try {
+                ServiceResult<List<UserGames>> result = userGameService.getUserGamesByUserId(UUID.fromString(userId));
+                if (result.isSuccess()){
+                    for (UserGames game : result.getData()){
+                        game.getUser().setPassword(null);
+                    }
+                    return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                            .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+                }
+            } catch (IllegalArgumentException e) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.failure("Invalid UUID provided.", null));
+            }
         }
     }
 

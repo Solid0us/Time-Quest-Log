@@ -9,20 +9,20 @@ const GameLibraryDashboard = () => {
   const { data } = useGetUserGames();
   const columns: ColumnDef<UserGame>[] = [
     {
-      accessorKey: "game.coverUrl",
+      accessorKey: "coverUrl",
       header: ({ column }) => {
         return <div className="min-w-24"></div>;
       },
       cell: ({ row }) => (
         <img
-          src={row.original.game.coverUrl}
-          alt={row.original.game.name}
+          src={row.original.coverUrl}
+          alt={row.original.gameName}
           className="size-24 object-cover rounded-md"
         />
       ),
     },
     {
-      accessorKey: "game.name",
+      accessorKey: "gameName",
       header: ({ column }) => {
         return (
           <Button
@@ -36,7 +36,7 @@ const GameLibraryDashboard = () => {
       },
     },
     {
-      accessorKey: "game.genres",
+      accessorKey: "genres",
       header: ({ column }) => {
         return (
           <Button
@@ -48,13 +48,7 @@ const GameLibraryDashboard = () => {
           </Button>
         );
       },
-      cell: ({ row }) =>
-        row.original.game.genres.map((genre) => genre.name).join(", "),
-      sortingFn: (rowA, rowB) => {
-        const genresA = rowA.original.game.genres.map((g) => g.name).join(", ");
-        const genresB = rowB.original.game.genres.map((g) => g.name).join(", ");
-        return genresA.localeCompare(genresB);
-      },
+      cell: ({ row }) => <p className="max-w-60">{row.original.genres}</p>,
     },
     {
       accessorKey: "exeName",
@@ -69,6 +63,21 @@ const GameLibraryDashboard = () => {
           </Button>
         );
       },
+    },
+    {
+      accessorKey: "hoursPlayed",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Hours Played
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => <>{row.original.hoursPlayed.toFixed(2)}</>,
     },
   ];
 
