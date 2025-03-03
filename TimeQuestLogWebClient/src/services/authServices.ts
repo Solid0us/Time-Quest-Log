@@ -93,6 +93,7 @@ async function performTokenRefresh(): Promise<string> {
     }
 
     const { token }: TokenResponse = await response.json();
+    console.log(token);
     if (token) localStorage.setItem("jwt", token);
 
     return token ?? "";
@@ -107,15 +108,19 @@ export async function authFetch(
   retryCount: number = 0
 ): Promise<Response> {
   const maxRetries = 1;
-  const jwt = localStorage.getItem("jwt")?.replace(/^"(.*)"$/, "$1");
+  let jwt = localStorage.getItem("jwt")?.replace(/^"(.*)"$/, "$1");
   let headers =
     init.headers instanceof Headers
       ? init.headers
       : new Headers(init.headers || {});
   headers.set("Content-Type", "application/json");
-  if (jwt) {
-    headers.set("Authorization", `Bearer ${jwt}`);
+  if (!jwt) {
+    console.log("refreshing...");
+    jwt = (await performTokenRefresh()).replace(/^"(.*)"$/, "$1");
   }
+
+  headers.set("Authorization", `Bearer ${jwt}`);
+
   const config: RequestInit = {
     ...init,
     headers,

@@ -65,7 +65,6 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
     return Array.from(genreSet);
   }, [monthlyData]);
   const chartConfig = createChartConfig(genreNames);
-  console.log(monthlyData);
   return (
     <AreaChartContainer
       chartTitle="Genre Preference"

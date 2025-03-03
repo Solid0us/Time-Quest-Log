@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { authFetch } from "./authServices";
-import { getJwtPayload } from "@/utils/jwtUtils";
 import { ApiResponse } from "@/types/apiTypes";
+import { useAuth } from "@/hooks/useAuth";
 
 export type UserDetails = {
   id: string;
@@ -12,12 +12,9 @@ export type UserDetails = {
 };
 
 export const useGetUserDetails = () => {
-  const jwt = localStorage.getItem("jwt");
-  let userId = null;
-  if (jwt) {
-    userId = getJwtPayload(jwt)?.id;
-  }
+  const { userId } = useAuth();
   const url = import.meta.env.VITE_API_BASE_URL + `api/v1/users/${userId}`;
+
   return useQuery<ApiResponse<UserDetails>>({
     queryKey: ["userDetails"],
     queryFn: async () => {

@@ -11,17 +11,28 @@ interface AuthContextType {
 }
 export const AuthContext = createContext<AuthContextType | null>(null);
 
+const isUserAuthenticated = (refreshToken: string | null) => {
+  if (refreshToken) {
+    const exp = getJwtPayload(refreshToken)?.exp;
+    const userId = getJwtPayload(refreshToken)?.id;
+    if (exp && exp > new Date().getTime() && userId) {
+    }
+    return true;
+  }
+  return false;
+};
+
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [authState, setAuthState] = useState(() => {
     const jwt = localStorage.getItem("jwt");
     const refreshToken = localStorage.getItem("refreshToken");
-    const userId = jwt ? getJwtPayload(jwt)?.id : null;
+    const userId = refreshToken ? getJwtPayload(refreshToken)?.id : null;
 
     return {
       jwt,
       refreshToken,
       userId,
-      isAuthenticated: Boolean(jwt && userId),
+      isAuthenticated: isUserAuthenticated(refreshToken),
     };
   });
 
@@ -35,7 +46,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       jwt,
       refreshToken,
       userId,
-      isAuthenticated: Boolean(jwt && userId),
+      isAuthenticated: Boolean(jwt && userId && refreshToken),
     });
   }, []);
 
