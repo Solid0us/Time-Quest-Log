@@ -93,7 +93,6 @@ async function performTokenRefresh(): Promise<string> {
     }
 
     const { token }: TokenResponse = await response.json();
-    console.log(token);
     if (token) localStorage.setItem("jwt", token);
 
     return token ?? "";
@@ -115,8 +114,11 @@ export async function authFetch(
       : new Headers(init.headers || {});
   headers.set("Content-Type", "application/json");
   if (!jwt) {
-    console.log("refreshing...");
-    jwt = (await performTokenRefresh()).replace(/^"(.*)"$/, "$1");
+    try {
+      jwt = (await performTokenRefresh()).replace(/^"(.*)"$/, "$1");
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   headers.set("Authorization", `Bearer ${jwt}`);
@@ -129,21 +131,20 @@ export async function authFetch(
   const response = await fetch(input, config);
   if (response.status === 401) {
     if (retryCount >= maxRetries) {
-      throw new Error("Maximum authentication retries exceeded");
+      return response;
     }
 
     if (!isRefreshing) {
       isRefreshing = true;
-      refreshPromise = performTokenRefresh().finally(() => {
-        isRefreshing = false;
-      });
-    }
-
-    try {
-      await refreshPromise;
-      return authFetch(input, init, retryCount + 1);
-    } catch (error) {
-      throw new Error("Session expired. Please log in again.");
+      try {
+        refreshPromise = performTokenRefresh().finally(() => {
+          isRefreshing = false;
+        });
+        await refreshPromise;
+        return authFetch(input, init, retryCount + 1);
+      } catch (err) {
+        console.log(err);
+      }
     }
   }
 

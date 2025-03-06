@@ -13,8 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/services/authServices";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useNavigate } from "react-router";
 
 const formSchema = z.object({
   username: z.string().min(1, {
@@ -26,7 +26,7 @@ const formSchema = z.object({
 });
 
 const LoginForm = () => {
-  const { login } = useAuth();
+  const { login, setShowReLoginModal } = useAuth();
   const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -52,6 +52,7 @@ const LoginForm = () => {
       const { token, refreshToken } = data;
       login(token ?? "", refreshToken ?? "");
       navigate("/dashboard/home", { replace: true });
+      setShowReLoginModal(false);
     },
     onError: (e) => {
       form.setError("root", {

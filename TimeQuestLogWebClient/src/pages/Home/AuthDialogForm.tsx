@@ -13,6 +13,7 @@ interface AuthDialogFormProps {
   description: string;
   triggerText: string;
   children: React.ReactNode;
+  openModal?: boolean;
 }
 
 const AuthDialogForm = ({
@@ -20,16 +21,24 @@ const AuthDialogForm = ({
   description,
   triggerText,
   title,
+  openModal,
 }: AuthDialogFormProps) => {
+  const returnToHomePage = (e: boolean) => {
+    if (e === false) {
+      window.location.href = "/";
+    }
+  };
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant={"outline"}>{triggerText}</Button>
-      </DialogTrigger>
-      <DialogContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
-      >
+    <Dialog
+      onOpenChange={(e) => returnToHomePage(e.valueOf())}
+      open={openModal}
+    >
+      {openModal === undefined && (
+        <DialogTrigger asChild>
+          <Button variant={"outline"}>{triggerText}</Button>
+        </DialogTrigger>
+      )}
+      <DialogContent onInteractOutside={(e) => e.preventDefault()}>
         <DialogTitle className="font-bold text-xl text-center">
           {title}
         </DialogTitle>

@@ -1,3 +1,6 @@
+import { Dialog } from "@/components/ui/dialog";
+import AuthDialogForm from "@/pages/Home/AuthDialogForm";
+import LoginForm from "@/pages/Home/LoginForm";
 import { getJwtPayload } from "@/utils/jwtUtils";
 import { createContext, useCallback, useEffect, useState } from "react";
 
@@ -8,6 +11,7 @@ interface AuthContextType {
   jwt: string | null;
   userId: string | null | undefined;
   refreshToken: string | null;
+  setShowReLoginModal: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export const AuthContext = createContext<AuthContextType | null>(null);
 
@@ -36,6 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   });
 
+  const [showReLoginModal, setShowReLoginModal] = useState(false);
   const login = useCallback((jwt: string, refreshToken: string) => {
     localStorage.setItem("jwt", jwt);
     localStorage.setItem("refreshToken", refreshToken);
@@ -86,6 +91,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     jwt: authState.jwt,
     userId: authState.userId,
     refreshToken: authState.refreshToken,
+    setShowReLoginModal,
   };
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      <AuthDialogForm
+        openModal={showReLoginModal}
+        title="Sign In"
+        description="Your session has expired. Please log back in to resume."
+        triggerText="Log In"
+      >
+        <LoginForm />
+      </AuthDialogForm>
+      {children}
+    </AuthContext.Provider>
+  );
 };

@@ -44,7 +44,7 @@ export type UserGameStats = {
 };
 
 export const useGetUserGames = () => {
-  const { userId } = useAuth();
+  const { userId, setShowReLoginModal } = useAuth();
   const url =
     import.meta.env.VITE_API_BASE_URL +
     `api/v1/user-games/${userId}/?hours=true`;
@@ -54,6 +54,10 @@ export const useGetUserGames = () => {
       const response = await authFetch(url, {
         method: "GET",
       });
+
+      if (response.status === 401) {
+        setShowReLoginModal(true);
+      }
 
       if (!response.ok) {
         throw new Error("Failed to fetch user details");
@@ -66,7 +70,7 @@ export const useGetUserGames = () => {
 };
 
 export const useGetUserGameStats = () => {
-  const { userId } = useAuth();
+  const { userId, setShowReLoginModal } = useAuth();
   const url =
     import.meta.env.VITE_API_BASE_URL + `api/v1/user-games/${userId}/stats`;
   return useQuery<ApiResponse<UserGameStats>>({
@@ -75,6 +79,10 @@ export const useGetUserGameStats = () => {
       const response = await authFetch(url, {
         method: "GET",
       });
+
+      if (response.status === 401) {
+        setShowReLoginModal(true);
+      }
 
       if (!response.ok) {
         throw new Error("Failed to fetch user details");

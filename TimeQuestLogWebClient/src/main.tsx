@@ -20,8 +20,8 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <AuthProvider>
-          <BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
             <Routes>
               <Route element={<HomeLayout />}>
                 <Route path="/" element={<Home />} />
@@ -35,8 +35,8 @@ createRoot(document.getElementById("root")!).render(
               </Route>
             </Routes>
             <ReactQueryDevtools initialIsOpen={false} />
-          </BrowserRouter>
-        </AuthProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </ThemeProvider>
     </QueryClientProvider>
   </StrictMode>
