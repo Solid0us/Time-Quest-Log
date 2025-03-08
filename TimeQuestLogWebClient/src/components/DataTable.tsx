@@ -6,6 +6,7 @@ import {
   getPaginationRowModel,
   SortingState,
   getSortedRowModel,
+  Row,
 } from "@tanstack/react-table";
 
 import {
@@ -23,12 +24,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   defaultSorting?: SortingState;
+  onRowClick?: (rowData: Row<TData>) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   defaultSorting = [],
+  onRowClick,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
   const table = useReactTable({
@@ -90,6 +93,12 @@ export function DataTable<TData, TValue>({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
+                  className={`${onRowClick && "cursor-pointer"}`}
+                  onClick={() => {
+                    if (onRowClick) {
+                      onRowClick(row);
+                    }
+                  }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="max-w-50">

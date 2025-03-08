@@ -2,6 +2,7 @@ package com.solid0us.time_quest_log.service;
 
 import com.solid0us.time_quest_log.model.*;
 import com.solid0us.time_quest_log.model.DTOs.GameHoursDTO;
+import com.solid0us.time_quest_log.model.DTOs.GameSessionAggregateStatsDTO;
 import com.solid0us.time_quest_log.model.DTOs.GameStatsDTO;
 import com.solid0us.time_quest_log.model.DTOs.UserGameWithHoursDTO;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedByGenre;
@@ -146,5 +147,14 @@ public class UserGameService {
         );
 
         return ServiceResult.success(stats);
+    }
+
+    public ServiceResult<GameSessionAggregateStatsDTO> getUserGameSessionAggregateStats(UUID userId, int gameId){
+        try {
+            List<GameSessionAggregateStatsDTO> stats = gameSessionRepository.findUserGameAggregateSessionStats(userId, gameId);
+            return ServiceResult.success(stats.get(0));
+        } catch (Exception e){
+            return ServiceResult.failure(List.of(new ErrorDetail("gameId", "Game not found in user's library.")));
+        }
     }
 }

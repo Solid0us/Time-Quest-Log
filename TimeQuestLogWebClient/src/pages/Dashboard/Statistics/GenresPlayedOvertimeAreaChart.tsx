@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/chart";
 import { UserGameStats } from "@/services/userGameServices";
 import { getUTCMonthName } from "@/utils/timeUtils";
-import AreaChartContainer from "./AreaChartContainer";
+import YearlyChartCard from "./YearlyChartCard";
 
 type ChartSeriesConfig = {
   label: string;
@@ -66,7 +66,7 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
   }, [monthlyData]);
   const chartConfig = createChartConfig(genreNames);
   return (
-    <AreaChartContainer
+    <YearlyChartCard
       chartTitle="Genre Preference"
       chartDescription="Hours played across different genres over the course of the year."
       year={year}
@@ -149,7 +149,7 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
           <ChartLegend className="flex-wrap" content={<ChartLegendContent />} />
         </AreaChart>
       </ChartContainer>
-    </AreaChartContainer>
+    </YearlyChartCard>
   );
 };
 

@@ -1,6 +1,8 @@
 package com.solid0us.time_quest_log.controller;
 
 import com.solid0us.time_quest_log.model.*;
+import com.solid0us.time_quest_log.model.DTOs.GameSessionAggregateStatsDTO;
+import com.solid0us.time_quest_log.model.DTOs.GameSessionsDTO;
 import com.solid0us.time_quest_log.model.DTOs.GameStatsDTO;
 import com.solid0us.time_quest_log.model.DTOs.UserGameWithHoursDTO;
 import com.solid0us.time_quest_log.service.UserGameService;
@@ -74,6 +76,22 @@ public class UserGameController {
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                         .body(ApiResponse.failure("Unable to add game to user's library.", result.getErrors()));
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.failure("Invalid UUID provided.", null));
+        }
+    }
+
+    @GetMapping({"/{userId}/stats/{gameId}", "/{userId}/stats/{gameId}/" })
+    public ResponseEntity<ApiResponse<?>> getUserGameStats(@PathVariable String userId, @PathVariable int gameId) {
+        try {
+            ServiceResult<GameSessionAggregateStatsDTO> result = userGameService.getUserGameSessionAggregateStats(UUID.fromString(userId), gameId);
+            if (result.isSuccess()){
+                return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("", result.getData()));
+            } else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        .body(ApiResponse.failure("Could not fetch game stats", result.getErrors()));
             }
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

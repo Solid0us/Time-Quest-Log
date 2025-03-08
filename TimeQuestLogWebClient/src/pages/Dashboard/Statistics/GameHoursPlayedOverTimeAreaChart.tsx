@@ -1,6 +1,6 @@
 import { UserGameStats } from "@/services/userGameServices";
 import { useMemo, useState } from "react";
-import AreaChartContainer from "./AreaChartContainer";
+import YearlyChartCard from "./YearlyChartCard";
 import {
   ChartContainer,
   ChartTooltip,
@@ -42,7 +42,7 @@ const GameHoursPlayedOverTimeAreaChart = ({
   );
   const chartConfig = createChartConfig();
   return (
-    <AreaChartContainer
+    <YearlyChartCard
       chartTitle="Gaming Hours"
       chartDescription="Total hours played over the course of the year by month."
       year={year}
@@ -94,7 +94,7 @@ const GameHoursPlayedOverTimeAreaChart = ({
           />
         </AreaChart>
       </ChartContainer>
-    </AreaChartContainer>
+    </YearlyChartCard>
   );
 };
 

@@ -1,6 +1,7 @@
 package com.solid0us.time_quest_log.repositories;
 
 import com.solid0us.time_quest_log.model.DTOs.GameHoursDTO;
+import com.solid0us.time_quest_log.model.DTOs.GameSessionAggregateStatsDTO;
 import com.solid0us.time_quest_log.model.GameSessions;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedByGenre;
 import com.solid0us.time_quest_log.model.aggregates.HoursPlayedPerYear;
@@ -89,5 +90,24 @@ public interface GameSessionRepository extends JpaRepository<GameSessions, UUID>
            GROUP BY EXTRACT(YEAR FROM gs.start_time), EXTRACT(MONTH FROM gs.start_time)::varchar(255), g.name, g.id
     """, nativeQuery = true)
     List<HoursPlayedPerYearPerMonthPerGame> findHoursPlayedPerYearPerMonthPerGame(@Param("userId") UUID userId);
+
+    @Query(value = """
+          SELECT
+            SUM(EXTRACT(EPOCH FROM (gs.end_time - gs.start_time)) / 3600)::double precision AS hoursPlayed,
+            AVG(EXTRACT(EPOCH FROM (gs.end_time - gs.start_time)) / 3600)::double precision AS avgSessionTime,
+            MAX(EXTRACT(EPOCH FROM (gs.end_time - gs.start_time)) / 3600)::double precision AS longestSessionTime,
+            (SELECT to_char(gs2.start_time, 'YYYY-MM-DD"T"HH24:MI:SS.MS+00:00')
+               FROM game_sessions gs2
+               WHERE gs2.user_id = :userId
+                 AND gs2.game_id = :gameId
+               ORDER BY (gs2.end_time - gs2.start_time) DESC
+               LIMIT 1) AS longestSessionDate,
+            to_char(MAX(gs.start_time), 'YYYY-MM-DD"T"HH24:MI:SS.MS+00:00') AS lastPlayed,
+            to_char(MIN(gs.start_time), 'YYYY-MM-DD"T"HH24:MI:SS.MS+00:00') AS firstTimePlayed
+        FROM game_sessions gs
+        WHERE gs.user_id = :userId
+        AND gs.game_id = :gameId;
+    """, nativeQuery = true)
+    List<GameSessionAggregateStatsDTO> findUserGameAggregateSessionStats(@Param("userId") UUID userId, @Param("gameId") int gameId);
 
 }

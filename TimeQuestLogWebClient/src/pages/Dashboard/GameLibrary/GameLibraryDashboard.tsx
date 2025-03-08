@@ -1,9 +1,11 @@
 import { useGetUserGames, UserGame } from "@/services/userGameServices";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, Row } from "@tanstack/react-table";
 import DataTable from "../../../components/DataTable";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import DashboardTitle from "../DashboardTitle";
+import { useState } from "react";
+import IndividualGameStat from "./IndividualGameStat";
 
 const GameLibraryDashboard = () => {
   const { data } = useGetUserGames();
@@ -80,11 +82,32 @@ const GameLibraryDashboard = () => {
       cell: ({ row }) => <>{row.original.hoursPlayed.toFixed(2)}</>,
     },
   ];
+  const [selectedRow, setSelectedRow] = useState<Row<UserGame>>();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openIndividualGameModal = (userGameRow: Row<UserGame>) => {
+    setIsModalOpen(true);
+    setSelectedRow(userGameRow);
+  };
 
   return (
     <div className="p-3 md:p-10 w-full overflow-auto">
+      {selectedRow && (
+        <IndividualGameStat
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+          userGameRow={selectedRow}
+        />
+      )}
       <DashboardTitle text="Game Library" />
-      {data && <DataTable columns={columns} data={data?.data ?? []} />}
+      {data && (
+        <DataTable
+          columns={columns}
+          data={data?.data ?? []}
+          onRowClick={openIndividualGameModal}
+        />
+      )}
     </div>
   );
 };

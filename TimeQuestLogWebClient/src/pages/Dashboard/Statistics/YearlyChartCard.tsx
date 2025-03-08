@@ -24,7 +24,7 @@ interface AreaChartContainerProps {
   children: React.ReactNode;
 }
 
-const AreaChartContainer = ({
+const YearlyChartCard = ({
   chartDescription,
   chartTitle,
   children,
@@ -65,4 +65,4 @@ const AreaChartContainer = ({
   );
 };
 
-export default AreaChartContainer;
+export default YearlyChartCard;
