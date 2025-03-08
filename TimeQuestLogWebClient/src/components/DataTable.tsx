@@ -7,6 +7,7 @@ import {
   SortingState,
   getSortedRowModel,
   Row,
+  Table as TableType,
 } from "@tanstack/react-table";
 
 import {
@@ -18,13 +19,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   defaultSorting?: SortingState;
   onRowClick?: (rowData: Row<TData>) => void;
+  setTableData?: (tableData: TableType<TData>) => void;
 }
 
 export function DataTable<TData, TValue>({
@@ -32,6 +34,7 @@ export function DataTable<TData, TValue>({
   data,
   defaultSorting = [],
   onRowClick,
+  setTableData,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>(defaultSorting);
   const table = useReactTable({
@@ -45,6 +48,12 @@ export function DataTable<TData, TValue>({
       sorting,
     },
   });
+
+  useEffect(() => {
+    if (setTableData) {
+      setTableData(table);
+    }
+  }, [table]);
 
   return (
     <div>

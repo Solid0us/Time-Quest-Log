@@ -1,40 +1,19 @@
 import { DataItem, TwoColumnTable } from "@/components/TwoColumnTable";
 import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@/components/ui/chart";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { GameSession, useGetGameSessions } from "@/services/gameSessionService";
 import {
   useGetUserIndividualGameStats,
   UserGame,
 } from "@/services/userGameServices";
-import { ColumnDef, Row } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
-import { CartesianGrid, Line, LineChart, XAxis } from "recharts";
-import YearlyChartCard from "../Statistics/YearlyChartCard";
-import {
-  getTimeDifferenceInMilliSeconds,
-  getUTCMonthName,
-} from "@/utils/timeUtils";
-
-const chartConfig = {
-  hours: {
-    label: "Hours",
-  },
-  desktop: {
-    label: "Desktop",
-    color: "hsl(var(--chart-1))",
-  },
-} satisfies ChartConfig;
+import { ColumnDef, Row, Table } from "@tanstack/react-table";
+import React, { useMemo } from "react";
+import YearlyChart from "./YearlyChart";
+import GameModalNavigation from "./GameModalNavigation";
 
 enum IGDBImageSize {
   CoverSmall = "cover_small",
@@ -51,28 +30,24 @@ enum IGDBImageSize {
 
 interface IndividualGameStatProps {
   userGameRow: Row<UserGame>;
+  setUserGameRow: React.Dispatch<
+    React.SetStateAction<Row<UserGame> | undefined>
+  >;
   isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  data: UserGame[];
+  gameLibraryTable?: Table<UserGame>;
 }
 const IndividualGameStat = ({
   userGameRow,
+  setUserGameRow,
   isModalOpen,
   setIsModalOpen,
+  data,
+  gameLibraryTable,
 }: IndividualGameStatProps) => {
   const { data: gameSessionAggregateData } = useGetUserIndividualGameStats(
     userGameRow.original.gameId
-  );
-  const [year, setYear] = useState(new Date().getUTCFullYear().toString());
-  const { data: gameSessions, isFetching: isGameSessionsFetching } =
-    useGetGameSessions();
-  const monthlyData = useMemo(
-    () =>
-      formatGameMonthlyData(
-        gameSessions?.data ?? [],
-        userGameRow.original.gameId,
-        year
-      ),
-    [gameSessions, userGameRow, year]
   );
 
   const changeIGDBCoverImageSize = (igdbUrl: string, size: IGDBImageSize) => {
@@ -125,6 +100,7 @@ const IndividualGameStat = ({
       },
     ];
   }, [gameSessionAggregateData]);
+
   const columns: ColumnDef<DataItem>[] = [
     {
       accessorKey: "description",
@@ -135,10 +111,27 @@ const IndividualGameStat = ({
       header: "",
     },
   ];
+
+  const getNextItem = () => {
+    if (gameLibraryTable) {
+      setUserGameRow(
+        gameLibraryTable.getCoreRowModel().rows[userGameRow.index + 1]
+      );
+    }
+  };
+
+  const getPrevItem = () => {
+    if (gameLibraryTable) {
+      setUserGameRow(
+        gameLibraryTable.getCoreRowModel().rows[userGameRow.index - 1]
+      );
+    }
+  };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={(e) => setIsModalOpen(e)}>
       <DialogContent
-        className="w-full max-w-[80%] h-[90%] overflow-auto flex flex-col gap-10"
+        className="w-full max-w-[95%] md:max-w-[80%] h-[90%] overflow-auto flex flex-col gap-10"
         onInteractOutside={(e) => e.preventDefault()}
       >
         <DialogHeader className="space-y-0">
@@ -148,13 +141,19 @@ const IndividualGameStat = ({
           <DialogDescription className="text-center">
             Detailed statistics that highlight your gameplay.
           </DialogDescription>
+          <GameModalNavigation
+            data={data}
+            getNextItem={getNextItem}
+            getPrevItem={getPrevItem}
+            userGameRow={userGameRow}
+          />
         </DialogHeader>
 
-        <div className="flex flex-col md:flex-row gap-3">
-          <section className="max-w-40 md:max-w-96 flex flex-row ml-auto mr-auto md:ml-0 md:mr-0">
+        <div className="flex flex-col lg:flex-row gap-3">
+          <section className="max-w-50 lg:max-w-96 flex flex-row ml-auto mr-auto lg:ml-0 lg:mr-0 border rounded-md w-fit h-fit ">
             <img
               draggable={false}
-              className="aspect-[9/16] mt-auto mb-auto"
+              className="aspect-auto lg:aspect-[9/16] mt-auto mb-auto rounded-md"
               src={`${changeIGDBCoverImageSize(
                 userGameRow.original.coverUrl,
                 IGDBImageSize.HD1080P
@@ -163,100 +162,15 @@ const IndividualGameStat = ({
           </section>
           <section className="w-full">
             <div className="flex flex-col gap-5 items-center justify-center">
-              <TwoColumnTable data={tableData} columns={columns} />
-
-              <YearlyChartCard
-                chartTitle="Hours Played Over Time"
-                chartDescription="df"
-                year={year}
-                setYear={setYear}
-                yearSelectList={["2025"]}
-              >
-                <ChartContainer
-                  config={chartConfig}
-                  className="aspect-auto h-[250px] w-full"
-                >
-                  <LineChart
-                    accessibilityLayer
-                    data={monthlyData}
-                    margin={{
-                      left: 12,
-                      right: 12,
-                    }}
-                  >
-                    <CartesianGrid vertical={false} />
-                    <XAxis
-                      dataKey="date"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={8}
-                      minTickGap={32}
-                      tickFormatter={(value: string) => {
-                        return getUTCMonthName(value, "short");
-                      }}
-                    />
-                    <ChartTooltip
-                      content={
-                        <ChartTooltipContent
-                          className="w-[150px]"
-                          nameKey="hours"
-                          labelFormatter={(value: string) => {
-                            return getUTCMonthName(value);
-                          }}
-                        />
-                      }
-                    />
-                    <Line
-                      dataKey={"hours"}
-                      type="monotone"
-                      stroke={`var(--chart-1)`}
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ChartContainer>
-              </YearlyChartCard>
+              <div className="border rounded-md w-full">
+                <TwoColumnTable data={tableData} columns={columns} />
+              </div>
+              <YearlyChart userGameRow={userGameRow} />
             </div>
           </section>
         </div>
       </DialogContent>
     </Dialog>
-  );
-};
-
-const formatGameMonthlyData = (
-  sessions: GameSession[],
-  gameId: number,
-  year: string
-) => {
-  const monthlyDataMap = new Map();
-  const yearData = sessions.filter(
-    (entry) =>
-      new Date(entry.startTime).getUTCFullYear().toString() === year &&
-      entry.endTime !== null &&
-      gameId === entry.game.id
-  );
-
-  for (let month = 1; month <= 12; month++) {
-    const monthKey = `${year}-${month.toString().padStart(2, "0")}`;
-    monthlyDataMap.set(monthKey, { date: monthKey, hours: 0 });
-  }
-
-  yearData.forEach((entry) => {
-    const monthKey = `${new Date(entry.startTime).getUTCFullYear()}-${(
-      new Date(entry.startTime).getUTCMonth() + 1
-    )
-      .toString()
-      .padStart(2, "0")}`;
-    const milliseconds = getTimeDifferenceInMilliSeconds(
-      new Date(entry.startTime),
-      new Date(entry.endTime as Date)
-    );
-    const hoursPlayed = milliseconds / 1000 / 60 / 60;
-    monthlyDataMap.get(monthKey).hours += hoursPlayed;
-  });
-  return Array.from(monthlyDataMap.values()).sort((a, b) =>
-    a.date.localeCompare(b.date)
   );
 };
 

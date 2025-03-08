@@ -1,5 +1,5 @@
 import { useGetUserGames, UserGame } from "@/services/userGameServices";
-import { ColumnDef, Row } from "@tanstack/react-table";
+import { ColumnDef, Row, Table } from "@tanstack/react-table";
 import DataTable from "../../../components/DataTable";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import IndividualGameStat from "./IndividualGameStat";
 
 const GameLibraryDashboard = () => {
   const { data } = useGetUserGames();
+  const [gameLibraryTable, setGameLibraryTable] = useState<Table<UserGame>>();
   const columns: ColumnDef<UserGame>[] = [
     {
       accessorKey: "coverUrl",
@@ -98,6 +99,9 @@ const GameLibraryDashboard = () => {
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
           userGameRow={selectedRow}
+          setUserGameRow={setSelectedRow}
+          data={data?.data ?? []}
+          gameLibraryTable={gameLibraryTable}
         />
       )}
       <DashboardTitle text="Game Library" />
@@ -106,6 +110,7 @@ const GameLibraryDashboard = () => {
           columns={columns}
           data={data?.data ?? []}
           onRowClick={openIndividualGameModal}
+          setTableData={setGameLibraryTable}
         />
       )}
     </div>

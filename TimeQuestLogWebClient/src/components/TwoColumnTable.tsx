@@ -34,7 +34,9 @@ export function TwoColumnTable<TData, TValue>({
             {row.getVisibleCells().map((cell, idx) => (
               <TableCell
                 key={cell.id}
-                className={`${idx % 2 === 0 && "font-bold border-r-2"} p-4`}
+                className={`${
+                  idx % 2 === 0 && "font-bold border-r-2"
+                } p-4 w-1/2`}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
