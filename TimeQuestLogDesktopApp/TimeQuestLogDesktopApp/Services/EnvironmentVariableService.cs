@@ -16,11 +16,10 @@ namespace TimeQuestLogDesktopApp.Services
 
 		private EnvironmentVariableService()
 		{
-			var envPath = Path.Combine(AppContext.BaseDirectory, "..", "..", "..", ".env");
+			var envPath = Path.Combine(AppContext.BaseDirectory, ".env");
 
 			LoadEnvFile(envPath);
 
-			// Read and store relevant variables
 			ApiBaseUrl = GetRequiredVariable("API_BASE_URL");
 		}
 

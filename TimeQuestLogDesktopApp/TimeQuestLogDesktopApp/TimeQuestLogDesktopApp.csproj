@@ -32,4 +32,8 @@
     <Resource Include="Resources\SyncIcon.png" />
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;$(ProjectDir).env&quot; &quot;$(TargetDir).env&quot;" />
+  </Target>
+
 </Project>
