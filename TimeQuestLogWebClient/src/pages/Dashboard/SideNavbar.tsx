@@ -47,16 +47,16 @@ const SideNavbar = () => {
           <Link draggable={false} to="/dashboard/home">
             <DashboardNavItem
               relativePath="home"
-              lightModeImageUrl="/iconmonstr-home-7-96.png"
-              darkModeImageUrl="/iconmonstr-home-7-96-dark.png"
-              text="Main"
+              lightModeImageUrl="/iconmonstr-dashboard-filled-96.png"
+              darkModeImageUrl="/iconmonstr-dashboard-filled-96-dark.png"
+              text="Game Sessions"
             />
           </Link>
           <Link draggable={false} to="/dashboard/statistics">
             <DashboardNavItem
               relativePath="statistics"
-              lightModeImageUrl="/iconmonstr-bar-chart-thin-96.png"
-              darkModeImageUrl="/iconmonstr-bar-chart-thin-240-dark.png"
+              lightModeImageUrl="/iconmonstr-chart-5-96.png"
+              darkModeImageUrl="/iconmonstr-chart-5-96-dark.png"
               text="Statistics"
             />
           </Link>
@@ -71,9 +71,17 @@ const SideNavbar = () => {
           <Link draggable={false} to="/dashboard/settings">
             <DashboardNavItem
               relativePath="settings"
-              lightModeImageUrl="/iconmonstr-gear-thin-96.png"
-              darkModeImageUrl="/iconmonstr-gear-thin-96-dark.png"
+              lightModeImageUrl="/iconmonstr-gear-3-96.png"
+              darkModeImageUrl="/iconmonstr-gear-3-96-dark.png"
               text="Settings"
+            />
+          </Link>
+          <Link className="mt-auto" draggable={false} to="/">
+            <DashboardNavItem
+              relativePath=""
+              lightModeImageUrl="/iconmonstr-home-7-96.png"
+              darkModeImageUrl="/iconmonstr-home-7-96-dark.png"
+              text="Home"
             />
           </Link>
         </nav>
