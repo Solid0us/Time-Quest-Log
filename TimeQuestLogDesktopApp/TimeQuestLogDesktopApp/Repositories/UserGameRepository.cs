@@ -85,7 +85,7 @@ namespace TimeQuestLogDesktopApp.Repositories
 			}
 		}
 
-		public int UpdateSync(string id, bool isSynced)
+		public int UpdateSync(string userId, int gameId, bool isSynced)
 		{
 			using(var cnn = _connectionFactory.CreateConnection())
 			{
@@ -93,9 +93,10 @@ namespace TimeQuestLogDesktopApp.Repositories
 				string sql = @"
 					UPDATE UserGames
 					SET IsSynced = @SyncValue
-					WHERE Id = @Id
+					WHERE UserId = @UserId
+					AND GameId = @GameId
 				";
-				var parameters = new { Id = id, SyncValue = syncValue };
+				var parameters = new { UserId = userId, GameId = gameId, SyncValue = syncValue };
 
 				return cnn.Execute(sql, parameters);
 			}

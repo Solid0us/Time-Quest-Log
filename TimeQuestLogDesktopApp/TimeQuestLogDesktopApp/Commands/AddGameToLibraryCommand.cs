@@ -66,11 +66,11 @@ namespace TimeQuestLogDesktopApp.Commands
 					}));
 				if (response.IsSuccessStatusCode)
 				{
-					userGameRepository.UpdateSync(userGame.Id, true);
+					userGameRepository.UpdateSync(userGame.UserId, userGame.GameId, true);
 				}
 				else
 				{
-					userGameRepository.UpdateSync(userGame.Id, false);
+					userGameRepository.UpdateSync(userGame.UserId, userGame.GameId, false);
 				}
 				_addGameViewModel._loadGames();
 				GameSessionMonitoringService.Instance.MapGame(_addGameViewModel.ExeName, _addGameViewModel.SelectedGame.id);

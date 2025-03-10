@@ -1,16 +1,22 @@
 package com.solid0us.time_quest_log.repositories;
 
 import com.solid0us.time_quest_log.model.DTOs.UserGameWithHoursDTO;
+import com.solid0us.time_quest_log.model.Games;
 import com.solid0us.time_quest_log.model.UserGames;
+import com.solid0us.time_quest_log.model.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface UserGameRepository extends JpaRepository<UserGames, UUID> {
     List<UserGames> findByUser_Id(UUID userId);
+
+    Optional<UserGames> findByUserAndGame(Users user, Games game);
+
 
     @Query(value = """
            SELECT COUNT(DISTINCT game_id)

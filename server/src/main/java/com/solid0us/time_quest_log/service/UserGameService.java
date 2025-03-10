@@ -104,7 +104,7 @@ public class UserGameService {
                 return ServiceResult.failure(errorDetails);
             }
         }
-        UserGames gameToSave = userGameRepository.findById(uuid)
+        UserGames gameToSave = userGameRepository.findByUserAndGame(userGame.getUser(), userGame.getGame())
                 .map(game -> {
                     game.setGame(userGame.getGame());
                     game.setExeName(userGame.getExeName());
@@ -112,7 +112,6 @@ public class UserGameService {
                     return game;
                 })
                 .orElse(userGame);
-        gameToSave.setId(uuid);
         return ServiceResult.success(userGameRepository.save(gameToSave));
     }
 

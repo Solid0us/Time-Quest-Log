@@ -87,10 +87,10 @@ namespace TimeQuestLogDesktopApp.Commands
 			{
 				HttpResponseMessage response = await _httpService.SendAndRepeatAuthorization(() => _httpService.PutAsync(userGameUrl, data));
 				string message = await response.Content.ReadAsStringAsync();
-				ApiResponse<List<UserGameDTO>> json = JsonConvert.DeserializeObject<ApiResponse<List<UserGameDTO>>>(message);
+				ApiResponse<List<UserGameSyncDTO>> json = JsonConvert.DeserializeObject<ApiResponse<List<UserGameSyncDTO>>>(message);
 				foreach (var userGameDTO in json.Data)
 				{
-					_userGameRepository.UpdateSync(userGameDTO.Id, true);
+					_userGameRepository.UpdateSync(userGameDTO.User.Id, userGameDTO.Game.Id, true);
 				}
 				return true;
 			}
