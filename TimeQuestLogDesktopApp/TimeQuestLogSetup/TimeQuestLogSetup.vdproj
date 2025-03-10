@@ -21,6 +21,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_AD70DD4A6AED4A239B00BDA25F2BE959"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_B59A5D16D42E460785FAD28919EE330C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -158,6 +164,26 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_AD70DD4A6AED4A239B00BDA25F2BE959"
+            {
+            "SourcePath" = "8:C:\\Users\\blt11\\Downloads\\gamepad-logo.ico"
+            "TargetName" = "8:gamepad-logo.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_BAE09EEC6B0D4097AF6562F8321D9CD8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_B59A5D16D42E460785FAD28919EE330C"
             {
             "SourcePath" = "8:..\\TimeQuestLogDesktopApp\\.env"
@@ -246,7 +272,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TimeQuestLogSetup"
         "ProductCode" = "8:{75CA10E0-D30E-4358-B8A0-F911CFFB24FD}"
-        "PackageCode" = "8:{51B4F35D-DAF0-43A9-ABAA-884CC47E9492}"
+        "PackageCode" = "8:{F2C5F00E-4E66-4CC6-AB68-7D09B9701A66}"
         "UpgradeCode" = "8:{A376A645-250E-44E5-A91D-CF4D42D8B61C}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -366,23 +392,9 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_58A399874E2841F5BC95298A143C41A6"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_4172AF2CCFD0499A907BEA08295B64B4"
             {
-            "Name" = "8:timequestlogsetup"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_F446F3D58E7D486296D3D963556DA72D"
-            "Folder" = "8:_3898CE0342C1460BBA669B9820A7946D"
-            "WorkingFolder" = "8:_BAE09EEC6B0D4097AF6562F8321D9CD8"
-            "Icon" = "8:"
-            "Feature" = "8:"
-            }
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_7B374F823F55455E885709B58FDCB7C1"
-            {
-            "Name" = "8:timequestlogsetup"
+            "Name" = "8:TimeQuestLog"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
@@ -391,7 +403,21 @@
             "Target" = "8:_F446F3D58E7D486296D3D963556DA72D"
             "Folder" = "8:_1D8B92DE4AA34B828D4A36EB447463A0"
             "WorkingFolder" = "8:_BAE09EEC6B0D4097AF6562F8321D9CD8"
-            "Icon" = "8:"
+            "Icon" = "8:_AD70DD4A6AED4A239B00BDA25F2BE959"
+            "Feature" = "8:"
+            }
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_58A399874E2841F5BC95298A143C41A6"
+            {
+            "Name" = "8:TimeQuestLog"
+            "Arguments" = "8:"
+            "Description" = "8:"
+            "ShowCmd" = "3:1"
+            "IconIndex" = "3:0"
+            "Transitive" = "11:FALSE"
+            "Target" = "8:_F446F3D58E7D486296D3D963556DA72D"
+            "Folder" = "8:_3898CE0342C1460BBA669B9820A7946D"
+            "WorkingFolder" = "8:_BAE09EEC6B0D4097AF6562F8321D9CD8"
+            "Icon" = "8:_AD70DD4A6AED4A239B00BDA25F2BE959"
             "Feature" = "8:"
             }
         }
