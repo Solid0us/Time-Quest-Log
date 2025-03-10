@@ -7,6 +7,7 @@ using System.Windows;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.Stores;
 using TimeQuestLogDesktopApp.ViewModels;
+using MessageBox = System.Windows.MessageBox;
 
 namespace TimeQuestLogDesktopApp.Commands
 {

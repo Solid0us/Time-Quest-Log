@@ -4,6 +4,7 @@ using System.Windows;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.Stores;
 using TimeQuestLogDesktopApp.ViewModel;
+using Application = System.Windows.Application;
 
 namespace TimeQuestLogDesktopApp
 {

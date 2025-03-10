@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.ViewModels;
+using OpenFileDialog = Microsoft.Win32.OpenFileDialog;
 
 namespace TimeQuestLogDesktopApp.Commands
 {

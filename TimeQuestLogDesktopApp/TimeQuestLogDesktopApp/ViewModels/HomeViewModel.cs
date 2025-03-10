@@ -11,6 +11,7 @@ using TimeQuestLogDesktopApp.Models.DTOs;
 using TimeQuestLogDesktopApp.Repositories;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.Stores;
+using Application = System.Windows.Application;
 
 namespace TimeQuestLogDesktopApp.ViewModels
 {

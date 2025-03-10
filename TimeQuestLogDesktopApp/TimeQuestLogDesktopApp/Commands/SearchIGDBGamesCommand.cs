@@ -14,6 +14,7 @@ using TimeQuestLogDesktopApp.Models.API;
 using TimeQuestLogDesktopApp.Models.DTOs;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.ViewModels;
+using MessageBox = System.Windows.MessageBox;
 
 namespace TimeQuestLogDesktopApp.Commands
 {

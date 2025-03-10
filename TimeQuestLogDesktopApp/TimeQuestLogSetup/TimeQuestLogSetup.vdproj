@@ -101,11 +101,6 @@
             "ComponentsUrl" = "8:"
                 "Items"
                 {
-                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
-                    {
-                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
-                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
-                    }
                     "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:Microsoft.NetCore.CoreRuntime.8.0.x64"
                     {
                     "Name" = "8:.NET Runtime 8.0.1 (x64)"
@@ -272,7 +267,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TimeQuestLogSetup"
         "ProductCode" = "8:{75CA10E0-D30E-4358-B8A0-F911CFFB24FD}"
-        "PackageCode" = "8:{F2C5F00E-4E66-4CC6-AB68-7D09B9701A66}"
+        "PackageCode" = "8:{1630467B-31FA-4A6C-8046-70A41FCCE31E}"
         "UpgradeCode" = "8:{A376A645-250E-44E5-A91D-CF4D42D8B61C}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"

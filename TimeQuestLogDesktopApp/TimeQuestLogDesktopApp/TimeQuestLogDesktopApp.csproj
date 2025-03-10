@@ -8,6 +8,7 @@
     <UseWPF>true</UseWPF>
     <ApplicationIcon>gamepad-logo.ico</ApplicationIcon>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+	<UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,6 +16,21 @@
     <None Remove="timequestlog.db" />
   </ItemGroup>
 
+  <ItemGroup>
+    <COMReference Include="{215d64d2-031c-33c7-96e3-61794cd1ee61}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>4</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>215d64d2-031c-33c7-96e3-61794cd1ee61</Guid>
+    </COMReference>
+    <COMReference Include="{d37e2a3e-8545-3a39-9f4f-31827c9124ab}">
+      <WrapperTool>tlbimp</WrapperTool>
+      <VersionMinor>4</VersionMinor>
+      <VersionMajor>2</VersionMajor>
+      <Guid>d37e2a3e-8545-3a39-9f4f-31827c9124ab</Guid>
+    </COMReference>
+  </ItemGroup>
+	
   <ItemGroup>
     <Content Include="gamepad-logo.ico" />
     <Content Include="timequestlog.db">
@@ -36,7 +52,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="copy &quot;$(ProjectDir).env&quot; &quot;$(TargetDir).env&quot;" />
+    <Exec Command="copy &quot;$(ProjectDir).env&quot; &quot;$(TargetDir).env&quot;&#xD;&#xA;copy &quot;$(ProjectDir)gamepad-logo.ico&quot; &quot;$(TargetDir)gamepad-logo.ico&quot;" />
   </Target>
 
 </Project>
