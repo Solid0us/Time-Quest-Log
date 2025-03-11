@@ -39,12 +39,17 @@ const WeeklyHoursChart = ({ data }: WeeklyHoursChartProps) => {
       hours: 0,
     }));
 
-    const currentDate = new Date(new Date().toLocaleDateString());
+    const currentDate = new Date();
     const currentDay = currentDate.getDay();
-    const startGraphDay =
-      currentDate.getTime() - currentDay * 24 * 60 * 60 * 1000;
-    const endGraphDay =
-      currentDate.getTime() + (7 - currentDay) * 24 * 60 * 60 * 1000;
+    const sundayDate = new Date(currentDate);
+    sundayDate.setDate(currentDate.getDate() - currentDay);
+    sundayDate.setHours(0, 0, 0, 0);
+
+    const saturdayDate = new Date(sundayDate);
+    saturdayDate.setDate(sundayDate.getDate() + 6);
+    saturdayDate.setHours(23, 59, 59, 999);
+    const startGraphDay = sundayDate.getTime();
+    const endGraphDay = saturdayDate.getTime();
     for (let i = 0; i < data.length; i++) {
       const sessionStartDate = new Date(data[i].startTime);
       if (
