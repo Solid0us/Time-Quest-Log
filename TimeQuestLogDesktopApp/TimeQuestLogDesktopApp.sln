@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeQuestLogDesktopApp", "T
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "TimeQuestLogSetup", "TimeQuestLogSetup\TimeQuestLogSetup.vdproj", "{A7F2DC33-96E7-4D48-8D02-BEFC0E41BD9E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeQuestLogInstaller", "TimeQuestLogInstaller\TimeQuestLogInstaller.csproj", "{C48270D7-2CDC-40B7-965E-EC1722D9CFC7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{27786C9D-5E4F-4A53-88F0-3B98A829EFD0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7F2DC33-96E7-4D48-8D02-BEFC0E41BD9E}.Debug|Any CPU.ActiveCfg = Debug
 		{A7F2DC33-96E7-4D48-8D02-BEFC0E41BD9E}.Release|Any CPU.ActiveCfg = Release
+		{C48270D7-2CDC-40B7-965E-EC1722D9CFC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C48270D7-2CDC-40B7-965E-EC1722D9CFC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C48270D7-2CDC-40B7-965E-EC1722D9CFC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C48270D7-2CDC-40B7-965E-EC1722D9CFC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

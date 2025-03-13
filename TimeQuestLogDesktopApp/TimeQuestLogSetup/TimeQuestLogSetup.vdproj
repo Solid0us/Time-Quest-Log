@@ -15,6 +15,12 @@
     {
         "Entry"
         {
+        "MsmKey" = "8:_77567C761E8C4DCCAB7D6195BA379EAB"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_8867C59F97B349B689DF2140F0A82155"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -35,6 +41,12 @@
         {
         "MsmKey" = "8:_F446F3D58E7D486296D3D963556DA72D"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_77567C761E8C4DCCAB7D6195BA379EAB"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -114,6 +126,20 @@
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_7D4A99A062334416AC9AEE75890EA6A1"
+            {
+            "Name" = "8:TimeQuestLogInstaller.dll"
+            "Condition" = "8:"
+            "Object" = "8:_77567C761E8C4DCCAB7D6195BA379EAB"
+            "FileType" = "3:1"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_6AAE320A_4458_43D5_9DE8_FD510EE541D4"
+            "InstallerClass" = "11:TRUE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -125,6 +151,14 @@
         {
             "LaunchCondition"
             {
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_102B0F0778B643D98F15D3296A5F8597"
+                {
+                "Name" = "8:.NET Framework"
+                "Message" = "8:[VSDNETMSG]"
+                "FrameworkVersion" = "8:.NETFramework,Version=v4.7.2"
+                "AllowLaterVersions" = "11:FALSE"
+                "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=863262"
+                }
                 "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_1F52B74978094054BDC9DB26A9B99A1E"
                 {
                 "Name" = "8:.NET Core"
@@ -139,6 +173,37 @@
         }
         "File"
         {
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_77567C761E8C4DCCAB7D6195BA379EAB"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:TimeQuestLogInstaller, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_77567C761E8C4DCCAB7D6195BA379EAB"
+                    {
+                    "Name" = "8:TimeQuestLogInstaller.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:..\\TimeQuestLogInstaller\\bin\\Debug\\TimeQuestLogInstaller.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_BAE09EEC6B0D4097AF6562F8321D9CD8"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_8867C59F97B349B689DF2140F0A82155"
             {
             "SourcePath" = "8:..\\TimeQuestLogDesktopApp\\timequestlog.db"
@@ -266,12 +331,12 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:TimeQuestLogSetup"
-        "ProductCode" = "8:{75CA10E0-D30E-4358-B8A0-F911CFFB24FD}"
-        "PackageCode" = "8:{1630467B-31FA-4A6C-8046-70A41FCCE31E}"
-        "UpgradeCode" = "8:{A376A645-250E-44E5-A91D-CF4D42D8B61C}"
+        "ProductCode" = "8:{FC08BB73-1810-4326-8609-8551EED870BE}"
+        "PackageCode" = "8:{16C183E3-BC63-4928-AEFD-FB2703FCD261}"
+        "UpgradeCode" = "8:{AAA67485-46A3-4971-87E5-4B4665AEAA96}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
-        "RemovePreviousVersions" = "11:FALSE"
+        "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
         "ProductVersion" = "8:1.0.0"
