@@ -1,10 +1,12 @@
 ﻿using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Windows;
 using TimeQuestLogDesktopApp.Services;
 using TimeQuestLogDesktopApp.Stores;
 using TimeQuestLogDesktopApp.ViewModel;
 using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace TimeQuestLogDesktopApp
 {
@@ -16,6 +18,14 @@ namespace TimeQuestLogDesktopApp
 		private readonly NavigationStore _mainViewModelNavigationStore;
 		public App()
 		{
+			Process currentProcess = Process.GetCurrentProcess();
+			Process[] processes = Process.GetProcessesByName(currentProcess.ProcessName);
+			if (processes.Length >  1)
+			{
+				Shutdown();
+				MessageBox.Show("An instance of this application is already running.", "Warning", (MessageBoxButton)MessageBoxButtons.OK, (MessageBoxImage)MessageBoxIcon.Warning);
+				return;
+			}
 			_mainViewModelNavigationStore = new NavigationStore();
 		}
 
