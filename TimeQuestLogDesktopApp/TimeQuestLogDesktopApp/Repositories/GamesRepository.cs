@@ -29,7 +29,7 @@ namespace TimeQuestLogDesktopApp.Repositories
 
         public int CreateGame(Games game)
         {
-            string sql = @"INSERT INTO Games (Id, Name, CoverUrl) VALUES (@Id, @Name, @CoverUrl)";
+            string sql = @"INSERT OR IGNORE INTO Games (Id, Name, CoverUrl) VALUES (@Id, @Name, @CoverUrl)";
             var parameters = new { game.Id, game.Name, game.CoverUrl };
 
             using (var cnn = _connectionFactory.CreateConnection())
@@ -37,5 +37,16 @@ namespace TimeQuestLogDesktopApp.Repositories
                 return cnn.Execute(sql, parameters);
             }
         }
+
+        public int ReplaceGame(Games game)
+        {
+			string sql = @"REPLACE INTO Games (Id, Name, CoverUrl, IsSynced) VALUES (@Id, @Name, @CoverUrl, @IsSynced)";
+			var parameters = new { game.Id, game.Name, game.CoverUrl, IsSynced = true };
+
+			using (var cnn = _connectionFactory.CreateConnection())
+			{
+				return cnn.Execute(sql, parameters);
+			}
+		}
     }
 }

@@ -20,13 +20,21 @@
                     Foreground="{StaticResource TextPrimaryBrush}" 
                     Style="{StaticResource HeaderText}"/>
             <Button 
+             Content="Pull Games from Cloud"
+             Width="150"
+             Height="30"
+             Background="{StaticResource TextLinkBrush}"   
+             Foreground="{StaticResource TextPrimaryBrush}"
+             Command="{Binding PullGamesFromCloud}"
+             /> 
+            <Button 
                 Content="+ Add Game"
                 Width="100"
                 Height="30"
                 Background="{StaticResource PrimaryBrush}"   
                 Foreground="{StaticResource TextPrimaryBrush}"
                 Command="{Binding ShowAddGameWindow}"
-                    />
+            />
             <DataGrid
                 Height="600"
                 CanUserReorderColumns="False"

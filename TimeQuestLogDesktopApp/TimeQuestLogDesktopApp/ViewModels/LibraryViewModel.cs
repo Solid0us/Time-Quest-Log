@@ -18,6 +18,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		private readonly CredentialManagerService _credentialManagerService;
 
 		public ICommand ShowAddGameWindow {  get; set; }
+		public ICommand PullGamesFromCloud {  get; set; }
 
 		public ObservableCollection<UserGameDTO> UserGamesTable
 		{
@@ -38,6 +39,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			_credentialManagerService.LoadCredentials();
 			UserGamesTable = new ObservableCollection<UserGameDTO>();
 			ShowAddGameWindow = new ShowAddGameCommand(LoadGames);
+			PullGamesFromCloud = new PullGamesFromCloudCommand(LoadGames);
 		}
 
 		public static async Task<LibraryViewModel> CreateAsync()
