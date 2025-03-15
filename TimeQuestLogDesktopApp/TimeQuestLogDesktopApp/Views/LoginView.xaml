@@ -39,18 +39,15 @@
                 HorizontalAlignment="Center"  
                 VerticalAlignment="Center"/>
             <TextBox 
-                Height="25"
-                BorderBrush="{StaticResource PrimaryBrush}"
+                Style="{StaticResource RoundedTextBoxStyle}"
                 Grid.Column="1" 
-                Background="{StaticResource SecondaryBrush}"
                 HorizontalAlignment="Center" 
                 Grid.Row="1" 
                 TextWrapping="Wrap" 
                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
                 VerticalAlignment="Center"
-                Foreground="{StaticResource TextPrimaryBrush}"
                 VerticalContentAlignment="Center"
-                Width="200"/>
+                />
             <StackPanel Grid.Column="1" Grid.Row="2" Background="#252525">
                 <Label
                   Grid.Column="1" 

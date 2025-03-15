@@ -14,21 +14,21 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="80"/>
+            <RowDefinition Height="110"/>
             <RowDefinition Height="500"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="1">
             <Label Foreground="{StaticResource TextPrimaryBrush}" Content="Search Game"/>
             <TextBox
-             Text="{Binding GameSearch, UpdateSourceTrigger=PropertyChanged}"
+                Style="{StaticResource RoundedTextBoxStyle}"
+                Width="450"
+                Text="{Binding GameSearch, UpdateSourceTrigger=PropertyChanged}"
             />
             <Button
-                Background="{StaticResource PrimaryBrush}" 
-                Foreground="{StaticResource TextPrimaryBrush}" 
+                Margin="0 10 0 0"
+                Style="{StaticResource RoundedButtonStyle}"
                 Content="Search"
-                Width="100"
-                Height="30"
                 Command="{Binding SearchIGDBGames}"
                 />
         </StackPanel>
@@ -74,23 +74,29 @@
         </DataGrid>
         <StackPanel Grid.Column="1" Grid.Row="2">
             <Label Content="Selected Game" Foreground="{StaticResource TextPrimaryBrush}" />
-            <TextBox IsReadOnly="True" Text="{Binding SelectedGame.name, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox
+                Style="{StaticResource RoundedTextBoxStyle}"
+                Width="450"
+                IsReadOnly="True" Text="{Binding SelectedGame.name, UpdateSourceTrigger=PropertyChanged}" />
             <Label Content="Exe Name" Foreground="{StaticResource TextPrimaryBrush}" />
             <StackPanel
                 Orientation="Horizontal"
                 HorizontalAlignment="Center"
                 >
-                <TextBox Width="350" Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox  
+                    Style="{StaticResource RoundedTextBoxStyle}" 
+                    Width="340" Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
                 <Button
-                    Width="100"
+                    Margin="10 0 0 0"
+                    Style="{StaticResource RoundedButtonStyle}"
                     Content="Select Game"
                     Command="{Binding SelectExecutableCommand}"
                     />
             </StackPanel>
             <Button 
+                Margin="0 10 0 0"
+                Style="{StaticResource RoundedButtonStyle}" 
                 Command="{Binding AddGameToLibraryCommand}"
-                Background="{StaticResource PrimaryBrush}" 
-                Foreground="{StaticResource TextPrimaryBrush}" 
                 Content="Add to Library" />
         </StackPanel>
     </Grid>

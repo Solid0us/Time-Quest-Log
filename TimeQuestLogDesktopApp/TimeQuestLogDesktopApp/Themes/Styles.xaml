@@ -102,5 +102,79 @@
         </Setter>
     </Style>
 
+    <Style x:Key="RoundedTextBoxStyle" TargetType="{x:Type TextBox}">
+        <Setter Property="Width" Value="200" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="CaretBrush" Value="White"/>
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type TextBox}">
+                    <Border x:Name="border" 
+                  CornerRadius="8" 
+                  Background="{StaticResource SecondaryBrush}" 
+                  BorderBrush="{StaticResource PrimaryBrush}" 
+                  BorderThickness="1" 
+                  SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost" 
+                            Focusable="False" 
+                            HorizontalScrollBarVisibility="Hidden" 
+                            VerticalScrollBarVisibility="Hidden"
+                            Margin="8,0,8,0"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource PrimaryButtonHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource PrimaryButtonHoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="RoundedPasswordBoxStyle" TargetType="{x:Type PasswordBox}">
+        <Setter Property="Width" Value="200" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+        <Setter Property="CaretBrush" Value="White"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type PasswordBox}">
+                    <Border x:Name="border" 
+                      CornerRadius="8" 
+                      Background="{StaticResource SecondaryBrush}" 
+                      BorderBrush="{StaticResource PrimaryBrush}" 
+                      BorderThickness="1" 
+                      SnapsToDevicePixels="True">
+                        <ScrollViewer x:Name="PART_ContentHost" 
+                        Focusable="False" 
+                        HorizontalScrollBarVisibility="Hidden" 
+                        VerticalScrollBarVisibility="Hidden"
+                        Margin="8,0,8,0"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" TargetName="border" Value="0.56"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource PrimaryButtonHoverBrush}"/>
+                        </Trigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource PrimaryButtonHoverBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 
 </ResourceDictionary>

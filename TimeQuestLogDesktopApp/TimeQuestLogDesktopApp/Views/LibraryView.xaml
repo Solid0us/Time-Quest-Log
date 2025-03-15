@@ -20,24 +20,21 @@
                     Foreground="{StaticResource TextPrimaryBrush}" 
                     Style="{StaticResource HeaderText}"/>
             <StackPanel
-                Orientation="Horizontal"
+                Orientation="Vertical"
                 HorizontalAlignment="Center"
                 >
-                <Button 
-                 Content="Pull Games from Cloud"
-                 Width="150"
-                 Height="30"
-                 Background="{StaticResource PrimaryBrush}"   
-                 Foreground="{StaticResource TextPrimaryBrush}"
-                 Command="{Binding PullGamesFromCloud}"
+                <Button
+                    Style="{StaticResource RoundedButtonStyle}"
+                    Content="Pull Games from Cloud"
+                    Command="{Binding PullGamesFromCloud}"
+                    Width="150"
                  />
                 <Button 
+                    Margin="0 10 0 0"
+                    Style="{StaticResource RoundedButtonStyle}"
                     Content="+ Add Game"
-                    Width="100"
-                    Height="30"
-                    Background="{StaticResource PrimaryBrush}"   
-                    Foreground="{StaticResource TextPrimaryBrush}"
                     Command="{Binding ShowAddGameWindow}"
+                    Width="100"
                 />
             </StackPanel>
             <DataGrid
