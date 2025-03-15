@@ -27,7 +27,7 @@
           HorizontalAlignment="Center" 
           VerticalAlignment="Center">       
             <TextBlock TextWrapping="WrapWithOverflow" FontSize="20" Foreground="{StaticResource TextPrimaryBrush}">
-              Welcome to QuestTime Log!
+              Welcome to TimeQuest Log!
             </TextBlock>
         </Label>
         <StackPanel Grid.Column="1" Grid.Row="1" Background="{StaticResource SecondaryBrush}">
@@ -102,15 +102,13 @@
         </StackPanel>
         <StackPanel Grid.Column="1" Grid.Row="6" Background="#252525" Height="100">
             <Button
-                Margin="0 25 0 0"
+                Style="{StaticResource RoundedButtonStyle}"
+                Margin="0 20 0 0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 Content="Register"
                 Command="{Binding SignupCommand}"
-                Foreground="{StaticResource TextPrimaryBrush}"
-                Background="{StaticResource PrimaryBrush}"
-                Height="30"
-                Width="100"/>
+                />
             <TextBlock 
                 Margin="0 20 0 0"
                 Foreground="White" 

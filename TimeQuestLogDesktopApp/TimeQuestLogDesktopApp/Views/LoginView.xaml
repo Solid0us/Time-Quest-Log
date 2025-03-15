@@ -11,8 +11,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -25,7 +23,7 @@
             HorizontalAlignment="Center" 
             VerticalAlignment="Center">
                 <TextBlock TextWrapping="WrapWithOverflow" FontSize="20" Foreground="{StaticResource TextPrimaryBrush}">
-                        Welcome to QuestTime Log!
+                        Welcome to TimeQuest Log!
                 </TextBlock>
             </Label>
         <StackPanel Grid.Column="1" Grid.Row="1" Background="{StaticResource SecondaryBrush}">
@@ -53,50 +51,43 @@
                 Foreground="{StaticResource TextPrimaryBrush}"
                 VerticalContentAlignment="Center"
                 Width="200"/>
-
-        </StackPanel>
-        <StackPanel Grid.Column="1" Grid.Row="2" Background="#252525">
-            <Label
-                Grid.Column="1" 
-                Grid.Row="1" 
-                Content="Password" 
-                HorizontalAlignment="Center"  
-                Foreground="{StaticResource TextPrimaryBrush}"
-                VerticalAlignment="Center"/>
-            <components:BindablePasswordBox
-                Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                />
-
-        </StackPanel>
-        <StackPanel 
-            Grid.Column="1" 
-            Grid.Row="3" 
-            VerticalAlignment="Bottom"
-            Background="{StaticResource SecondaryBrush}" 
-            Height="100">
-                <Button
-                    Grid.Column="1" Grid.Row="3"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center"
-                    Margin="0 25 0 0"
-                    Content="Login"
-                    Command="{Binding LoginCommand}"
-                    Foreground="{StaticResource TextPrimaryBrush}"
-                    Background="{StaticResource PrimaryBrush}"
-                    Height="30"
-                    Width="100"/>
+            <StackPanel Grid.Column="1" Grid.Row="2" Background="#252525">
+                <Label
+                  Grid.Column="1" 
+                  Grid.Row="1" 
+                  Content="Password" 
+                  HorizontalAlignment="Center"  
+                  Foreground="{StaticResource TextPrimaryBrush}"
+                  VerticalAlignment="Center"/>
+                <components:BindablePasswordBox
+                  Password="{Binding Password, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                  />
+            </StackPanel>
+            <StackPanel 
+               Grid.Column="1" 
+               Grid.Row="3" 
+               VerticalAlignment="Bottom"
+               Height="100">
+                <Button Style="{StaticResource RoundedButtonStyle}"
+                   Grid.Column="1" Grid.Row="3"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   Margin="0 20 0 0"
+                   Content="Login"
+                   Command="{Binding LoginCommand}"
+                   />
                 <TextBlock 
-                        Margin="0 20 0 0"
-                        Foreground="White" 
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center">
-                        Don't have an account yet?
-                    <Hyperlink
-                            Foreground="{StaticResource TextLinkBrush}"
-                            Command="{Binding NavigateToSignup}"
-                            >Sign up now</Hyperlink>
+                   Margin="0 20 0 0"
+                   Foreground="White" 
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center">
+                   Don't have an account yet?
+               <Hyperlink
+                    Foreground="{StaticResource TextLinkBrush}"
+                    Command="{Binding NavigateToSignup}"
+                    >Sign up now</Hyperlink>
                 </TextBlock>
+            </StackPanel>
         </StackPanel>
-
     </Grid>
 </UserControl>
