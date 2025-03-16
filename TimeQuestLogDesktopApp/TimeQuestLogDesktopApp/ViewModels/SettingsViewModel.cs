@@ -8,5 +8,5 @@ namespace TimeQuestLogDesktopApp.ViewModels
 {
 	internal class SettingsViewModel : ViewModelBase
 	{
-	}
+    }
 }

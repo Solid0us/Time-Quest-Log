@@ -19,6 +19,19 @@ namespace TimeQuestLogDesktopApp.ViewModels
 	{
 		private readonly NavigationStore _dashboardNavigationStore;
 		public ViewModelBase CurrentDashboardViewModel => _dashboardNavigationStore.CurrentViewModel;
+		private string _currentDashboardViewModelName = "Home";
+
+		public string CurrentDashboardViewModelName
+		{
+			get { return _currentDashboardViewModelName; }
+			set 
+			{ 
+				_currentDashboardViewModelName = value;
+				OnPropertyChanged(nameof(CurrentDashboardViewModelName));
+			}
+		}
+
+
 		private LibraryViewModel _libraryViewModel;
 
 		public int NumberUnsynced
@@ -30,8 +43,6 @@ namespace TimeQuestLogDesktopApp.ViewModels
 				OnPropertyChanged(nameof(NumberUnsynced));
 			}
 		}
-
-		private bool _isSyncButtonEnabled;
 
 		public bool IsSyncButtonEnabled => NumberUnsynced != 0;
 
@@ -67,8 +78,16 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			_dashboardNavigationStore.CurrentViewModel = new HomeViewModel();
 			_dashboardNavigationStore.CurrentViewModelChanged += OnCurrentDashboardViewModelChanged;
 
-			NavigateToHome = new NavigateCommand<HomeViewModel>(_dashboardNavigationStore, () => new HomeViewModel());
-			NavigateToSettings = new NavigateCommand<SettingsViewModel>(_dashboardNavigationStore, () => new SettingsViewModel());
+			NavigateToHome = new NavigateCommand<HomeViewModel>(_dashboardNavigationStore, () =>
+			{
+				CurrentDashboardViewModelName = "Home";
+				return new HomeViewModel();
+			});
+			NavigateToSettings = new NavigateCommand<SettingsViewModel>(_dashboardNavigationStore, () =>
+			{
+				CurrentDashboardViewModelName = "Settings";
+				return new SettingsViewModel();
+			});
 
 			SyncData = new SyncDataCommand();
 			UpdateUnsyncedCounter();
@@ -88,13 +107,18 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		private async void InitializeLibraryNavigationAsync()
 		{
 			_libraryViewModel = await LibraryViewModel.CreateAsync();
-			NavigateToLibrary = new NavigateCommand<LibraryViewModel>(_dashboardNavigationStore, () => _libraryViewModel);
+			NavigateToLibrary = new NavigateCommand<LibraryViewModel>(_dashboardNavigationStore, () =>
+			{
+				CurrentDashboardViewModelName = "Library";
+				return _libraryViewModel;
+			});
 			OnPropertyChanged(nameof(NavigateToLibrary));
 		}
 
 		private void OnCurrentDashboardViewModelChanged()
 		{
 			OnPropertyChanged(nameof(CurrentDashboardViewModel));
+			OnPropertyChanged(nameof(CurrentDashboardViewModelName));
 		}
 
 		public void UpdateUnsyncedCounter()

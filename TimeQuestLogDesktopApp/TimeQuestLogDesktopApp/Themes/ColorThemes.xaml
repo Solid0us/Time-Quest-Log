@@ -15,7 +15,8 @@
     <!-- Status Colors -->
     <Color x:Key="SuccessColor">#4CAF50</Color>
     <Color x:Key="WarningColor">#FFC107</Color>
-    <Color x:Key="ErrorColor">#F44336</Color>
+    <Color x:Key="ErrorColor">#fc4f42</Color>
+    <Color x:Key="ErrorFocusedColor">#ff4538</Color>
     
     <!-- Focus Colors-->
     <Color x:Key="PrimaryButtonFocus">#33e8ba</Color>
@@ -32,6 +33,7 @@
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
     <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}"/>
     <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="ErrorFocusedBrush" Color="{StaticResource ErrorFocusedColor}"/>
     <SolidColorBrush x:Key="TextLinkBrush" Color="{StaticResource TextLinkColor}"/>
     <SolidColorBrush x:Key="PrimaryButtonHoverBrush" Color="{StaticResource PrimaryButtonFocus}"/>
 </ResourceDictionary>

@@ -47,24 +47,53 @@
                     <Button x:Name="btnHome" 
                             Content="Home" 
                             Command="{Binding NavigateToHome}"
-                            Style="{StaticResource NavButton}"
-                            />
+                    >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource NavButton}" TargetType="Button">
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentDashboardViewModelName}" Value="Home">
+                                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryButtonHoverBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button 
-                            Content="Game Library" 
-                            Command="{Binding NavigateToLibrary}"
-                            Style="{StaticResource NavButton}"
-                            />
+                        Content="Game Library" 
+                        Command="{Binding NavigateToLibrary}"
+                    >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource NavButton}" TargetType="Button">
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentDashboardViewModelName}" Value="Library">
+                                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryButtonHoverBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button x:Name="btnSettings" 
                             Content="Settings" 
                             Command="{Binding NavigateToSettings}"
-                            Style="{StaticResource NavButton}"
-                            />
+                    >
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource NavButton}" TargetType="Button">
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding CurrentDashboardViewModelName}" Value="Settings">
+                                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryButtonHoverBrush}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
                 <StackPanel Grid.Row="2">
                     <Button x:Name="btnSync"
                         Command="{Binding SyncData}"
                         Margin="0,20,0,0"
-                        Style="{StaticResource NavButton}"
                         IsEnabled="{Binding IsSyncButtonEnabled}"
                         Opacity="{Binding IsSyncButtonEnabled, Converter={StaticResource BoolToOpacityConverter}}"
                     >
@@ -77,6 +106,11 @@
                            />
                             <TextBlock Foreground="{StaticResource TextPrimaryBrush}" Text="{Binding NumberUnsynced}" />
                         </StackPanel>
+                        <Button.Style>
+                            <Style BasedOn="{StaticResource NavButton}" TargetType="Button">
+                                <Setter Property="BorderBrush" Value="Transparent" />
+                            </Style>
+                        </Button.Style>
                     </Button>
 
                     <Button x:Name="btnSignOut"
