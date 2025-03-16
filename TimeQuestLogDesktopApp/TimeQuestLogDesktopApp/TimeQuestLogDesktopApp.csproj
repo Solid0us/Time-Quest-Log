@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\gamepad-logo.png" />
     <None Remove="Resources\SyncIcon.png" />
     <None Remove="timequestlog.db" />
   </ItemGroup>
@@ -48,6 +49,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\gamepad-logo.png" />
     <Resource Include="Resources\SyncIcon.png" />
   </ItemGroup>
 

@@ -406,7 +406,7 @@
         <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
         <Setter Property="FontSize" Value="24"/>
         <Setter Property="Margin" Value="0,0,0,25"/>
-        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Cursor" Value="Arrow"/>
     </Style>
 
     <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource NavButton}">

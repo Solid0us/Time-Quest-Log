@@ -72,6 +72,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			_credentialManager = CredentialManagerService.GetInstance();
 			_credentialManager.LoadCredentials();
 			Username = _credentialManager.GetUsername(CredentialManagerService.CredentialType.REFRESH);
+			Username = UpperCaseString(Username);
 			SignoutCommand = new SignoutCommand(mainViewModelNavigationStore);
 
 			_dashboardNavigationStore = new NavigationStore();
@@ -93,6 +94,12 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			UpdateUnsyncedCounter();
 
 			InitializeLibraryNavigationAsync();
+		}
+
+		private static string UpperCaseString(string val)
+		{
+			if (string.IsNullOrEmpty(val)) return val;
+			return char.ToUpper(val[0]) + val.Substring(1);
 		}
 
 		private void GameMonitoringService_PropertyChanged(object sender, PropertyChangedEventArgs e)

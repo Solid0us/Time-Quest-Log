@@ -6,6 +6,7 @@
     <!-- Secondary Colors -->
     <Color x:Key="SecondaryColor">#252525</Color>
     <Color x:Key="TextLinkColor">#16c79a</Color>
+    <Color x:Key="SyncColor">#f4a261</Color>
 
     <!-- Neutral Colors -->
     <Color x:Key="BackgroundColor">#121212</Color>
@@ -28,6 +29,7 @@
     <!-- Solid Color Brushes -->
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
+    <SolidColorBrush x:Key="SyncBrush" Color="{StaticResource SyncColor}"/>
     <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
     <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
     <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>

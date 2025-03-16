@@ -9,7 +9,7 @@
              Background="{StaticResource BackgroundBrush}">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="100"/>
+            <RowDefinition Height="125"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -17,16 +17,25 @@
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-            <Label
+        <StackPanel 
             Grid.Column="1" 
-            Grid.Row="0" 
-            HorizontalAlignment="Center" 
-            VerticalAlignment="Center">
+            Grid.Row="0">
+                <Image
+                    Margin="0 10 0 0"
+                    Width="50"
+                    Source="/Resources/gamepad-logo.png"/>
+                <Label
+                    HorizontalAlignment="Center" 
+                    VerticalAlignment="Center">
                 <TextBlock TextWrapping="WrapWithOverflow" FontSize="20" Foreground="{StaticResource TextPrimaryBrush}">
-                        Welcome to TimeQuest Log!
+                         Welcome to TimeQuest Log!
                 </TextBlock>
             </Label>
-        <StackPanel Grid.Column="1" Grid.Row="1" Background="{StaticResource SecondaryBrush}">
+        </StackPanel>
+        <StackPanel 
+            Grid.Column="1" 
+            Grid.Row="1" 
+            Background="{StaticResource SecondaryBrush}">
             <Label
              Content="Sign In" 
              FontSize="20"
