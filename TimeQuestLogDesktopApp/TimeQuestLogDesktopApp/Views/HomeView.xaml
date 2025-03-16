@@ -18,17 +18,23 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*" />
+            <RowDefinition Height="100" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Label Foreground="{StaticResource TextPrimaryBrush}" Content="Home View"/>
+        <TextBlock 
+            Grid.Column="1"
+            HorizontalAlignment="Center"
+            Text="Game Sessions"
+            Foreground="{StaticResource TextPrimaryBrush}" 
+            Style="{StaticResource HeaderText}"/>
         <DataGrid   
             ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
             RowStyle="{DynamicResource DataGridRowStyle1}"
             Style="{DynamicResource DataGridStyle1}" 
             Grid.Row="1" 
             Grid.ColumnSpan="3"
-            Height="auto"
+            Height="600"
+            VerticalAlignment="Top"
             IsReadOnly="True" 
             CanUserReorderColumns="False"
             ItemsSource="{Binding GameSessionTable}"

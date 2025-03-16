@@ -40,12 +40,13 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <TextBlock 
+                    Cursor="Arrow"
                     Text="{Binding Username, FallbackValue='Username'}" 
                     Foreground="{StaticResource TextPrimaryBrush}" 
                     Style="{StaticResource HeaderText}"/>
                 <StackPanel Grid.Row="1">
                     <Button x:Name="btnHome" 
-                            Content="Home" 
+                            Content="Game Sessions" 
                             Command="{Binding NavigateToHome}"
                     >
                         <Button.Style>

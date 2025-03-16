@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
         <StackPanel Grid.Row="0">
             <TextBlock 
-                HorizontalAlignment="Center"
+                    HorizontalAlignment="Center"
                     Text="Library"
                     Foreground="{StaticResource TextPrimaryBrush}" 
                     Style="{StaticResource HeaderText}"/>

@@ -82,7 +82,7 @@
                 Width="450"
                 IsReadOnly="True" Text="{Binding SelectedGame.name, UpdateSourceTrigger=PropertyChanged}"
                 Cursor="No"
-                IsInactiveSelectionHighlightEnabled="True"/>
+                />
             <Label Content="Exe Name" Foreground="{StaticResource TextPrimaryBrush}" />
             <StackPanel
                 Orientation="Horizontal"
