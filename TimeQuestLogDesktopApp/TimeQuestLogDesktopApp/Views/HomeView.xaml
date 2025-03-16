@@ -22,7 +22,10 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Label Foreground="{StaticResource TextPrimaryBrush}" Content="Home View"/>
-        <DataGrid 
+        <DataGrid   
+            ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+            RowStyle="{DynamicResource DataGridRowStyle1}"
+            Style="{DynamicResource DataGridStyle1}" 
             Grid.Row="1" 
             Grid.ColumnSpan="3"
             Height="auto"

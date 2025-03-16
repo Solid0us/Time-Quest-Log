@@ -37,7 +37,10 @@
                     Width="100"
                 />
             </StackPanel>
-            <DataGrid
+            <DataGrid 
+                ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
+                RowStyle="{DynamicResource DataGridRowStyle1}"
+                Style="{DynamicResource DataGridStyle1}" 
                 Height="600"
                 CanUserReorderColumns="False"
                 IsReadOnly="True" 
@@ -46,6 +49,7 @@
                 Margin="10" 
                 HorizontalScrollBarVisibility="Auto" 
                 VerticalScrollBarVisibility="Auto">
+              
                 <DataGrid.Columns>
                     <DataGridTemplateColumn Header="Cover" Width="*">
                         <DataGridTemplateColumn.CellTemplate>
