@@ -101,6 +101,24 @@ async function performTokenRefresh(): Promise<string> {
   }
 }
 
+export async function noAuthFetch(
+  input: RequestInfo | URL,
+  init: RequestInit = {}
+): Promise<Response> {
+  let headers =
+    init.headers instanceof Headers
+      ? init.headers
+      : new Headers(init.headers || {});
+  headers.set("Content-Type", "application/json");
+
+  const config: RequestInit = {
+    ...init,
+    headers,
+  };
+  const response = await fetch(input, config);
+  return response;
+}
+
 export async function authFetch(
   input: RequestInfo | URL,
   init: RequestInit = {},
