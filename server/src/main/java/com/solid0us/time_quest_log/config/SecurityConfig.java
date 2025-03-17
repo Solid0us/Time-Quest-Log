@@ -37,7 +37,7 @@ public class SecurityConfig {
             .securityMatcher("/api/**")
             .csrf((csrf) -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/api/v1/users/login", "/api/v1/users/register", "/api/v1/users/refresh").permitAll()
+                .requestMatchers("/api/v1/users/login", "/api/v1/users/register", "/api/v1/users/refresh", "/api/v1/aws/s3/installers").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
