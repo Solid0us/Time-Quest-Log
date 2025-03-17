@@ -64,10 +64,6 @@ namespace TimeQuestLogDesktopApp.ViewModels
 			{
 				AllocConsole();
 			}
-			using (_gameMonitoringService)
-			{
-				_gameMonitoringService.StartMonitoring();
-			}
 			_gameMonitoringService.StartMonitoring();
 			_credentialManager = CredentialManagerService.GetInstance();
 			_credentialManager.LoadCredentials();
@@ -92,6 +88,10 @@ namespace TimeQuestLogDesktopApp.ViewModels
 
 			SyncData = new SyncDataCommand();
 			UpdateUnsyncedCounter();
+			if (NumberUnsynced > 0)
+			{
+				SyncData.Execute(NumberUnsynced);
+			}
 
 			InitializeLibraryNavigationAsync();
 		}

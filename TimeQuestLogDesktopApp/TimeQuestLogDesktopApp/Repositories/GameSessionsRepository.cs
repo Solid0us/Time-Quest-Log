@@ -81,20 +81,20 @@ namespace TimeQuestLogDesktopApp.Repositories
             }
         }
 
-        public void EndGameSession(GameSessions gameSession)
+        public void UpdateGameSessionEndTime(GameSessions gameSession)
         {
             string sql = @"
                 UPDATE GameSessions
-                SET Endtime = @EndTime
+                SET Endtime = @EndTime,
+                IsSynced = @IsSynced
                 WHERE Id = @GameSessionId
             ";
-            var parameters = new { gameSession.EndTime, GameSessionId = gameSession.Id };
+            var parameters = new { gameSession.EndTime, GameSessionId = gameSession.Id, IsSynced = false};
 
             using (var cnn = _connectionFactory.CreateConnection())
             {
                 cnn.Execute(sql, parameters);
             }
-
         }
 
         public int UpdateSync(string id, bool isSynced)

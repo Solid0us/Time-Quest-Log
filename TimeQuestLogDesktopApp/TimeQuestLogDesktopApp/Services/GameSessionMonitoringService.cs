@@ -109,6 +109,7 @@ namespace TimeQuestLogDesktopApp.Services
 			_stopWatch.Start();
 
 			isMonitoring = true;
+			Task.Run(() => UpdateEndTime());
 		}
 
 		public void StopMonitoring()
@@ -172,7 +173,7 @@ namespace TimeQuestLogDesktopApp.Services
 
 			_processIdToNameMap.TryRemove(processId, out _);
 			gameSessionToEnd.EndTime = DateTime.UtcNow;
-			_gameSessionsRepository.EndGameSession(gameSessionToEnd);
+			_gameSessionsRepository.UpdateGameSessionEndTime(gameSessionToEnd);
 			try
 			{
 				string url = _environmentVariableService.ApiBaseUrl + $"game-sessions/{gameSessionToEnd.Id}";
@@ -187,6 +188,19 @@ namespace TimeQuestLogDesktopApp.Services
 			{
 				LoadGameSessions();
 				UpdateUnsyncedCounter();
+			}
+		}
+
+		private void UpdateEndTime()
+		{
+			while (isMonitoring)
+			{
+				foreach(var gameSession in _gameSessionMap.Values)
+				{
+					gameSession.EndTime = DateTime.UtcNow;
+					_gameSessionsRepository.UpdateGameSessionEndTime(gameSession);
+				}
+				Thread.Sleep(10000);
 			}
 		}
 
