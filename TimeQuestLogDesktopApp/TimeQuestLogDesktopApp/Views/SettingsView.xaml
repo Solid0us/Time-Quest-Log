@@ -3,14 +3,22 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views"
+             xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views" xmlns:viewmodels="clr-namespace:TimeQuestLogDesktopApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:SettingsViewModel}"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <TextBlock 
             HorizontalAlignment="Center"
             Text="Settings"
             Foreground="{StaticResource TextPrimaryBrush}" 
             Style="{StaticResource HeaderText}"/>
+        <CheckBox x:Name="StartupToggle" 
+              Style="{StaticResource ToggleSwitchStyle}"
+              IsChecked="{Binding IsStartupEnabled, Mode=TwoWay}"
+              Command="{Binding ToggleStartupCommand}"/>
     </Grid>
 </UserControl>
