@@ -10,7 +10,7 @@ namespace TimeQuestLogDesktopApp.Commands
 	internal class ToggleStartupCommand : CommandBase
 	{
 		private string _appName;
-		private readonly RegistryStartupService _startupService;
+		private readonly ScheduledTaskService _startupService;
 		public override void Execute(object? parameter)
 		{
 			ToggleStartup();
@@ -19,18 +19,18 @@ namespace TimeQuestLogDesktopApp.Commands
         public ToggleStartupCommand(string appName)
         {
             _appName = appName;
-			_startupService = RegistryStartupService.Instance;
+			_startupService = ScheduledTaskService.Instance;
         }
 
 		private void ToggleStartup()
 		{
-			if (!_startupService.IsStartupEnabled(_appName))
+			if (!_startupService.IsStartupEnabled())
 			{
-				_startupService.EnableStartup(_appName);
+				_startupService.EnableStartup();
 			}
 			else
 			{
-				_startupService.DisableStartup(_appName);
+				_startupService.DisableStartup();
 			}
 		}
 	}

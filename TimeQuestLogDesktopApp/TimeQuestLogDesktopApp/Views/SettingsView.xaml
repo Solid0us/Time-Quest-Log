@@ -16,9 +16,19 @@
             Text="Settings"
             Foreground="{StaticResource TextPrimaryBrush}" 
             Style="{StaticResource HeaderText}"/>
-        <CheckBox x:Name="StartupToggle" 
+        <StackPanel 
+            Grid.Row="1"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Center"
+            Orientation="Horizontal">
+            <Label
+                VerticalAlignment="Center"
+                Foreground="{StaticResource TextPrimaryBrush}"
+                Content="Toggle Launch on Startup" />
+            <CheckBox x:Name="StartupToggle" 
               Style="{StaticResource ToggleSwitchStyle}"
               IsChecked="{Binding IsStartupEnabled, Mode=TwoWay}"
               Command="{Binding ToggleStartupCommand}"/>
+        </StackPanel>
     </Grid>
 </UserControl>

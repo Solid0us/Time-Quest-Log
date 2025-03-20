@@ -15,7 +15,7 @@ namespace TimeQuestLogDesktopApp.ViewModels
 {
 	internal class SettingsViewModel : ViewModelBase
 	{
-		private readonly RegistryStartupService _startupService;
+		private readonly ScheduledTaskService _startupService;
 		private bool _isStartupEnabled;
 		private const string AppName = "TimeQuestLog";
 		public ICommand ToggleStartupCommand {  get; set; }
@@ -36,14 +36,14 @@ namespace TimeQuestLogDesktopApp.ViewModels
 		public SettingsViewModel()
 		{
 			ToggleStartupCommand = new ToggleStartupCommand(AppName);
-			_startupService = RegistryStartupService.Instance;
+			_startupService = ScheduledTaskService.Instance;
 			LoadStartupState();
 		}
 
 
 		private void LoadStartupState()
 		{
-			IsStartupEnabled = _startupService.IsStartupEnabled(AppName);
+			IsStartupEnabled = _startupService.IsStartupEnabled();
 		}
 
 	}

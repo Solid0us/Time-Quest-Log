@@ -29,7 +29,7 @@ namespace TimeQuestLogDesktopApp
 			notifyIcon = new NotifyIcon();
 			notifyIcon.Icon = new Icon("gamepad-logo.ico");
 			notifyIcon.Text = "My App";
-			notifyIcon.Visible = false;
+			notifyIcon.Visible = true;
 
 			notifyIcon.DoubleClick += (s, args) => RestoreWindow();
 
@@ -43,7 +43,6 @@ namespace TimeQuestLogDesktopApp
 		{
 			ShowInTaskbar = true;
 			WindowState = WindowState.Normal;
-			notifyIcon.Visible = false;
 			Activate();
 		}
 
