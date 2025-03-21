@@ -6,11 +6,12 @@
         xmlns:local="clr-namespace:TimeQuestLogDesktopApp.Views" xmlns:viewmodels="clr-namespace:TimeQuestLogDesktopApp.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:AddGameViewModel}"
         mc:Ignorable="d"
         Title="Add Game to Library" Height="1000" Width="1400"
-        Background="{StaticResource BackgroundBrush}">
+        Background="{StaticResource BackgroundBrush}"
+        FontSize="16">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -79,7 +80,7 @@
             <Label Content="Selected Game" Foreground="{StaticResource TextPrimaryBrush}" />
             <TextBox
                 Style="{StaticResource RoundedTextBoxStyle}"
-                Width="450"
+                Width="500"
                 IsReadOnly="True" Text="{Binding SelectedGame.name, UpdateSourceTrigger=PropertyChanged}"
                 Cursor="No"
                 />
@@ -90,8 +91,9 @@
                 >
                 <TextBox  
                     Style="{StaticResource RoundedTextBoxStyle}" 
-                    Width="340" Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
+                    Width="370" Text="{Binding ExeName, UpdateSourceTrigger=PropertyChanged}" />
                 <Button
+                    Width="120"
                     Margin="10 0 0 0"
                     Style="{StaticResource RoundedButtonStyle}"
                     Content="Select Game"
@@ -99,6 +101,7 @@
                     />
             </StackPanel>
             <Button 
+                Width="150"
                 Margin="0 10 0 0"
                 Style="{StaticResource RoundedButtonStyle}" 
                 Command="{Binding AddGameToLibraryCommand}"

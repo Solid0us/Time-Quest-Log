@@ -25,10 +25,27 @@
                 VerticalAlignment="Center"
                 Foreground="{StaticResource TextPrimaryBrush}"
                 Content="Toggle Launch on Startup" />
+            <Image 
+                Style="{StaticResource TooltipIcon}"
+                Margin="0 0 20 0"
+                Source="/Resources/iconmonstr-help-2-96.png"
+                ToolTipService.InitialShowDelay="300"
+                ToolTipService.BetweenShowDelay="2000">
+                <Image.ToolTip>
+                    <ToolTip>
+                        <DockPanel Width="250" Height="70">
+                            <TextBlock 
+                                FontSize="14"
+                                TextWrapping="Wrap">Enabling this will create a task scheduler that will launch the program on Windows login.</TextBlock>
+                        </DockPanel>
+                    </ToolTip>
+                </Image.ToolTip>
+            </Image>
             <CheckBox x:Name="StartupToggle" 
               Style="{StaticResource ToggleSwitchStyle}"
               IsChecked="{Binding IsStartupEnabled, Mode=TwoWay}"
-              Command="{Binding ToggleStartupCommand}"/>
+              Command="{Binding ToggleStartupCommand}" />
+
         </StackPanel>
     </Grid>
 </UserControl>

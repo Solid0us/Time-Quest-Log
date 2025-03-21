@@ -24,7 +24,7 @@
                 Style="{StaticResource RoundedButtonStyle}"
                 Content="+ Add Game"
                 Command="{Binding ShowAddGameWindow}"
-                Width="100"/>
+                Width="125"/>
             <DataGrid 
                 ColumnHeaderStyle="{DynamicResource DataGridColumnHeaderStyle1}" 
                 RowStyle="{DynamicResource DataGridRowStyle1}"
@@ -85,7 +85,7 @@
               Grid.Row="1"
               Content="Pull Games from Cloud"
               Command="{Binding PullGamesFromCloud}"
-              Width="150"
+              Width="190"
               Background="{StaticResource SyncBrush}">
                 <Button.Style>
                     <Style TargetType="Button" BasedOn="{StaticResource RoundedButtonStyle}">

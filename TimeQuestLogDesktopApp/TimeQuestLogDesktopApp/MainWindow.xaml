@@ -9,7 +9,8 @@
         mc:Ignorable="d"
         Title="TimeQuest Log" Height="1000" Width="1600"
         Closing="Window_Closing"
-        StateChanged="Window_StateChanged">
+        StateChanged="Window_StateChanged"
+        FontSize="16">
     <Grid>
         <Grid.Resources>
             <DataTemplate DataType="{x:Type vms:LoginViewModel}">
