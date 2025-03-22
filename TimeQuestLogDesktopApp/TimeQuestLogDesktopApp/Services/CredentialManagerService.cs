@@ -14,22 +14,29 @@ namespace TimeQuestLogDesktopApp.Services
 		public enum CredentialType
 		{
 			REFRESH,
-			JWT
+			JWT,
+			LOGIN
 		}
 		private readonly Credential _refreshTokenCredential;
 		private readonly Credential _jwtCredential;
+		private readonly Credential _loginCredential;
 
 		private CredentialManagerService()
 		{
 			_refreshTokenCredential = new Credential
 			{
-				Target = "timequestlog-app",
+				Target = "timequestlog-app-Refresh",
 				PersistanceType = PersistanceType.LocalComputer
 			};
 
 			_jwtCredential = new Credential
 			{
 				Target = "timequestlog-app-JWT",
+				PersistanceType = PersistanceType.LocalComputer
+			};
+			_loginCredential = new Credential
+			{
+				Target = "timequestlog-app-Login",
 				PersistanceType = PersistanceType.LocalComputer
 			};
 		}
@@ -45,7 +52,14 @@ namespace TimeQuestLogDesktopApp.Services
 			{
 				return _refreshTokenCredential.Password;
 			}
-			return _jwtCredential.Password;
+			else if (type == CredentialType.JWT)
+			{
+				return _jwtCredential.Password;
+			}
+			else
+			{
+				return _refreshTokenCredential.Password;
+			}
 		}
 
 		public void SetUsername(CredentialType type, string userId,  string username)                 
@@ -60,15 +74,24 @@ namespace TimeQuestLogDesktopApp.Services
 			}
 		}
 
+		public void SetUsername(string username)
+		{
+			_loginCredential.Username = username;
+		}
+
 		public void SetPassword(CredentialType type, string password)
 		{
 			if (type == CredentialType.REFRESH)
 			{
 				_refreshTokenCredential.Password = password;
 			}
-			else
+			else if (type == CredentialType.JWT)
 			{
 				_jwtCredential.Password = password;
+			}
+			else
+			{
+				_loginCredential.Password = password;
 			}
 		}
 
@@ -78,9 +101,13 @@ namespace TimeQuestLogDesktopApp.Services
 			{
 				_refreshTokenCredential.Save();
 			}
-			else
+			else if (type == CredentialType.JWT)
 			{
 				_jwtCredential.Save();
+			}
+			else
+			{
+				_loginCredential.Save();
 			}
 		}
 
@@ -88,6 +115,7 @@ namespace TimeQuestLogDesktopApp.Services
 		{
 			_refreshTokenCredential.Load();
 			_jwtCredential.Load();
+			_loginCredential.Load();
 		}
 
 		public void Delete(CredentialType type)
@@ -96,9 +124,13 @@ namespace TimeQuestLogDesktopApp.Services
 			{
 				_refreshTokenCredential.Delete();
 			}
-			else
+			else if (type == CredentialType.JWT)
 			{
 				_jwtCredential.Delete();
+			}
+			else
+			{
+				_loginCredential.Delete();
 			}
 		}
 

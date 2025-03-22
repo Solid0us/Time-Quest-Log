@@ -69,7 +69,6 @@ namespace TimeQuestLogDesktopApp.Commands
 					AuthResponse json = JsonConvert.DeserializeObject<AuthResponse>(message);
 					if (response.IsSuccessStatusCode)
 					{
-						MessageBox.Show($"Hi {_signupViewModel.Username}, you have registered!", "Successful User Registration", MessageBoxButton.OK, MessageBoxImage.Information);
 						_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.REFRESH, json?.UserId, json?.Username);
 						_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.REFRESH, json?.RefreshToken);
 						_credentialManagerService.Save(CredentialManagerService.CredentialType.REFRESH);
@@ -77,6 +76,10 @@ namespace TimeQuestLogDesktopApp.Commands
 						_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.JWT, json?.UserId, json?.Username);
 						_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.JWT, json?.Token);
 						_credentialManagerService.Save(CredentialManagerService.CredentialType.JWT);
+
+						_credentialManagerService.SetUsername(json?.Username);
+						_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.LOGIN, _signupViewModel.Password);
+						_credentialManagerService.Save(CredentialManagerService.CredentialType.LOGIN);
 
 						SqliteConnectionFactory sqliteConnectionFactory = new SqliteConnectionFactory(_sqliteDataAccess.LoadConnectionString());
 						UserRepository userRepository = new UserRepository(sqliteConnectionFactory);

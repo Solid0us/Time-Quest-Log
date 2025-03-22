@@ -38,40 +38,12 @@ namespace TimeQuestLogDesktopApp.Commands
 		{
 			try
 			{
-				string url = $"{_environmentVariableService.ApiBaseUrl}users/login";
-				HttpResponseMessage response = await _httpService.PostAsync(url, _loginViewModel);
-
-				string message = await response.Content.ReadAsStringAsync();
-				AuthResponse json = JsonConvert.DeserializeObject<AuthResponse>(message);
-				if (response.IsSuccessStatusCode)
+				bool loginSuccess = await LoginService.Instance.Login(_loginViewModel.Username, _loginViewModel.Password);
+				if (loginSuccess)
 				{
-					_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.REFRESH,json?.UserId, json?.Username);
-					_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.REFRESH,json?.RefreshToken);
-					_credentialManagerService.Save(CredentialManagerService.CredentialType.REFRESH);
-
-					_credentialManagerService.SetUsername(CredentialManagerService.CredentialType.JWT, json?.UserId, json?.Username);
-					_credentialManagerService.SetPassword(CredentialManagerService.CredentialType.JWT, json?.Token);
-					_credentialManagerService.Save(CredentialManagerService.CredentialType.JWT);
-
-					SqliteConnectionFactory sqliteConnectionFactory = new SqliteConnectionFactory(_sqliteDataAccess.LoadConnectionString());
-					UserRepository userRepository = new UserRepository(sqliteConnectionFactory);
-					Users? existingUser = userRepository.GetUserById(json.UserId);
-					if (existingUser == null)
-					{
-						userRepository.SaveUsers(new Users(json.UserId, json.Username));
-					}
-
 					_navigationStore.CurrentViewModel = new DashboardViewModel(_navigationStore);
 					GameSessionMonitoringService.Instance.LoadGameSessions();
 					GameSessionMonitoringService.Instance.LoadExeMap();
-				}
-				else if (response.StatusCode == HttpStatusCode.Unauthorized)
-				{
-					MessageBox.Show($"{json?.Error}");
-				}
-				else
-				{
-					MessageBox.Show($"Something went wrong.");
 				}
 			}
 			catch (HttpRequestException ex)

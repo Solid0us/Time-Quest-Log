@@ -24,6 +24,7 @@ namespace TimeQuestLogDesktopApp.Services
 		private readonly int HTTP_TIMEOUT = 30;
 		private readonly JsonSerializerSettings _jsonSerializerSettings;
 		private EnvironmentVariableService _environmentVariableService;
+		private static readonly int MAX_LOGIN_ATTEMPTS = 2;
 
 		private HttpService()
 		{
@@ -62,7 +63,6 @@ namespace TimeQuestLogDesktopApp.Services
 			{
 				using var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
 				AddHeadersToRequest(requestMessage, headers);
-				_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _credentialService.GetPassword(CredentialManagerService.CredentialType.JWT));
 				return await _httpClient.SendAsync(requestMessage);
 			}
 			catch (HttpRequestException ex)
@@ -157,48 +157,80 @@ namespace TimeQuestLogDesktopApp.Services
 
 		public async Task<HttpResponseMessage> SendAndRepeatAuthorization(Func<Task<HttpResponseMessage>> httpRequestFunc)
 		{
+			int loginAttempts = 0;
 			try
 			{
-				HttpResponseMessage response = await httpRequestFunc();
-				if (response.StatusCode == HttpStatusCode.InternalServerError)
+				do
 				{
-					int retryCount = 0;
-					while (retryCount < 5 && response.StatusCode == HttpStatusCode.InternalServerError)
+					loginAttempts++;
+					HttpResponseMessage response = await httpRequestFunc();
+
+					if (response.StatusCode == HttpStatusCode.InternalServerError)
 					{
-						await Task.Delay(1000);
-						retryCount++;
-						Console.WriteLine($"Internal server error: Retry attempt {retryCount}...");
-						response.Dispose();
-						response = await httpRequestFunc();
+						int retryCount = 0;
+						while (retryCount < 5 && response.StatusCode == HttpStatusCode.InternalServerError)
+						{
+							response.Dispose();
+							await Task.Delay(1000);
+							retryCount++;
+							Console.WriteLine($"Internal server error: Retry attempt {retryCount}...");
+							response = await httpRequestFunc();
+						}
+						if (retryCount == 5 && response.StatusCode == HttpStatusCode.InternalServerError)
+						{
+							Console.WriteLine("Internal server error: Maximum retry attempts reached");
+							return response;
+						}
 					}
-					if (retryCount == 5 && response.StatusCode == HttpStatusCode.InternalServerError)
+
+					if (response.StatusCode == HttpStatusCode.Unauthorized)
 					{
-						Console.WriteLine("Internal server error: Maximum retry attempts reached");
+						response.Dispose();
+
+						string url = $"{_environmentVariableService.ApiBaseUrl}users/refresh";
+						RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest
+						{
+							refreshToken = _credentialService.GetPassword(CredentialManagerService.CredentialType.REFRESH),
+							username = _credentialService.GetUsername(CredentialManagerService.CredentialType.REFRESH),
+						};
+
+						using (HttpResponseMessage refreshTokenResponse = await PostAsync(url, refreshTokenRequest))
+						{
+							if (refreshTokenResponse.IsSuccessStatusCode)
+							{
+								string message = await refreshTokenResponse.Content.ReadAsStringAsync();
+								RefreshTokenResponse json = JsonConvert.DeserializeObject<RefreshTokenResponse>(message);
+								_credentialService.SetPassword(CredentialManagerService.CredentialType.JWT, json.token);
+								_credentialService.Save(CredentialManagerService.CredentialType.JWT);
+								_credentialService.LoadCredentials();
+								_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", json.token);
+
+								response = await httpRequestFunc();
+							}
+							else
+							{
+								bool relogSuccess = await LoginService.Instance.Login(
+									_credentialService.GetUsername(CredentialManagerService.CredentialType.LOGIN),
+									_credentialService.GetPassword(CredentialManagerService.CredentialType.LOGIN));
+
+								if (relogSuccess)
+								{
+									response = await httpRequestFunc();
+								}
+							}
+						}
+					}
+
+					if (response.IsSuccessStatusCode ||
+						(response.StatusCode != HttpStatusCode.Unauthorized &&
+						 response.StatusCode != HttpStatusCode.InternalServerError))
+					{
 						return response;
 					}
-				}
 
-				if (response.StatusCode == HttpStatusCode.Unauthorized)
-				{
-					string url = $"{_environmentVariableService.ApiBaseUrl}users/refresh";
-					RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest
-					{
-						refreshToken = _credentialService.GetPassword(CredentialManagerService.CredentialType.REFRESH),
-						username = _credentialService.GetUsername(CredentialManagerService.CredentialType.REFRESH),
-					};
-					HttpResponseMessage refreshTokenResponse = await PostAsync(url, refreshTokenRequest);
-					if (refreshTokenResponse.IsSuccessStatusCode)
-					{
-						string message = await refreshTokenResponse.Content.ReadAsStringAsync();
-						RefreshTokenResponse json = JsonConvert.DeserializeObject<RefreshTokenResponse>(message);
-						_credentialService.SetPassword(CredentialManagerService.CredentialType.JWT, json.token);
-						_credentialService.Save(CredentialManagerService.CredentialType.JWT);
-						_credentialService.LoadCredentials();
-						_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", json.token);
-						response = await httpRequestFunc();
-					}
-				}
-				return response;
+				} while (loginAttempts < MAX_LOGIN_ATTEMPTS);
+
+				throw new Exception("Max Relogin attempts reached. Your password might have been changed or the server is unresponsive.");
 			}
 			catch (HttpRequestException ex)
 			{
