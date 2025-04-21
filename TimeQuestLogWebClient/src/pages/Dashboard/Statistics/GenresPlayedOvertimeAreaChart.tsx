@@ -1,5 +1,13 @@
 import { useMemo, useState } from "react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Line,
+  LineChart,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   ChartContainer,
   ChartLegend,
@@ -79,35 +87,22 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
         config={chartConfig}
         className="aspect-auto h-[300px] w-full"
       >
-        <AreaChart margin={{ left: 10, right: 10 }} data={monthlyData}>
-          <defs>
-            {genreNames.map((genre) => (
-              <linearGradient
-                key={genre}
-                id={`fill${genre.replace(/\s+/g, "")}`}
-                x1="0"
-                y1="0"
-                x2="0"
-                y2="1"
-              >
-                <stop
-                  offset="5%"
-                  stopColor={`var(--color-${genre
-                    .toLowerCase()
-                    .replace(/\s+/g, "")})`}
-                  stopOpacity={0.8}
-                />
-                <stop
-                  offset="95%"
-                  stopColor={`var(--color-${genre
-                    .toLowerCase()
-                    .replace(/\s+/g, "")})`}
-                  stopOpacity={0.1}
-                />
-              </linearGradient>
-            ))}
-          </defs>
+        <LineChart
+          accessibilityLayer
+          data={monthlyData}
+          margin={{
+            left: 12,
+            right: 12,
+          }}
+        >
           <CartesianGrid vertical={false} />
+          <YAxis
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            domain={[0, "auto"]}
+            width={50}
+          />
           <XAxis
             dataKey="date"
             tickLine={false}
@@ -117,13 +112,6 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
             tickFormatter={(value: string) => {
               return getUTCMonthName(value, "short");
             }}
-          />
-          <YAxis
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            domain={[0, "auto"]}
-            width={50}
           />
           <ChartTooltip
             cursor={false}
@@ -137,17 +125,16 @@ const GenresPlayedOvertimeAreaChart = ({ stats }: { stats: UserGameStats }) => {
             }
           />
           {genreNames.map((genre, idx) => (
-            <Area
+            <Line
               key={genre}
               dataKey={genre}
               type="monotone"
               fill={`var(--chart-${(idx + 1) % 20})`}
               stroke={`var(--chart-${(idx + 1) % 20})`}
-              stackId="a"
             />
           ))}
           <ChartLegend className="flex-wrap" content={<ChartLegendContent />} />
-        </AreaChart>
+        </LineChart>
       </ChartContainer>
     </YearlyChartCard>
   );
