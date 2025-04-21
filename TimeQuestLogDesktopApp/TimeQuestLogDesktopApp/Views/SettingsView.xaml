@@ -45,7 +45,6 @@
               Style="{StaticResource ToggleSwitchStyle}"
               IsChecked="{Binding IsStartupEnabled, Mode=TwoWay}"
               Command="{Binding ToggleStartupCommand}" />
-
         </StackPanel>
     </Grid>
 </UserControl>

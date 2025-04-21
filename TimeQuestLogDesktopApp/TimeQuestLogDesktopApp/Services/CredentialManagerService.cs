@@ -39,6 +39,7 @@ namespace TimeQuestLogDesktopApp.Services
 				Target = "timequestlog-app-Login",
 				PersistanceType = PersistanceType.LocalComputer
 			};
+			LoadCredentials();
 		}
 
 		public static CredentialManagerService GetInstance()
@@ -58,7 +59,7 @@ namespace TimeQuestLogDesktopApp.Services
 			}
 			else
 			{
-				return _refreshTokenCredential.Password;
+				return _loginCredential.Password;
 			}
 		}
 
@@ -144,12 +145,16 @@ namespace TimeQuestLogDesktopApp.Services
 					username = _refreshTokenCredential.Username.Split(';')[1];
 				}
 			}
-			else
+			else if (type == CredentialType.JWT)
 			{
 				if (_jwtCredential.Username != null)
 				{
 					username = _jwtCredential.Username.Split(";")[1];
 				}
+			}
+			else
+			{
+				username = _loginCredential.Username;
 			}
 			return username;
 		}
