@@ -24,7 +24,7 @@ namespace TimeQuestLogDesktopApp.Services
         private ManagementEventWatcher _stopWatch;
 		private bool isMonitoring;
 		private bool disposed;
-		private ConcurrentDictionary<int, string> _processIdToNameMap = new();
+		private ConcurrentDictionary<string, int> _processNameToIdMap = new();
 		private ConcurrentDictionary<string, int> _gameMap = new();
 		private ConcurrentDictionary<int, GameSessions> _gameSessionMap = new();
 		private List<GameSessionsDTO> _gameSessions = new List<GameSessionsDTO>();
@@ -138,14 +138,14 @@ namespace TimeQuestLogDesktopApp.Services
 		{
 			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
 			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-			if (!_gameMap.TryGetValue(processName, out var game))
+			if (!_gameMap.TryGetValue(processName, out var gameId))
 				return;
 
 			string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
-			GameSessions gameSession = new GameSessions(_gameMap[processName], userId);
-			if (!_gameSessionMap.TryAdd(processId, gameSession))
+
+			GameSessions gameSession = new GameSessions(gameId, userId);
+			if (!_gameSessionMap.TryAdd(processId, gameSession) || !_processNameToIdMap.TryAdd(processName, processId))
 				return;
-			_processIdToNameMap.TryAdd(processId, processName);
 			_gameSessionsRepository.CreateGameSession(gameSession);
 			try
 			{
@@ -171,7 +171,7 @@ namespace TimeQuestLogDesktopApp.Services
 			if (!_gameSessionMap.TryRemove(processId, out var gameSessionToEnd))
 				return;
 
-			_processIdToNameMap.TryRemove(processId, out _);
+			_processNameToIdMap.TryRemove(processName, out _);
 			gameSessionToEnd.EndTime = DateTime.UtcNow;
 			_gameSessionsRepository.UpdateGameSessionEndTime(gameSessionToEnd);
 			try
