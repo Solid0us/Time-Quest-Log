@@ -138,13 +138,27 @@ namespace TimeQuestLogDesktopApp.Services
 		{
 			string processName = e.NewEvent.Properties["ProcessName"].Value.ToString();
 			int processId = Convert.ToInt32(e.NewEvent.Properties["ProcessID"].Value);
-			if (!_gameMap.TryGetValue(processName, out var game))
+			if (!_gameMap.TryGetValue(processName, out var gameId))
 				return;
 
 			string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
 			GameSessions gameSession = new GameSessions(_gameMap[processName], userId);
-			if (!_gameSessionMap.TryAdd(processId, gameSession))
+			try
+			{
+				Process proc = Process.GetProcessById(processId);
+				if (proc.HasExited)
+					return;
+			}
+			catch
+			{
+				// Process may not exist
 				return;
+			}
+			if (!_gameSessionMap.TryAdd(processId, gameSession))
+			{
+				Console.WriteLine($"Skipping {processName} ({processId}) due to Game Session Map Key Conflict.");
+				return;
+			}
 			_processIdToNameMap.TryAdd(processId, processName);
 			_gameSessionsRepository.CreateGameSession(gameSession);
 			try
