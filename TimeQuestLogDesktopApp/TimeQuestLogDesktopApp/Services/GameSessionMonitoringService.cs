@@ -24,7 +24,7 @@ namespace TimeQuestLogDesktopApp.Services
         private ManagementEventWatcher _stopWatch;
 		private bool isMonitoring;
 		private bool disposed;
-		private ConcurrentDictionary<string, int> _processNameToIdMap = new();
+		private ConcurrentDictionary<string, int> _processIdToNameMap = new();
 		private ConcurrentDictionary<string, int> _gameMap = new();
 		private ConcurrentDictionary<int, GameSessions> _gameSessionMap = new();
 		private List<GameSessionsDTO> _gameSessions = new List<GameSessionsDTO>();
@@ -143,9 +143,24 @@ namespace TimeQuestLogDesktopApp.Services
 
 			string userId = _credentialManagerService.GetUserId(CredentialManagerService.CredentialType.REFRESH);
 
-			GameSessions gameSession = new GameSessions(gameId, userId);
-			if (!_gameSessionMap.TryAdd(processId, gameSession) || !_processNameToIdMap.TryAdd(processName, processId))
+			GameSessions gameSession = new GameSessions(_gameMap[processName], userId);
+			try
+			{
+				Process proc = Process.GetProcessById(processId);
+				if (proc.HasExited)
+					return;
+			}
+			catch
+			{
 				return;
+			}
+			if (!_gameSessionMap.TryAdd(processId, gameSession))
+			{
+				Console.WriteLine($"Skipping {processName} ({processId}) due to Game Session Map Key Conflict.");
+				return;
+			}
+			_processIdToNameMap.TryAdd(processName, processId);
+
 			_gameSessionsRepository.CreateGameSession(gameSession);
 			try
 			{
