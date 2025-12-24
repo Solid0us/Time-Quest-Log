@@ -35,6 +35,7 @@ namespace TimeQuestLogDesktopApp.Repositories
                 INNER JOIN Games game ON game.Id = gameSession.GameId
                 WHERE gameSession.UserId = @UserId
                 ORDER BY gameSession.StartTime DESC
+                LIMIT 50
             ";
             var parameters = new { UserId = userId };
             using (var cnn = _connectionFactory.CreateConnection())

@@ -186,7 +186,7 @@ namespace TimeQuestLogDesktopApp.Services
 			if (!_gameSessionMap.TryRemove(processId, out var gameSessionToEnd))
 				return;
 
-			_processNameToIdMap.TryRemove(processName, out _);
+			_processIdToNameMap.TryRemove(processName, out _);
 			gameSessionToEnd.EndTime = DateTime.UtcNow;
 			_gameSessionsRepository.UpdateGameSessionEndTime(gameSessionToEnd);
 			try

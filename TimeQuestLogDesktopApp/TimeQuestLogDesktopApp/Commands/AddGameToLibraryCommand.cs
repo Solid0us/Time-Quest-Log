@@ -21,7 +21,11 @@ namespace TimeQuestLogDesktopApp.Commands
 		private readonly SqliteDataAccess _sqliteDataAccess;
 		protected async override Task ExecuteAsync(object? parameter)
 		{
-			// TODO: Add Validation 
+			if (!IsValid(out List<string> errors))
+			{
+				MessageBox.Show($"Please resolve the following errors:\n{string.Join("\n", errors)}", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+				return;
+			}
 			SqliteConnectionFactory sqliteConnectionFactory = new SqliteConnectionFactory(_sqliteDataAccess.LoadConnectionString());
 			UserGameRepository userGameRepository = new UserGameRepository(sqliteConnectionFactory);
 			GamesRepository gameRepository = new GamesRepository(sqliteConnectionFactory);
@@ -48,7 +52,7 @@ namespace TimeQuestLogDesktopApp.Commands
 				List<Genres> genres = new List<Genres>();
 				foreach (var genre in _addGameViewModel.SelectedGame.genres)
 				{
-					genres.Add(new Genres{ Id = genre.id, Name = genre.name});
+					genres.Add(new Genres { Id = genre.id, Name = genre.name });
 				}
 				genresRepository.CreateGenres(genres);
 				gameGenresRepository.CreateGameGenres(game.Id, genres.Select(item => item.Id).ToList());
@@ -61,8 +65,8 @@ namespace TimeQuestLogDesktopApp.Commands
 				HttpResponseMessage response = await httpService.SendAndRepeatAuthorization(() => httpService.PutAsync(EnvironmentVariableService.Instance.ApiBaseUrl + $"user-games/{userGame.Id}",
 					new
 					{
-						user = new {id = userGame.UserId},
-						game = new {id = userGame.GameId},
+						user = new { id = userGame.UserId },
+						game = new { id = userGame.GameId },
 						exeName = userGame.ExeName
 					}));
 				if (response.IsSuccessStatusCode)
@@ -83,11 +87,25 @@ namespace TimeQuestLogDesktopApp.Commands
 			}
 		}
 
-        public AddGameToLibraryCommand(AddGameViewModel addGameViewModel)
-        {
-            _addGameViewModel = addGameViewModel;
+		private bool IsValid(out List<string> errors)
+		{
+			errors = new();
+			if (string.IsNullOrEmpty(_addGameViewModel.ExeName))
+			{
+				errors.Add("Executable name cannot be empty");
+			}
+			if (_addGameViewModel.SelectedGame == null)
+			{
+				errors.Add("Selected game cannot be empty");
+			}
+			return errors.Count == 0;
+		}
+
+		public AddGameToLibraryCommand(AddGameViewModel addGameViewModel)
+		{
+			_addGameViewModel = addGameViewModel;
 			_credentialManagerService = CredentialManagerService.GetInstance();
 			_sqliteDataAccess = new SqliteDataAccess();
-        }
-    }
+		}
+	}
 }
